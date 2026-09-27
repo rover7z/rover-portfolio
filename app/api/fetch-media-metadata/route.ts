@@ -107,6 +107,7 @@ async function collectMetadata(
     await enrichOEmbed(
       `https://open.spotify.com/oembed?url=${encodeURIComponent(input.toString())}`,
       result,
+      true,
     );
   } else if (host === "youtu.be" || host.includes("youtube.com")) {
     await enrichOEmbed(
@@ -392,8 +393,11 @@ function enrichFromHtml(html: string, input: URL, result: Metadata) {
     );
     if (spotify) {
       result.title = spotify[1].trim();
-      result.subtitle ||= spotify[2].trim();
+      if (!result.subtitle || /^https?:\/\//i.test(result.subtitle)) {
+        result.subtitle = spotify[2].trim();
+      }
     }
+    if (/^https?:\/\//i.test(result.subtitle)) result.subtitle = "";
   }
 }
 
@@ -679,7 +683,7 @@ function imageFromLd(value: any): string {
 }
 
 function nameFromLd(value: any): string {
-  if (typeof value === "string") return value;
+  if (typeof value === "string") return /^https?:\/\//i.test(value) ? "" : value;
 
   if (Array.isArray(value)) {
     return value.map(nameFromLd).filter(Boolean).join(", ");
@@ -711,6 +715,7 @@ function cleanupTitle(title: string, platform: string) {
   out = out
     .replace(/^Watch\s+/i, "")
     .replace(/\s+\|\s+Netflix$/i, "")
+    .replace(new RegExp(`\\s+on\\s+${escaped}\\s*$`, "i"), "")
     .trim();
 
   return out;

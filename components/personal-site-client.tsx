@@ -34,6 +34,7 @@ export function PersonalSiteClient({
   forcedLang?: Lang;
 }) {
   const [localLang, setLocalLang] = useState<Lang>(forcedLang ?? "en");
+  const [openMusic, setOpenMusic] = useState<string | null>(null);
   const lang = forcedLang ?? localLang;
   const dir = lang === "ar" ? "rtl" : "ltr";
 
@@ -132,7 +133,7 @@ export function PersonalSiteClient({
           ))}
         </div>
         {add("movie", "إضافة فيلم", "Add movie")}
-        {!movies.length && <Empty lang={lang} textAr="أضف أفلامك المفضلة وصور الأغلفة وروابط أي منصة تختارها." textEn="Add favorite movies, posters, and links to any platform you choose." />}
+        {!movies.length && <Empty lang={lang} textAr="أضف أفلامك المفضلة وصور الأغلفة وروابط Netflix." textEn="Add favorite movies, posters, and Netflix links." />}
       </section>
     ),
     music: (
@@ -140,17 +141,32 @@ export function PersonalSiteClient({
         {sectionTitle("music")}
         <div className="v6MusicGrid">
           {music.map((item, i) => {
+            const cardKey = item.id ?? `${item.title}-${i}`;
             const embed = musicEmbed(item.external_url ?? "");
-            return <article className="v6MusicCard" key={item.id ?? `${item.title}-${i}`}>
+            const isOpen = openMusic === cardKey;
+            return <article className="v6MusicCard" key={cardKey}>
               {editItem(item)}
-              <div className="v6MusicTop">{item.cover_url ? <img src={item.cover_url} alt={titleFor(item)} /> : <div className="v6Placeholder">♪</div>}<div><h3>{titleFor(item)}</h3>{subtitleFor(item) && <p>{subtitleFor(item)}</p>}</div></div>
-              {embed ? <iframe className="v6Spotify" src={embed} width="100%" height="152" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" title={titleFor(item)} /> : item.video_url ? <audio controls preload="none" src={item.video_url} /> : null}
-              {item.external_url && <a className="v6External" href={item.external_url} target="_blank" rel="noreferrer">{lang === "ar" ? "زيارة المنصة" : "Visit platform"} ↗</a>}
+              <div className="v6MusicCover">
+                {item.cover_url ? <img src={item.cover_url} alt={titleFor(item)} /> : <div className="v6Placeholder">♪</div>}
+                {item.category && <span className="v6MusicPlatform">{item.category}</span>}
+                {(embed || item.video_url) && <button className="v6MusicPlay" type="button" aria-label={lang === "ar" ? "تشغيل الأغنية" : "Play song"} onClick={() => setOpenMusic(isOpen ? null : cardKey)}>{isOpen ? "×" : "▶"}</button>}
+              </div>
+              <div className="v6MusicBody">
+                <h3>{titleFor(item)}</h3>
+                {subtitleFor(item) && <p className="v6MusicArtist">{subtitleFor(item)}</p>}
+                <div className="v6MusicMeta">
+                  {item.year && <span>{item.year}</span>}
+                  {item.source_rating_text && <span>★ {item.source_rating_label ? `${item.source_rating_label} ` : ""}{item.source_rating_text}</span>}
+                </div>
+                {isOpen && embed && <iframe className="v6MusicMiniPlayer" src={embed} width="100%" height={spotifyEmbed(item.external_url ?? "") ? "80" : "160"} allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" title={titleFor(item)} />}
+                {isOpen && !embed && item.video_url && <audio className="v6MusicAudio" controls autoPlay preload="none" src={item.video_url} />}
+                {item.external_url && <a className="v6External v6MusicVisit" href={item.external_url} target="_blank" rel="noreferrer">{lang === "ar" ? "زيارة المنصة" : "Visit platform"} ↗</a>}
+              </div>
             </article>;
           })}
         </div>
         {add("music", "إضافة أغنية", "Add song")}
-        {!music.length && <Empty lang={lang} textAr="أضف أغانيك وروابط Spotify، وتشتغل من داخل الموقع." textEn="Add songs and Spotify links for in-site playback." />}
+        {!music.length && <Empty lang={lang} textAr="أضف أغانيك وروابط المنصات، وشغّلها من داخل الموقع." textEn="Add songs and platform links with in-site playback." />}
       </section>
     ),
     games: (
@@ -160,9 +176,21 @@ export function PersonalSiteClient({
           {games.map((item, i) => (
             <article className="v6GameCard" key={item.id ?? `${item.title}-${i}`}>
               {editItem(item)}
-              {item.cover_url ? <img src={item.cover_url} alt={titleFor(item)} /> : <div className="v6Placeholder">GAME</div>}
-              <div className="v6GameShade" />
-              <div className="v6GameBody"><div>{item.category && <span>{item.category}</span>}{item.source_rating_text ? <span>{item.source_rating_label ? `${item.source_rating_label} ` : ""}{item.source_rating_text}</span> : null}<h3>{titleFor(item)}</h3>{descriptionFor(item) && <p>{descriptionFor(item)}</p>}</div>{item.external_url && <a className="v6External" href={item.external_url} target="_blank" rel="noreferrer">{lang === "ar" ? "افتح اللعبة" : "Open game"} ↗</a>}</div>
+              <div className="v6GameVisual">
+                {item.cover_url ? <img src={item.cover_url} alt={titleFor(item)} /> : <div className="v6Placeholder">GAME</div>}
+                <div className="v6GameBadges">
+                  {item.category && <span>{item.category}</span>}
+                  {item.source_rating_text && <span>★ {item.source_rating_text}</span>}
+                </div>
+              </div>
+              <div className="v6GameInfo">
+                <h3>{titleFor(item)}</h3>
+                {descriptionFor(item) && <p>{descriptionFor(item)}</p>}
+                <div className="v6GameFooter">
+                  {item.year && <small>{item.year}</small>}
+                  {item.external_url && <a className="v6External" href={item.external_url} target="_blank" rel="noreferrer">{lang === "ar" ? "زيارة اللعبة" : "View game"} ↗</a>}
+                </div>
+              </div>
             </article>
           ))}
         </div>

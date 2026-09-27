@@ -18,3 +18,51 @@
 @media(max-width:720px){.v6Hero{min-height:78svh;padding:48px 20px}.v6Hero h1{font-size:24vw}.v6Section,.v6About,.v6Contact{padding:64px 18px}.v6PhotoGrid{grid-template-columns:1fr}.v6PhotoCard,.v6PhotoCard.v6Photo0,.v6PhotoCard.v6Photo1,.v6PhotoCard.v6Photo3,.v6PhotoCard.v6Photo4{grid-column:1;min-height:300px}.v6PosterGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.v6PosterBody{padding:12px}.v6PosterBody h3{font-size:15px}.v6PosterBody p{font-size:11px;-webkit-line-clamp:3}.v6GameCard{min-height:330px}.v6GameBody{padding:18px;display:block}.v6ContactLinks{grid-template-columns:1fr}.v6Footer{flex-direction:column;align-items:flex-start}.v6AdminBar{align-items:flex-start;flex-direction:column;min-height:98px}.v6AdminActions{width:100%}.v6AdminSite{padding-top:98px}.v6Admin .v6Nav.sticky{top:98px}.v6Inspector{top:auto!important;right:7px!important;left:7px!important;bottom:7px;width:auto;max-height:76svh}.v6Pair{grid-template-columns:1fr}.v6SectionHead{display:block}.v6SectionHead>.v6Edit{margin-top:14px}}
 
 .v6Rating{display:inline-flex;align-items:center;gap:4px;margin-inline-start:8px;padding:4px 8px;border:1px solid color-mix(in srgb,var(--v6-accent) 60%,transparent);border-radius:999px;background:color-mix(in srgb,var(--v6-accent) 13%,transparent);color:var(--v6-accent);font-size:11px;font-weight:800;white-space:nowrap}
+
+/* Rover media cards V7 — compact music + games */
+.v6MusicGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.v6MusicCard{position:relative;border:1px solid var(--v6-line);background:var(--v6-panel);border-radius:var(--v6-radius);padding:0;overflow:hidden;min-width:0}
+.v6MusicCover{position:relative;aspect-ratio:1/1;background:#0b0d0f;overflow:hidden}
+.v6MusicCover>img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s ease}
+.v6MusicCard:hover .v6MusicCover>img{transform:scale(1.025)}
+.v6MusicCover>.v6Placeholder{width:100%;height:100%}
+.v6MusicPlatform{position:absolute;top:10px;left:10px;padding:5px 8px;border:1px solid rgba(255,255,255,.16);border-radius:999px;background:rgba(0,0,0,.62);backdrop-filter:blur(8px);font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#fff}
+.v6Site[dir="rtl"] .v6MusicPlatform{left:auto;right:10px}
+.v6MusicPlay{position:absolute;right:12px;bottom:12px;width:46px;height:46px;border:0;border-radius:50%;display:grid;place-items:center;background:var(--v6-accent);color:#171108;font-size:16px;font-weight:900;box-shadow:0 8px 30px rgba(0,0,0,.4);cursor:pointer}
+.v6Site[dir="rtl"] .v6MusicPlay{right:auto;left:12px}
+.v6MusicBody{padding:14px;min-width:0}
+.v6MusicBody h3{margin:0;font-size:17px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v6MusicArtist{margin:6px 0 0;color:var(--v6-muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v6MusicMeta{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.v6MusicMeta span{padding:4px 7px;border:1px solid var(--v6-line);border-radius:999px;color:#b9c0c4;font-size:9px}
+.v6MusicMiniPlayer{border:0;border-radius:9px;display:block;margin-top:12px;overflow:hidden}
+.v6MusicAudio{width:100%;margin-top:12px}
+.v6MusicVisit{margin-top:12px}
+.v6GameGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.v6GameCard{position:relative;min-height:0;border:1px solid var(--v6-line);border-radius:var(--v6-radius);overflow:hidden;background:var(--v6-panel)}
+.v6GameVisual{position:relative;aspect-ratio:16/10;background:#0c0f11;overflow:hidden}
+.v6GameVisual>img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s ease}
+.v6GameCard:hover .v6GameVisual>img{transform:scale(1.02)}
+.v6GameVisual>.v6Placeholder{width:100%;height:100%}
+.v6GameBadges{position:absolute;left:10px;right:10px;top:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:6px;pointer-events:none}
+.v6GameBadges span{max-width:70%;padding:5px 7px;border:1px solid rgba(255,255,255,.16);border-radius:999px;background:rgba(0,0,0,.65);backdrop-filter:blur(8px);font-size:8px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v6GameInfo{padding:14px}
+.v6GameInfo h3{font-size:17px;line-height:1.25;margin:0 0 8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.v6GameInfo p{margin:0;color:var(--v6-muted);font-size:11px;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.v6GameFooter{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px}
+.v6GameFooter small{color:var(--v6-muted);font-size:10px}
+.v6GameFooter .v6External{margin-top:0;padding:7px 9px;font-size:9px}
+@media(max-width:1000px){
+  .v6MusicGrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .v6GameGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:720px){
+  .v6MusicGrid,.v6GameGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .v6MusicBody,.v6GameInfo{padding:10px}
+  .v6MusicBody h3,.v6GameInfo h3{font-size:14px}
+  .v6MusicArtist{font-size:10px}
+  .v6MusicPlay{width:40px;height:40px;right:9px;bottom:9px}
+  .v6Site[dir="rtl"] .v6MusicPlay{right:auto;left:9px}
+  .v6GameInfo p{font-size:10px;-webkit-line-clamp:2}
+  .v6GameFooter{align-items:flex-end}
+}
