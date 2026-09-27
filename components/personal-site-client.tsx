@@ -51,7 +51,7 @@ export function PersonalSiteClient({
 
   const ordered = useMemo(
     () => personalSectionKeys
-      .filter((key) => settings.sections[key].enabled)
+      .filter((key) => key !== "about" && settings.sections[key].enabled)
       .sort((a, b) => settings.sections[a].order - settings.sections[b].order),
     [settings.sections],
   );
@@ -233,13 +233,7 @@ export function PersonalSiteClient({
         {!games.length && <Empty lang={lang} textAr="أضف ألعابك وصورها وروابط Steam أو PlayStation أو Google Play وغيرها." textEn="Add games with images and Steam, PlayStation, Google Play, or other links." />}
       </section>
     ),
-    about: (
-      <section id="about" className="v6About v6Black" key="about">
-        {edit(lang === "ar" ? "تعديل نبذة عني" : "Edit About", { type: "about" })}
-        <div className="v6AboutPhoto">{settings.about.imageUrl ? <img src={settings.about.imageUrl} alt={settings.hero.name} /> : <div className="v6AboutLetter">{settings.brand.letter || "R"}</div>}</div>
-        <div className="v6AboutText"><span>{settings.about.eyebrow[lang]}</span><h2>{settings.sections.about.title[lang]}</h2><p>{settings.about.text[lang]}</p><div className="v6Experience"><h3>{settings.about.experienceTitle[lang]}</h3>{settings.about.experienceText[lang].split("\n").map((line, i) => <p key={i}>{line}</p>)}</div></div>
-      </section>
-    ),
+    about: null,
     contact: (
       <section id="contact" className="v6Contact" key="contact">
         {edit(lang === "ar" ? "تعديل التواصل" : "Edit contact", { type: "contact" })}
@@ -263,11 +257,41 @@ export function PersonalSiteClient({
       {settings.header.showLanguageSwitch && <button className="v6Lang" onClick={() => !forcedLang && setLocalLang(lang === "en" ? "ar" : "en")}>{lang === "en" ? "عربي" : "EN"}</button>}
     </header>}
 
-    {settings.hero.enabled && <section id="home" className="v6Hero" style={settings.hero.backgroundUrl ? { backgroundImage: `url('${settings.hero.backgroundUrl}')` } : undefined}>
+    {settings.hero.enabled && <section id="home" className="v6Hero v6HeroProfile" style={settings.hero.backgroundUrl ? { backgroundImage: `url('${settings.hero.backgroundUrl}')` } : undefined}>
       {edit(lang === "ar" ? "تعديل الواجهة" : "Edit hero", { type: "hero" })}
+      {edit(lang === "ar" ? "تعديل نبذة عني" : "Edit about", { type: "about" })}
       <div className="v6HeroOverlay" />
-      <div className="v6HeroCopy"><span>{settings.hero.name.toUpperCase()}</span><h1>{settings.hero.heading}</h1><h2>{settings.hero.kicker[lang]}</h2><p>{settings.hero.subtitle[lang]}</p><div className="v6HeroActions"><a className="primary" href={`#${settings.hero.primaryTarget}`}>{settings.hero.primaryButton[lang]}</a><a href={`#${settings.hero.secondaryTarget}`}>{settings.hero.secondaryButton[lang]}</a></div></div>
-    </section>}
+      <div className="v6HeroProfileGrid">
+        <div className="v6HeroCopy">
+          <span>{settings.hero.name.toUpperCase()}</span>
+          <h1>{settings.hero.heading}</h1>
+          <h2>{settings.hero.kicker[lang]}</h2>
+          <p>{settings.hero.subtitle[lang]}</p>
+          <div className="v6HeroActions">
+            <a className="primary" href={`#${settings.hero.primaryTarget}`}>{settings.hero.primaryButton[lang]}</a>
+            <a href={`#${settings.hero.secondaryTarget}`}>{settings.hero.secondaryButton[lang]}</a>
+          </div>
+        </div>
+        <aside className="v6HeroAboutCard">
+          <div className="v6HeroAboutPhoto">
+            {settings.about.imageUrl ? <img src={settings.about.imageUrl} alt={settings.hero.name} /> : <div className="v6AboutLetter">{settings.brand.letter || "R"}</div>}
+          </div>
+          <div className="v6HeroAboutContent">
+            <span>{settings.about.eyebrow[lang]}</span>
+            <h3>{lang === "ar" ? "نبذة عني" : "About me"}</h3>
+            <p>{settings.about.text[lang]}</p>
+            {settings.about.experienceText[lang] && <div className="v6HeroExperience">
+              <strong>{settings.about.experienceTitle[lang]}</strong>
+              <p>{settings.about.experienceText[lang]}</p>
+            </div>}
+          </div>
+        </aside>
+      </div>
+      <a className="v6ScrollCue" href="#photos" aria-label={lang === "ar" ? "انتقل للقسم التالي" : "Next section"}>
+        <span>{lang === "ar" ? "اسحب للأسفل" : "Scroll down"}</span>
+        <b>↓</b>
+      </a>
+    </section>
 
     {ordered.map((key) => nodes[key])}
 
