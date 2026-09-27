@@ -1,7 +1,7 @@
 import { PortfolioClient } from "../components/portfolio-client";
-import { loadPortfolioItems } from "../lib/load-content";
+import { loadPortfolioItems, loadSiteConfig } from "../lib/load-content";
 
 export default async function Home() {
-  const items = await loadPortfolioItems();
-  return <PortfolioClient items={items} />;
+  const [items, settings] = await Promise.all([loadPortfolioItems(), loadSiteConfig()]);
+  return <PortfolioClient items={items} settings={settings} />;
 }
