@@ -25,3 +25,7 @@ alter table public.portfolio_items
 alter table public.portfolio_items
   add constraint portfolio_items_rating_check
   check (rating is null or (rating >= 0 and rating <= 10));
+
+alter table public.portfolio_items
+  add column if not exists source_rating_text text,
+  add column if not exists source_rating_label text;

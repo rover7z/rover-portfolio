@@ -24,6 +24,8 @@ export type PortfolioItem = {
   year?: string | null;
   duration?: string | null;
   rating?: number | null;
+  source_rating_text?: string | null;
+  source_rating_label?: string | null;
   tags?: string[] | null;
   sort_order?: number | null;
   is_featured?: boolean | null;

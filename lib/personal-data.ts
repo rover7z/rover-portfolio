@@ -3,7 +3,7 @@ import { createClient } from "./supabase/server";
 import type { PortfolioItem } from "./content";
 import { defaultPersonalSiteConfig, mergePersonalSiteConfig, type PersonalSiteConfig } from "./personal-site";
 
-const itemFields = "id,kind,title,title_ar,subtitle,subtitle_ar,description,description_ar,category,cover_url,video_url,external_url,year,duration,rating,tags,sort_order,is_featured,is_published";
+const itemFields = "id,kind,title,title_ar,subtitle,subtitle_ar,description,description_ar,category,cover_url,video_url,external_url,year,duration,rating,source_rating_text,source_rating_label,tags,sort_order,is_featured,is_published";
 
 export async function loadPersonalItems(): Promise<PortfolioItem[]> {
   if (!isSupabaseConfigured()) return [];

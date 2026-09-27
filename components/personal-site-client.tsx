@@ -127,7 +127,7 @@ export function PersonalSiteClient({
             <article className="v6PosterCard" key={item.id ?? `${item.title}-${i}`}>
               {editItem(item)}
               <div className="v6PosterVisual">{item.cover_url ? <img src={item.cover_url} alt={titleFor(item)} /> : <div className="v6Placeholder">MOVIE</div>}</div>
-              <div className="v6PosterBody">{item.category && <small>{item.category}</small>}{item.rating !== null && item.rating !== undefined && <span className="v6Rating">★ {Number(item.rating).toFixed(1)}/10</span>}<h3>{titleFor(item)}</h3>{descriptionFor(item) && <p>{descriptionFor(item)}</p>}{item.external_url && <a className="v6External" href={item.external_url} target="_blank" rel="noreferrer">{item.category ? (lang === "ar" ? `افتح على ${item.category}` : `Open on ${item.category}`) : (lang === "ar" ? "فتح رابط الفيلم" : "Open movie link")} ↗</a>}</div>
+              <div className="v6PosterBody">{item.category && <small>{item.category}</small>}{item.rating !== null && item.rating !== undefined && <span className="v6Rating">★ Rover {Number(item.rating).toFixed(1)}/10</span>{item.source_rating_text ? <span className="v6Rating">★ {item.source_rating_label ? `${item.source_rating_label} ` : ""}{item.source_rating_text}</span> : null}}<h3>{titleFor(item)}</h3>{descriptionFor(item) && <p>{descriptionFor(item)}</p>}{item.external_url && <a className="v6External" href={item.external_url} target="_blank" rel="noreferrer">{item.category ? (lang === "ar" ? `افتح على ${item.category}` : `Open on ${item.category}`) : (lang === "ar" ? "فتح رابط الفيلم" : "Open movie link")} ↗</a>}</div>
             </article>
           ))}
         </div>
@@ -140,12 +140,12 @@ export function PersonalSiteClient({
         {sectionTitle("music")}
         <div className="v6MusicGrid">
           {music.map((item, i) => {
-            const spotify = spotifyEmbed(item.external_url ?? "");
+            const embed = musicEmbed(item.external_url ?? "");
             return <article className="v6MusicCard" key={item.id ?? `${item.title}-${i}`}>
               {editItem(item)}
               <div className="v6MusicTop">{item.cover_url ? <img src={item.cover_url} alt={titleFor(item)} /> : <div className="v6Placeholder">♪</div>}<div><h3>{titleFor(item)}</h3>{subtitleFor(item) && <p>{subtitleFor(item)}</p>}</div></div>
-              {spotify ? <iframe className="v6Spotify" src={spotify} width="100%" height="152" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" title={titleFor(item)} /> : item.video_url ? <audio controls preload="none" src={item.video_url} /> : null}
-              {item.external_url && <a className="v6External spotify" href={item.external_url} target="_blank" rel="noreferrer">{lang === "ar" ? "افتح على Spotify" : "Open on Spotify"} ↗</a>}
+              {embed ? <iframe className="v6Spotify" src={embed} width="100%" height="152" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" title={titleFor(item)} /> : item.video_url ? <audio controls preload="none" src={item.video_url} /> : null}
+              {item.external_url && <a className="v6External" href={item.external_url} target="_blank" rel="noreferrer">{lang === "ar" ? "زيارة المنصة" : "Visit platform"} ↗</a>}
             </article>;
           })}
         </div>
@@ -162,7 +162,7 @@ export function PersonalSiteClient({
               {editItem(item)}
               {item.cover_url ? <img src={item.cover_url} alt={titleFor(item)} /> : <div className="v6Placeholder">GAME</div>}
               <div className="v6GameShade" />
-              <div className="v6GameBody"><div>{item.category && <span>{item.category}</span>}<h3>{titleFor(item)}</h3>{descriptionFor(item) && <p>{descriptionFor(item)}</p>}</div>{item.external_url && <a className="v6External" href={item.external_url} target="_blank" rel="noreferrer">{lang === "ar" ? "افتح اللعبة" : "Open game"} ↗</a>}</div>
+              <div className="v6GameBody"><div>{item.category && <span>{item.category}</span>}{item.source_rating_text ? <span>{item.source_rating_label ? `${item.source_rating_label} ` : ""}{item.source_rating_text}</span> : null}<h3>{titleFor(item)}</h3>{descriptionFor(item) && <p>{descriptionFor(item)}</p>}</div>{item.external_url && <a className="v6External" href={item.external_url} target="_blank" rel="noreferrer">{lang === "ar" ? "افتح اللعبة" : "Open game"} ↗</a>}</div>
             </article>
           ))}
         </div>
@@ -238,4 +238,16 @@ function youtubeEmbed(url: string) {
 function spotifyEmbed(url: string) {
   const match = url.match(/open\.spotify\.com\/(track|album|playlist)\/([A-Za-z0-9]+)/);
   return match ? `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator&theme=0` : "";
+}
+
+function musicEmbed(url: string) {
+  const spotify = spotifyEmbed(url);
+  if (spotify) return spotify;
+  const youtube = youtubeEmbed(url);
+  if (youtube) return youtube;
+  if (/soundcloud\.com/i.test(url)) return `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&auto_play=false`;
+  if (/music\.apple\.com/i.test(url)) return url.replace(/^https?:\/\/music\.apple\.com/i, "https://embed.music.apple.com");
+  const deezer = url.match(/deezer\.com\/(?:[a-z]{2}\/)?track\/(\d+)/i);
+  if (deezer) return `https://widget.deezer.com/widget/dark/track/${deezer[1]}`;
+  return "";
 }
