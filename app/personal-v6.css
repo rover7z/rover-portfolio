@@ -347,3 +347,16 @@
   .rvVisitorsHeading{padding:15px 14px}
 }
 .v6AdminVisitorsLink{white-space:nowrap;border:1px solid #30393e;background:#111619;color:#d9dde0!important;border-radius:7px;padding:8px 10px;font-size:11px;text-decoration:none}
+
+/* Rover V11 — anonymous visitor counter only */
+.rvStatsSimple{grid-template-columns:repeat(3,minmax(0,1fr))}
+.rvStatsSimple article{min-height:150px;align-content:center}
+.rvStatsSimple article p{margin:0;color:#727c81;font-size:9px;line-height:1.55}
+.rvSimpleInfo{max-width:1200px;margin:18px auto 0;border:1px solid #242c30;background:#0b0f11;border-radius:14px;padding:22px}
+.rvSimpleInfo>span{color:#d8a54f;font-size:9px;letter-spacing:.18em}
+.rvSimpleInfo h2{margin:7px 0 8px;font-size:22px}
+.rvSimpleInfo p{margin:0;color:#8b9498;font-size:11px;line-height:1.7}
+@media(max-width:760px){
+  .rvStatsSimple{grid-template-columns:1fr}
+  .rvStatsSimple article{min-height:120px}
+}
