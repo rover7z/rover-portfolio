@@ -291,7 +291,7 @@ export function PersonalSiteClient({
         <span>{lang === "ar" ? "اسحب للأسفل" : "Scroll down"}</span>
         <b>↓</b>
       </a>
-    </section>
+    </section>}
 
     {ordered.map((key) => nodes[key])}
 
