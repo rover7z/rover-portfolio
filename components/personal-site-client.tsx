@@ -127,7 +127,7 @@ export function PersonalSiteClient({
             <article className="v6PosterCard" key={item.id ?? `${item.title}-${i}`}>
               {editItem(item)}
               <div className="v6PosterVisual">{item.cover_url ? <img src={item.cover_url} alt={titleFor(item)} /> : <div className="v6Placeholder">MOVIE</div>}</div>
-              <div className="v6PosterBody">{item.category && <small>{item.category}</small>}<h3>{titleFor(item)}</h3>{descriptionFor(item) && <p>{descriptionFor(item)}</p>}{item.external_url && <a className="v6External" href={item.external_url} target="_blank" rel="noreferrer">{item.category ? (lang === "ar" ? `افتح على ${item.category}` : `Open on ${item.category}`) : (lang === "ar" ? "فتح رابط الفيلم" : "Open movie link")} ↗</a>}</div>
+              <div className="v6PosterBody">{item.category && <small>{item.category}</small>}{item.rating !== null && item.rating !== undefined && <span className="v6Rating">★ {Number(item.rating).toFixed(1)}/10</span>}<h3>{titleFor(item)}</h3>{descriptionFor(item) && <p>{descriptionFor(item)}</p>}{item.external_url && <a className="v6External" href={item.external_url} target="_blank" rel="noreferrer">{item.category ? (lang === "ar" ? `افتح على ${item.category}` : `Open on ${item.category}`) : (lang === "ar" ? "فتح رابط الفيلم" : "Open movie link")} ↗</a>}</div>
             </article>
           ))}
         </div>

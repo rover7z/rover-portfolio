@@ -19,7 +19,7 @@ export default async function AdminPage() {
   if (!adminRow) redirect("/admin/login?error=not-admin");
 
   const [{ data: items }, { data: settingsRow }] = await Promise.all([
-    supabase.from("portfolio_items").select("id,kind,title,title_ar,subtitle,subtitle_ar,description,description_ar,category,cover_url,video_url,external_url,year,duration,tags,sort_order,is_featured,is_published").in("kind", ["photo", "video", "movie", "music", "game"]).order("sort_order", { ascending: true }),
+    supabase.from("portfolio_items").select("id,kind,title,title_ar,subtitle,subtitle_ar,description,description_ar,category,cover_url,video_url,external_url,year,duration,rating,tags,sort_order,is_featured,is_published").in("kind", ["photo", "video", "movie", "music", "game"]).order("sort_order", { ascending: true }),
     supabase.from("site_settings").select("value").eq("key", "site_config_v6").maybeSingle(),
   ]);
 

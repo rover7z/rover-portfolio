@@ -15,3 +15,13 @@ set allowed_mime_types = array[
 ],
 file_size_limit = 104857600
 where id='portfolio-media';
+
+alter table public.portfolio_items
+  add column if not exists rating numeric(3,1);
+
+alter table public.portfolio_items
+  drop constraint if exists portfolio_items_rating_check;
+
+alter table public.portfolio_items
+  add constraint portfolio_items_rating_check
+  check (rating is null or (rating >= 0 and rating <= 10));

@@ -23,6 +23,7 @@ export type PortfolioItem = {
   external_url?: string | null;
   year?: string | null;
   duration?: string | null;
+  rating?: number | null;
   tags?: string[] | null;
   sort_order?: number | null;
   is_featured?: boolean | null;
