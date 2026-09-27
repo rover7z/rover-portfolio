@@ -127,12 +127,12 @@ export function PersonalSiteClient({
             <article className="v6PosterCard" key={item.id ?? `${item.title}-${i}`}>
               {editItem(item)}
               <div className="v6PosterVisual">{item.cover_url ? <img src={item.cover_url} alt={titleFor(item)} /> : <div className="v6Placeholder">MOVIE</div>}</div>
-              <div className="v6PosterBody"><h3>{titleFor(item)}</h3>{descriptionFor(item) && <p>{descriptionFor(item)}</p>}{item.external_url && <a className="v6External netflix" href={item.external_url} target="_blank" rel="noreferrer">{lang === "ar" ? "شاهد على Netflix" : "Watch on Netflix"} ↗</a>}</div>
+              <div className="v6PosterBody">{item.category && <small>{item.category}</small>}<h3>{titleFor(item)}</h3>{descriptionFor(item) && <p>{descriptionFor(item)}</p>}{item.external_url && <a className="v6External" href={item.external_url} target="_blank" rel="noreferrer">{item.category ? (lang === "ar" ? `افتح على ${item.category}` : `Open on ${item.category}`) : (lang === "ar" ? "فتح رابط الفيلم" : "Open movie link")} ↗</a>}</div>
             </article>
           ))}
         </div>
         {add("movie", "إضافة فيلم", "Add movie")}
-        {!movies.length && <Empty lang={lang} textAr="أضف أفلامك المفضلة وصور الأغلفة وروابط Netflix." textEn="Add favorite movies, posters, and Netflix links." />}
+        {!movies.length && <Empty lang={lang} textAr="أضف أفلامك المفضلة وصور الأغلفة وروابط أي منصة تختارها." textEn="Add favorite movies, posters, and links to any platform you choose." />}
       </section>
     ),
     music: (
