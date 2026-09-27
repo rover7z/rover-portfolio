@@ -236,7 +236,7 @@ export function PersonalEditor({ initialItems, initialSettings }: { initialItems
     {panel && !preview && <aside className="v6Inspector">
       <div className="v6InspectorHead"><strong>{panelTitle(panel, t, Boolean(selectedItem?._local))}</strong><button onClick={() => setPanel(null)}>×</button></div>
       <div className="v6InspectorBody">
-        {panel.type === "sections" && <SectionsPanel settings={settings} patchSection={patchSection} onEdit={(key) => setPanel({ type: "section", key })} t={t} />}
+        {panel.type === "sections" && <SectionsPanel settings={settings} patchSection={patchSection} onEdit={(key: PersonalSectionKey) => setPanel({ type: "section", key })} t={t} />}
         {panel.type === "section" && <SectionPanel sectionKey={panel.key} settings={settings} patchSection={patchSection} patchLocalized={patchSectionLocalized} t={t} />}
         {panel.type === "brand" && <BrandPanel settings={settings} updateSettings={updateSettings} upload={upload} t={t} />}
         {panel.type === "hero" && <HeroPanel settings={settings} updateSettings={updateSettings} patchLocalized={patchLocalized} upload={upload} t={t} />}
