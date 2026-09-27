@@ -66,3 +66,67 @@
   .v6GameInfo p{font-size:10px;-webkit-line-clamp:2}
   .v6GameFooter{align-items:flex-end}
 }
+
+/* Rover media layout V8 — albums + compact video + playback */
+.v6AlbumGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.v6AlbumCard{position:relative;min-width:0;border:1px solid var(--v6-line);border-radius:var(--v6-radius);overflow:hidden;background:var(--v6-panel);cursor:pointer}
+.v6AlbumCover{position:relative;aspect-ratio:4/5;overflow:hidden;background:#0b0d0f}
+.v6AlbumCover img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s ease}
+.v6AlbumCard:hover .v6AlbumCover img{transform:scale(1.025)}
+.v6AlbumCount{position:absolute;right:9px;top:9px;padding:5px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.64);backdrop-filter:blur(8px);color:#fff;font-size:9px;font-weight:800}
+.v6Site[dir="rtl"] .v6AlbumCount{right:auto;left:9px}
+.v6AlbumCaption{padding:12px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.v6AlbumCaption>div{display:grid;min-width:0}
+.v6AlbumCaption strong{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v6AlbumCaption small{margin-top:4px;color:var(--v6-muted);font-size:9px}
+.v6AlbumCaption>span{color:var(--v6-accent);font-size:18px}
+.v6VideoCompactGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.v6VideoCompactCard{position:relative;border:1px solid var(--v6-line);border-radius:var(--v6-radius);overflow:hidden;background:var(--v6-panel);cursor:pointer;min-width:0}
+.v6VideoThumb{position:relative;aspect-ratio:16/10;overflow:hidden;background:#060708}
+.v6VideoThumb>img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s ease}
+.v6VideoCompactCard:hover .v6VideoThumb>img{transform:scale(1.025)}
+.v6VideoPlay{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:42px;height:42px;border-radius:50%;display:grid;place-items:center;padding-left:2px;background:rgba(7,8,9,.76);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(8px);color:#fff;font-size:13px}
+.v6VideoDuration{position:absolute;right:8px;bottom:8px;padding:4px 6px;border-radius:5px;background:rgba(0,0,0,.72);color:#fff;font-size:8px}
+.v6Site[dir="rtl"] .v6VideoDuration{right:auto;left:8px}
+.v6VideoCompactBody{padding:11px}
+.v6VideoCompactBody h3{margin:0;font-size:14px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v6VideoCompactBody>div{display:flex;gap:7px;margin-top:7px;color:var(--v6-muted);font-size:9px}
+.v6MediaModal{position:fixed;z-index:1100;inset:0;padding:18px;background:rgba(0,0,0,.86);backdrop-filter:blur(12px);display:grid;place-items:center;overflow:auto}
+.v6MediaModalPanel{position:relative;width:min(1060px,100%);max-height:92svh;overflow:auto;border:1px solid #30363a;border-radius:18px;background:#090c0e;box-shadow:0 30px 120px rgba(0,0,0,.7)}
+.v6ModalClose{position:sticky;z-index:5;top:12px;float:right;margin:12px 12px 0 0;width:40px;height:40px;border-radius:50%;border:1px solid #3a4145;background:#101519;color:#fff;font-size:25px;cursor:pointer}
+.v6Site[dir="rtl"] .v6ModalClose{float:left;margin:12px 0 0 12px}
+.v6ModalHeading{padding:24px 24px 10px}
+.v6ModalHeading>span{color:var(--v6-accent);font-size:9px;letter-spacing:.16em;text-transform:uppercase}
+.v6ModalHeading h3{font-size:clamp(25px,4vw,44px);margin:7px 0}
+.v6ModalHeading p{margin:0;color:var(--v6-muted);font-size:11px}
+.v6AlbumGallery{padding:14px 24px 26px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.v6AlbumGalleryItem{position:relative;border:1px solid var(--v6-line);border-radius:12px;overflow:hidden;background:#0f1315}
+.v6AlbumGalleryItem>a{display:block;aspect-ratio:4/5}
+.v6AlbumGalleryItem img{width:100%;height:100%;object-fit:cover;display:block}
+.v6AlbumGalleryItem>div:last-child{padding:9px 10px;font-size:10px}
+.v6VideoModal{width:min(900px,100%);overflow:visible}
+.v6VideoModalFrame{background:#000;border-radius:18px 18px 0 0;overflow:hidden}
+.v6VideoModalFrame .v6VideoPlayer{width:100%;aspect-ratio:16/9;display:block;border:0;object-fit:contain;background:#000}
+.v6VideoModalInfo{padding:16px 20px 20px}
+.v6VideoModalInfo h3{margin:0 0 8px;font-size:20px}
+.v6VideoModalInfo p{margin:0;color:var(--v6-muted);font-size:12px;line-height:1.6}
+.v6SpotifyApiPlayer{min-height:80px;margin-top:12px;border-radius:10px;overflow:hidden;background:#121212;display:grid;place-items:center;color:#aaa;font-size:10px}
+.v6SpotifyApiPlayer iframe{display:block;border:0}
+@media(max-width:1000px){
+  .v6AlbumGrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .v6VideoCompactGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:720px){
+  .v6AlbumGrid,.v6VideoCompactGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .v6AlbumCaption{padding:9px}
+  .v6AlbumCaption strong{font-size:13px}
+  .v6AlbumCover{aspect-ratio:1/1.18}
+  .v6VideoCompactBody{padding:9px}
+  .v6VideoCompactBody h3{font-size:12px}
+  .v6VideoPlay{width:36px;height:36px;font-size:11px}
+  .v6MediaModal{padding:7px}
+  .v6MediaModalPanel{border-radius:13px}
+  .v6ModalHeading{padding:18px 14px 8px}
+  .v6AlbumGallery{padding:10px 14px 18px;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .v6VideoModalInfo{padding:13px}
+}

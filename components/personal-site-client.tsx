@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import type { PortfolioItem, PortfolioKind } from "../lib/content";
 import { personalSectionKeys, type Lang, type PersonalSectionKey, type PersonalSiteConfig } from "../lib/personal-site";
 
@@ -35,6 +35,8 @@ export function PersonalSiteClient({
 }) {
   const [localLang, setLocalLang] = useState<Lang>(forcedLang ?? "en");
   const [openMusic, setOpenMusic] = useState<string | null>(null);
+  const [activeAlbumKey, setActiveAlbumKey] = useState<string | null>(null);
+  const [activeVideo, setActiveVideo] = useState<PortfolioItem | null>(null);
   const lang = forcedLang ?? localLang;
   const dir = lang === "ar" ? "rtl" : "ltr";
 
@@ -44,6 +46,8 @@ export function PersonalSiteClient({
   const movies = byKind("movie");
   const music = byKind("music");
   const games = byKind("game");
+  const photoAlbums = groupPhotoAlbums(photos, lang);
+  const activeAlbum = photoAlbums.find((album) => album.key === activeAlbumKey) ?? null;
 
   const ordered = useMemo(
     () => personalSectionKeys
@@ -91,30 +95,59 @@ export function PersonalSiteClient({
     photos: (
       <section id="photos" className="v6Section v6Dark" key="photos">
         {sectionTitle("photos")}
-        <div className="v6PhotoGrid">
-          {photos.map((item, i) => (
-            <article className={`v6PhotoCard v6Photo${i % 5}`} key={item.id ?? `${item.title}-${i}`}>
-              {editItem(item)}
-              {item.cover_url ? <a href={item.cover_url} target="_blank" rel="noreferrer"><img src={item.cover_url} alt={titleFor(item)} /></a> : <div className="v6Placeholder">PHOTO</div>}
-              <div className="v6CardCaption"><strong>{titleFor(item)}</strong>{item.category && <span>{item.category}</span>}</div>
-            </article>
-          ))}
+        <div className="v6AlbumGrid">
+          {photoAlbums.map((album) => {
+            const cover = album.items[0];
+            return <article
+              className="v6AlbumCard"
+              key={album.key}
+              role="button"
+              tabIndex={0}
+              onClick={() => setActiveAlbumKey(album.key)}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setActiveAlbumKey(album.key); }}
+            >
+              {editItem(cover)}
+              <div className="v6AlbumCover">
+                {cover?.cover_url ? <img src={cover.cover_url} alt={album.title} /> : <div className="v6Placeholder">PHOTO</div>}
+                <span className="v6AlbumCount">{album.items.length} {lang === "ar" ? (album.items.length === 1 ? "صورة" : "صور") : (album.items.length === 1 ? "photo" : "photos")}</span>
+              </div>
+              <div className="v6AlbumCaption">
+                <div><strong>{album.title}</strong><small>{lang === "ar" ? "فتح الألبوم" : "Open album"}</small></div>
+                <span>↗</span>
+              </div>
+            </article>;
+          })}
         </div>
         {add("photo", "إضافة صورة", "Add photo")}
-        {!photos.length && <Empty lang={lang} textAr="أضف صورك من هنا." textEn="Add your photos here." />}
+        {!photos.length && <Empty lang={lang} textAr="أضف صورك، واكتب نفس اسم الألبوم للصور التي تريد جمعها معاً." textEn="Add photos and use the same album name to group them together." />}
       </section>
     ),
     videos: (
       <section id="videos" className="v6Section v6Black" key="videos">
         {sectionTitle("videos")}
-        <div className="v6VideoGrid">
-          {videos.map((item, i) => (
-            <article className="v6VideoCard" key={item.id ?? `${item.title}-${i}`}>
+        <div className="v6VideoCompactGrid">
+          {videos.map((item, i) => {
+            const thumb = videoPoster(item);
+            return <article
+              className="v6VideoCompactCard"
+              key={item.id ?? `${item.title}-${i}`}
+              role="button"
+              tabIndex={0}
+              onClick={() => setActiveVideo(item)}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setActiveVideo(item); }}
+            >
               {editItem(item)}
-              <VideoPlayer item={item} title={titleFor(item)} />
-              <div className="v6Info"><h3>{titleFor(item)}</h3>{descriptionFor(item) && <p>{descriptionFor(item)}</p>}</div>
-            </article>
-          ))}
+              <div className="v6VideoThumb">
+                {thumb ? <img src={thumb} alt={titleFor(item)} /> : <div className="v6Placeholder">VIDEO</div>}
+                <span className="v6VideoPlay">▶</span>
+                {item.duration && <small className="v6VideoDuration">{item.duration}</small>}
+              </div>
+              <div className="v6VideoCompactBody">
+                <h3>{titleFor(item)}</h3>
+                <div>{item.year && <span>{item.year}</span>}{item.category && <span>{item.category}</span>}</div>
+              </div>
+            </article>;
+          })}
         </div>
         {add("video", "إضافة فيديو", "Add video")}
         {!videos.length && <Empty lang={lang} textAr="أضف فيديوهاتك من هنا." textEn="Add your videos here." />}
@@ -142,14 +175,15 @@ export function PersonalSiteClient({
         <div className="v6MusicGrid">
           {music.map((item, i) => {
             const cardKey = item.id ?? `${item.title}-${i}`;
-            const embed = musicEmbed(item.external_url ?? "");
+            const spotify = spotifyEmbed(item.external_url ?? "");
+            const embed = musicEmbed(item.external_url ?? "", true);
             const isOpen = openMusic === cardKey;
             return <article className="v6MusicCard" key={cardKey}>
               {editItem(item)}
               <div className="v6MusicCover">
                 {item.cover_url ? <img src={item.cover_url} alt={titleFor(item)} /> : <div className="v6Placeholder">♪</div>}
                 {item.category && <span className="v6MusicPlatform">{item.category}</span>}
-                {(embed || item.video_url) && <button className="v6MusicPlay" type="button" aria-label={lang === "ar" ? "تشغيل الأغنية" : "Play song"} onClick={() => setOpenMusic(isOpen ? null : cardKey)}>{isOpen ? "×" : "▶"}</button>}
+                {(spotify || embed || item.video_url) && <button className="v6MusicPlay" type="button" aria-label={lang === "ar" ? "تشغيل الأغنية" : "Play song"} onClick={() => setOpenMusic(isOpen ? null : cardKey)}>{isOpen ? "×" : "▶"}</button>}
               </div>
               <div className="v6MusicBody">
                 <h3>{titleFor(item)}</h3>
@@ -158,8 +192,9 @@ export function PersonalSiteClient({
                   {item.year && <span>{item.year}</span>}
                   {item.source_rating_text && <span>★ {item.source_rating_label ? `${item.source_rating_label} ` : ""}{item.source_rating_text}</span>}
                 </div>
-                {isOpen && embed && <iframe className="v6MusicMiniPlayer" src={embed} width="100%" height={spotifyEmbed(item.external_url ?? "") ? "80" : "160"} allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" title={titleFor(item)} />}
-                {isOpen && !embed && item.video_url && <audio className="v6MusicAudio" controls autoPlay preload="none" src={item.video_url} />}
+                {isOpen && spotify && <SpotifyInlinePlayer url={item.external_url ?? ""} title={titleFor(item)} />}
+                {isOpen && !spotify && embed && <iframe className="v6MusicMiniPlayer" src={embed} width="100%" height="160" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" title={titleFor(item)} />}
+                {isOpen && !spotify && !embed && item.video_url && <audio className="v6MusicAudio" controls autoPlay preload="none" src={item.video_url} />}
                 {item.external_url && <a className="v6External v6MusicVisit" href={item.external_url} target="_blank" rel="noreferrer">{lang === "ar" ? "زيارة المنصة" : "Visit platform"} ↗</a>}
               </div>
             </article>;
@@ -236,6 +271,28 @@ export function PersonalSiteClient({
 
     {ordered.map((key) => nodes[key])}
 
+    {activeAlbum && <div className="v6MediaModal" onClick={() => setActiveAlbumKey(null)}>
+      <div className="v6MediaModalPanel v6AlbumModal" onClick={(e) => e.stopPropagation()}>
+        <button className="v6ModalClose" type="button" onClick={() => setActiveAlbumKey(null)}>×</button>
+        <div className="v6ModalHeading"><span>{lang === "ar" ? "ألبوم الصور" : "Photo album"}</span><h3>{activeAlbum.title}</h3><p>{activeAlbum.items.length} {lang === "ar" ? "صور" : "photos"}</p></div>
+        <div className="v6AlbumGallery">
+          {activeAlbum.items.map((item, i) => <div className="v6AlbumGalleryItem" key={item.id ?? `${item.title}-${i}`}>
+            {editItem(item)}
+            {item.cover_url ? <a href={item.cover_url} target="_blank" rel="noreferrer"><img src={item.cover_url} alt={titleFor(item)} /></a> : <div className="v6Placeholder">PHOTO</div>}
+            <div><strong>{titleFor(item)}</strong></div>
+          </div>)}
+        </div>
+      </div>
+    </div>}
+
+    {activeVideo && <div className="v6MediaModal" onClick={() => setActiveVideo(null)}>
+      <div className="v6MediaModalPanel v6VideoModal" onClick={(e) => e.stopPropagation()}>
+        <button className="v6ModalClose" type="button" onClick={() => setActiveVideo(null)}>×</button>
+        <div className="v6VideoModalFrame"><VideoPlayer item={activeVideo} title={titleFor(activeVideo)} autoPlay /></div>
+        <div className="v6VideoModalInfo"><h3>{titleFor(activeVideo)}</h3>{descriptionFor(activeVideo) && <p>{descriptionFor(activeVideo)}</p>}</div>
+      </div>
+    </div>}
+
     {settings.footer.enabled && <footer className="v6Footer">{edit(lang === "ar" ? "تعديل الحقوق" : "Edit footer", { type: "footer" })}<Logo settings={settings} /><span>{settings.footer.text[lang]}</span></footer>}
     {editor?.enabled && editor.controlsVisible && <button className="v6ThemeButton" onClick={() => editor.onEdit({ type: "theme" })}>◐ {lang === "ar" ? "المظهر والألوان" : "Theme & colors"}</button>}
   </main>;
@@ -250,17 +307,28 @@ function Empty({ lang, textAr, textEn }: { lang: Lang; textAr: string; textEn: s
   return <div className="v6Empty">{lang === "ar" ? textAr : textEn}</div>;
 }
 
-function VideoPlayer({ item, title }: { item: PortfolioItem; title: string }) {
-  const youtube = youtubeEmbed(item.video_url ?? "");
+function VideoPlayer({ item, title, autoPlay = false }: { item: PortfolioItem; title: string; autoPlay?: boolean }) {
+  const source = item.video_url || item.external_url || "";
+  const youtube = youtubeEmbed(source, autoPlay);
   if (youtube) return <iframe className="v6VideoPlayer" src={youtube} title={title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />;
-  if (item.video_url) return <video className="v6VideoPlayer" controls preload="metadata" poster={item.cover_url ?? undefined} src={item.video_url} />;
+  if (source) return <video className="v6VideoPlayer" controls autoPlay={autoPlay} playsInline preload="metadata" poster={item.cover_url ?? undefined} src={source} />;
   if (item.cover_url) return <img className="v6VideoPlayer" src={item.cover_url} alt={title} />;
   return <div className="v6VideoPlayer v6Placeholder">VIDEO</div>;
 }
 
-function youtubeEmbed(url: string) {
-  const match = url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/);
-  return match ? `https://www.youtube.com/embed/${match[1]}` : "";
+function youtubeId(url: string) {
+  return url.match(/(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/)?.[1] ?? "";
+}
+
+function youtubeEmbed(url: string, autoPlay = false) {
+  const id = youtubeId(url);
+  return id ? `https://www.youtube.com/embed/${id}?rel=0${autoPlay ? "&autoplay=1" : ""}` : "";
+}
+
+function videoPoster(item: PortfolioItem) {
+  if (item.cover_url) return item.cover_url;
+  const id = youtubeId(item.video_url || item.external_url || "");
+  return id ? `https://i.ytimg.com/vi/${id}/hqdefault.jpg` : "";
 }
 
 function spotifyEmbed(url: string) {
@@ -268,14 +336,81 @@ function spotifyEmbed(url: string) {
   return match ? `https://open.spotify.com/embed/${match[1]}/${match[2]}?utm_source=generator&theme=0` : "";
 }
 
-function musicEmbed(url: string) {
-  const spotify = spotifyEmbed(url);
-  if (spotify) return spotify;
-  const youtube = youtubeEmbed(url);
+function musicEmbed(url: string, autoPlay = false) {
+  if (/open\.spotify\.com/i.test(url)) return "";
+  const youtube = youtubeEmbed(url, autoPlay);
   if (youtube) return youtube;
-  if (/soundcloud\.com/i.test(url)) return `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&auto_play=false`;
+  if (/soundcloud\.com/i.test(url)) return `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}&auto_play=${autoPlay ? "true" : "false"}`;
   if (/music\.apple\.com/i.test(url)) return url.replace(/^https?:\/\/music\.apple\.com/i, "https://embed.music.apple.com");
   const deezer = url.match(/deezer\.com\/(?:[a-z]{2}\/)?track\/(\d+)/i);
   if (deezer) return `https://widget.deezer.com/widget/dark/track/${deezer[1]}`;
   return "";
+}
+
+function SpotifyInlinePlayer({ url, title }: { url: string; title: string }) {
+  const holder = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let disposed = false;
+    let controller: any = null;
+    const win = window as any;
+
+    const create = (api: any) => {
+      if (disposed || !holder.current) return;
+      holder.current.innerHTML = "";
+      api.createController(holder.current, { url, width: "100%", height: 80 }, (next: any) => {
+        if (disposed) {
+          next?.destroy?.();
+          return;
+        }
+        controller = next;
+        const tryPlay = () => {
+          try { controller?.play?.(); } catch {}
+        };
+        controller?.addListener?.("ready", tryPlay);
+        tryPlay();
+      });
+    };
+
+    if (win.__roverSpotifyIframeApi) {
+      create(win.__roverSpotifyIframeApi);
+    } else {
+      const previous = win.onSpotifyIframeApiReady;
+      win.onSpotifyIframeApiReady = (api: any) => {
+        win.__roverSpotifyIframeApi = api;
+        if (typeof previous === "function") previous(api);
+        create(api);
+      };
+      if (!document.querySelector('script[data-rover-spotify-api="1"]')) {
+        const script = document.createElement("script");
+        script.src = "https://open.spotify.com/embed/iframe-api/v1";
+        script.async = true;
+        script.dataset.roverSpotifyApi = "1";
+        document.body.appendChild(script);
+      }
+    }
+
+    return () => {
+      disposed = true;
+      try { controller?.destroy?.(); } catch {}
+    };
+  }, [url]);
+
+  return <div className="v6SpotifyApiPlayer" aria-label={title} ref={holder}><span>Spotify</span></div>;
+}
+
+function groupPhotoAlbums(items: PortfolioItem[], lang: Lang) {
+  const groups = new Map<string, PortfolioItem[]>();
+  for (const item of items) {
+    const raw = item.category?.trim();
+    const key = raw || "__rover_default_album__";
+    const existing = groups.get(key) ?? [];
+    existing.push(item);
+    groups.set(key, existing);
+  }
+  return [...groups.entries()].map(([key, albumItems]) => ({
+    key,
+    title: key === "__rover_default_album__" ? (lang === "ar" ? "صوري" : "My Photos") : key,
+    items: albumItems,
+  }));
 }
