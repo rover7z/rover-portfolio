@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { loadPersonalSiteConfig } from "../lib/personal-data";
+import { VisitorIdentity } from "../components/visitor-identity";
 import "./globals.css";
 import "./personal-v6.css";
 
@@ -13,5 +14,5 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en"><body>{children}</body></html>;
+  return <html lang="en"><body>{children}<VisitorIdentity /></body></html>;
 }

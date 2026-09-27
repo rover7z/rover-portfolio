@@ -228,7 +228,7 @@ export function PersonalEditor({ initialItems, initialSettings }: { initialItems
       <div className="v6AdminTitle"><strong>{t.editor}</strong>{dirty && <span>● {t.unsaved}</span>}</div>
       <div className="v6AdminActions">
         <button onClick={() => setPreview((x) => !x)}>{preview ? t.edit : t.preview}</button>
-        <button onClick={() => { setPanel({ type: "sections" }); setPreview(false); }}>{t.sections}</button>
+        <a className="v6AdminVisitorsLink" href="/admin/visitors">{lang === "ar" ? "الزوار" : "Visitors"}</a><button onClick={() => { setPanel({ type: "sections" }); setPreview(false); }}>{t.sections}</button>
         <button onClick={() => { setPanel({ type: "brand" }); setPreview(false); }}>{t.brand}</button>
         <button onClick={() => { setPanel({ type: "theme" }); setPreview(false); }}>{t.theme}</button>
         <button onClick={() => setLang((x) => x === "ar" ? "en" : "ar")}>{lang === "ar" ? "EN" : "عربي"}</button>
@@ -278,7 +278,7 @@ function Upload({ label, accept, onChange }: { label: string; accept: string; on
 }
 
 function SectionsPanel({ settings, patchSection, onEdit, t }: any) {
-  return <div className="v6Form">{personalSectionKeys.sort((a, b) => settings.sections[a].order - settings.sections[b].order).map((key) => <div className="v6ManagerRow" key={key}><div><strong>{settings.sections[key].title.ar}</strong><small>{settings.sections[key].title.en}</small></div><Toggle label={t.enabled} checked={settings.sections[key].enabled} onChange={(v) => patchSection(key, { enabled: v })} /><button onClick={() => onEdit(key)}>✎</button></div>)}</div>;
+  return <div className="v6Form">{personalSectionKeys.filter((key) => key !== "about").sort((a, b) => settings.sections[a].order - settings.sections[b].order).map((key) => <div className="v6ManagerRow" key={key}><div><strong>{settings.sections[key].title.ar}</strong><small>{settings.sections[key].title.en}</small></div><Toggle label={t.enabled} checked={settings.sections[key].enabled} onChange={(v) => patchSection(key, { enabled: v })} /><button onClick={() => onEdit(key)}>✎</button></div>)}</div>;
 }
 
 function SectionPanel({ sectionKey, settings, patchSection, patchLocalized, t }: any) {

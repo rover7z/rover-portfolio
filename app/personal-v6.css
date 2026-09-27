@@ -272,3 +272,78 @@
   .v6SectionHead p{font-size:12px;line-height:1.5}
   .v6AdminSite .v6Site{height:calc(100svh - 98px)}
 }
+
+/* Rover V10 — visitor analytics + optional Google identity */
+.rvGoogleIdentify,.rvIdentityChip{
+  position:fixed;z-index:850;right:16px;bottom:16px;
+  font-family:Arial,sans-serif;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(9,12,14,.92);
+  color:#f4f2ed;
+  box-shadow:0 18px 55px rgba(0,0,0,.42);
+  backdrop-filter:blur(16px);
+}
+.rvGoogleIdentify{
+  width:min(360px,calc(100vw - 24px));
+  border-radius:14px;padding:13px;
+  display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:center;
+}
+.rvGoogleClose{position:absolute;top:-7px;right:-7px;width:24px;height:24px;border-radius:50%;border:1px solid #333;background:#111;color:#bbb;cursor:pointer}
+.rvGoogleMark,.rvIdentityInitial{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#fff;color:#111;font-weight:900}
+.rvGoogleCopy{display:grid;gap:3px;min-width:0}
+.rvGoogleCopy strong{font-size:12px}
+.rvGoogleCopy small{font-size:9px;color:#99a2a7}
+.rvGoogleButton{border:0;border-radius:8px;background:#f2efe9;color:#121212;padding:9px 11px;font-size:10px;font-weight:800;cursor:pointer;white-space:nowrap}
+.rvGoogleButton:disabled{opacity:.55}
+.rvGoogleError{grid-column:1/-1;color:#e7a3a3;font-size:9px}
+.rvIdentityChip{border-radius:999px;padding:7px 9px 7px 7px;display:flex;align-items:center;gap:8px;max-width:min(340px,calc(100vw - 24px))}
+.rvIdentityChip img{width:34px;height:34px;border-radius:50%;object-fit:cover}
+.rvIdentityChip>div{display:grid;min-width:0}
+.rvIdentityChip strong{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rvIdentityChip small{font-size:8px;color:#9ba3a7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rvIdentityChip>button{border:0;background:transparent;color:#888;font-size:18px;cursor:pointer;padding:2px 5px}
+.rvVisitorsPage{min-height:100svh;background:#070a0c;color:#f4f2ed;padding:clamp(20px,4vw,48px);font-family:Arial,sans-serif}
+.rvVisitorsTop{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;max-width:1200px;margin:0 auto 28px}
+.rvVisitorsTop span,.rvVisitorsHeading span{color:#d8a54f;font-size:9px;letter-spacing:.18em}
+.rvVisitorsTop h1{font-size:clamp(36px,6vw,72px);margin:8px 0 10px}
+.rvVisitorsTop p{color:#90999e;margin:0;max-width:680px;line-height:1.7;font-size:12px}
+.rvVisitorsTop>a{border:1px solid #30383d;border-radius:8px;padding:10px 13px;color:#e9e5dd;text-decoration:none;white-space:nowrap;font-size:11px}
+.rvStats{max-width:1200px;margin:0 auto 20px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.rvStats article{border:1px solid #242c30;background:#0e1316;border-radius:12px;padding:18px;display:grid;gap:8px}
+.rvStats small{color:#8d969c;font-size:10px}
+.rvStats strong{font-size:34px;color:#d8a54f}
+.rvVisitorsPanel{max-width:1200px;margin:0 auto;border:1px solid #242c30;background:#0b0f11;border-radius:14px;overflow:hidden}
+.rvVisitorsHeading{padding:18px 20px;border-bottom:1px solid #242c30;display:flex;justify-content:space-between;align-items:end}
+.rvVisitorsHeading h2{margin:5px 0 0;font-size:24px}
+.rvVisitorsHeading>small{color:#7f888c}
+.rvVisitorList{display:grid}
+.rvVisitorCard{padding:16px 20px;border-bottom:1px solid #1f262a;display:grid;grid-template-columns:minmax(240px,.9fr) minmax(0,1.4fr);gap:18px;align-items:center}
+.rvVisitorCard:last-child{border-bottom:0}
+.rvVisitorPerson{display:flex;align-items:center;gap:11px;min-width:0}
+.rvVisitorPerson>img,.rvVisitorPerson>span{width:44px;height:44px;border-radius:50%;object-fit:cover;flex:0 0 auto}
+.rvVisitorPerson>span{display:grid;place-items:center;background:#151b1f;color:#d8a54f;font-weight:900;border:1px solid #2b3439}
+.rvVisitorPerson>div{min-width:0}
+.rvVisitorNameLine{display:flex;align-items:center;gap:8px;min-width:0}
+.rvVisitorNameLine strong{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rvVisitorNameLine em{font-style:normal;border:1px solid #30383d;border-radius:999px;padding:3px 6px;color:#8f999e;font-size:7px}
+.rvVisitorNameLine em.known{color:#d8a54f;border-color:#68532f}
+.rvVisitorPerson a{display:block;margin-top:4px;color:#aab1b5;font-size:9px;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rvVisitorMeta{display:flex;flex-wrap:wrap;gap:7px}
+.rvVisitorMeta span{padding:6px 8px;border:1px solid #252d31;border-radius:999px;color:#9ca5a9;font-size:8px}
+.rvVisitorMeta b{color:#f0ece3}
+.rvVisitorsEmpty{padding:44px 20px;text-align:center;color:#899297;font-size:12px}
+.rvPrivacyNote{max-width:1200px;margin:14px auto 0;color:#6f787c;font-size:9px;text-align:center}
+@media(max-width:760px){
+  .rvGoogleIdentify{right:12px;bottom:12px;grid-template-columns:32px 1fr}
+  .rvGoogleMark{width:32px;height:32px}
+  .rvGoogleButton{grid-column:1/-1;width:100%}
+  .rvVisitorsPage{padding:18px 12px 36px}
+  .rvVisitorsTop{display:grid}
+  .rvVisitorsTop>a{width:max-content}
+  .rvStats{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .rvStats article{padding:13px}
+  .rvStats strong{font-size:27px}
+  .rvVisitorCard{grid-template-columns:1fr;padding:14px;gap:12px}
+  .rvVisitorsHeading{padding:15px 14px}
+}
+.v6AdminVisitorsLink{white-space:nowrap;border:1px solid #30393e;background:#111619;color:#d9dde0!important;border-radius:7px;padding:8px 10px;font-size:11px;text-decoration:none}
