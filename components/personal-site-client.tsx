@@ -73,11 +73,21 @@ export function PersonalSiteClient({
 
   const sectionVisual = (key: PersonalSectionKey) => ((settings.sections[key] as any).style ?? {}) as any;
   const sectionPreset = (key: PersonalSectionKey) => sectionVisual(key).backgroundPreset || "inherit";
+  const fallbackSectionBackground = (key: PersonalSectionKey) => {
+    if (key === "photos") return photoAlbums[0]?.items[0]?.cover_url || "";
+    if (key === "videos") return videos[0] ? videoPoster(videos[0]) : "";
+    if (key === "movies") return movies[0]?.cover_url || "";
+    if (key === "music") return music[0]?.cover_url || "";
+    if (key === "games") return games[0]?.cover_url || "";
+    return "";
+  };
+
   const sectionStyle = (key: PersonalSectionKey) => {
     const visual = sectionVisual(key);
+    const backgroundUrl = visual.backgroundUrl || fallbackSectionBackground(key);
     return {
       ...(visual.backgroundColor ? { backgroundColor: visual.backgroundColor } : {}),
-      ...(visual.backgroundUrl ? { backgroundImage: `url("${visual.backgroundUrl}")`, backgroundSize: "cover", backgroundPosition: "center" } : {}),
+      ...(backgroundUrl ? { backgroundImage: `url("${backgroundUrl}")`, backgroundSize: "cover", backgroundPosition: "center" } : {}),
       ...(visual.textColor ? { "--v6-text": visual.textColor } : {}),
       ...(visual.accentColor ? { "--v6-accent": visual.accentColor } : {}),
       ...(visual.panelColor ? { "--v6-panel": visual.panelColor } : {}),
@@ -101,9 +111,23 @@ export function PersonalSiteClient({
   const subtitleFor = (item: PortfolioItem) => lang === "ar" && item.subtitle_ar ? item.subtitle_ar : item.subtitle;
   const descriptionFor = (item: PortfolioItem) => lang === "ar" && item.description_ar ? item.description_ar : item.description;
 
+  const sectionNumber: Partial<Record<PersonalSectionKey, string>> = {
+    photos: "01",
+    videos: "02",
+    movies: "03",
+    music: "04",
+    games: "05",
+    contact: "06",
+  };
+
   const sectionTitle = (key: PersonalSectionKey) => (
     <div className="v6SectionHead">
-      <div><span>ROVER / {settings.sections[key].nav[lang]}</span><h2>{settings.sections[key].title[lang]}</h2><p>{settings.sections[key].subtitle[lang]}</p></div>
+      <div>
+        <span className="v15SectionNumber">{sectionNumber[key] || ""}</span>
+        <span className="v15SectionEyebrow">ROVER / {settings.sections[key].nav[lang]}</span>
+        <h2>{settings.sections[key].title[lang]}</h2>
+        <p>{settings.sections[key].subtitle[lang]}</p>
+      </div>
       {edit(lang === "ar" ? "تعديل القسم" : "Edit section", { type: "section", key })}
     </div>
   );
@@ -284,6 +308,23 @@ export function PersonalSiteClient({
           <h1>{settings.hero.heading}</h1>
           <h2>{settings.hero.kicker[lang]}</h2>
           <p>{settings.hero.subtitle[lang]}</p>
+
+          <div className="v15HeroMediaIcons">
+            <a href="#photos" aria-label={settings.sections.photos.nav[lang]}>◉</a>
+            <a href="#videos" aria-label={settings.sections.videos.nav[lang]}>▶</a>
+            <a href="#movies" aria-label={settings.sections.movies.nav[lang]}>▣</a>
+            <a href="#music" aria-label={settings.sections.music.nav[lang]}>♫</a>
+            <a href="#games" aria-label={settings.sections.games.nav[lang]}>✦</a>
+          </div>
+
+          <div className="v15HeroActions">
+            <button type="button" className="primary" onClick={() => { setAboutOpen(true); setResumeOpen(true); }}>
+              <span>▣</span>{lang === "ar" ? "عرض سيرتي الذاتية" : "View My CV"}
+            </button>
+            <button type="button" onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth", block: "start" })}>
+              <span>➤</span>{lang === "ar" ? "فتح التواصل" : "Open Contact"}
+            </button>
+          </div>
         </div>
         <aside
           className="v6HeroAboutCard v6HeroAboutCardClickable"
@@ -313,6 +354,12 @@ export function PersonalSiteClient({
             <small className="v6AboutExpandHint">{lang === "ar" ? "اضغط للتكبير وقراءة التفاصيل" : "Tap to expand and read more"} ↗</small>
           </div>
         </aside>
+
+        <button className="v15Availability" type="button" onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth", block: "start" })}>
+          <i />
+          <span><strong>{lang === "ar" ? "متاح لفرص العمل" : "Available for Opportunities"}</strong><small>{lang === "ar" ? "متاح للعمل — اضغط للتواصل" : "Open to work — Let's connect"}</small></span>
+          <b>›</b>
+        </button>
       </div>
       <a className="v6ScrollCue" href="#photos" aria-label={lang === "ar" ? "انتقل للقسم التالي" : "Next section"}>
         <span>{lang === "ar" ? "اسحب للأسفل" : "Scroll down"}</span>
