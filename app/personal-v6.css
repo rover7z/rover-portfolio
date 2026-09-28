@@ -1762,3 +1762,165 @@
     transition:none!important;
   }
 }
+
+/* Rover V20 — smooth mobile motion without layout jank */
+@media(max-width:720px){
+  /*
+   * Animate only the outer shell height.
+   * Keep inner layouts at a stable size and reveal them with compositor-friendly
+   * opacity/translate transitions. This avoids the repeated layout + paint work
+   * that caused V19 stutter on mobile.
+   */
+  .v6Site .v14WorldGrid>.v6Section,
+  .v6Site .v14WorldGrid>.v6Contact{
+    height:76px!important;
+    min-height:0!important;
+    overflow:hidden!important;
+    will-change:auto!important;
+    contain:paint;
+    transform:translateZ(0);
+    transition:
+      height .46s cubic-bezier(.20,.82,.22,1),
+      border-color .24s ease,
+      box-shadow .28s ease!important;
+  }
+
+  .v6Site .v14WorldGrid>.v6Section.v15MobileExpanded{
+    height:430px!important;
+    min-height:0!important;
+  }
+
+  .v6Site .v14WorldGrid>.v6Contact.v15MobileExpanded{
+    height:300px!important;
+    min-height:0!important;
+  }
+
+  /* Keep media rows laid out once; only fade/slide them. */
+  .v6Site #photos .v6AlbumGrid,
+  .v6Site #videos .v6VideoCompactGrid,
+  .v6Site #movies .v6PosterGrid,
+  .v6Site #music .v6MusicGrid,
+  .v6Site #games .v6GameGrid{
+    display:flex!important;
+    max-height:310px!important;
+    opacity:0!important;
+    transform:translate3d(0,12px,0)!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    pointer-events:none!important;
+    padding:8px 14px 18px!important;
+    margin:0!important;
+    will-change:opacity,transform!important;
+    transition:
+      opacity .22s ease,
+      transform .32s cubic-bezier(.20,.82,.22,1)!important;
+  }
+
+  .v6Site #photos.v15MobileExpanded .v6AlbumGrid,
+  .v6Site #videos.v15MobileExpanded .v6VideoCompactGrid,
+  .v6Site #movies.v15MobileExpanded .v6PosterGrid,
+  .v6Site #music.v15MobileExpanded .v6MusicGrid,
+  .v6Site #games.v15MobileExpanded .v6GameGrid{
+    opacity:1!important;
+    transform:translate3d(0,0,0)!important;
+    pointer-events:auto!important;
+    transition-delay:.08s!important;
+  }
+
+  /* Do not animate layout-affecting title dimensions. */
+  .v6Site .v14WorldGrid>.v6Section .v6SectionHead,
+  .v6Site .v14WorldGrid>.v6Contact>div:first-of-type{
+    transition:none!important;
+  }
+
+  /* Full-card backdrop filtering while height changes is expensive on Android.
+     Keep the translucent wash, but don't animate/recompute a large blur layer. */
+  .v6Site .v14WorldGrid>.v6Section::after,
+  .v6Site .v14WorldGrid>.v6Contact::after{
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+    transition:background .22s ease,opacity .22s ease!important;
+  }
+
+  /* Contact content: stable layout, compositor-only reveal. */
+  .v6Site .v14WorldGrid>.v6Contact .v6ContactLinks{
+    display:grid!important;
+    max-height:170px!important;
+    opacity:0!important;
+    transform:translate3d(0,10px,0)!important;
+    overflow:hidden!important;
+    pointer-events:none!important;
+    padding:8px 14px 18px!important;
+    will-change:opacity,transform!important;
+    transition:
+      opacity .22s ease,
+      transform .32s cubic-bezier(.20,.82,.22,1)!important;
+  }
+
+  .v6Site .v14WorldGrid>.v6Contact.v15MobileExpanded .v6ContactLinks{
+    opacity:1!important;
+    transform:translate3d(0,0,0)!important;
+    pointer-events:auto!important;
+    transition-delay:.08s!important;
+  }
+
+  /* Custom sections follow the same light animation path. */
+  .v6Site .v6CustomSection.v15MobileExpanded{
+    height:330px!important;
+    min-height:0!important;
+  }
+
+  .v6Site .v6CustomSection .v6CustomSectionBody{
+    display:block!important;
+    max-height:205px!important;
+    opacity:0!important;
+    transform:translate3d(0,10px,0)!important;
+    overflow:hidden!important;
+    pointer-events:none!important;
+    padding:8px 14px 18px!important;
+    will-change:opacity,transform!important;
+    transition:
+      opacity .22s ease,
+      transform .32s cubic-bezier(.20,.82,.22,1)!important;
+  }
+
+  .v6Site .v6CustomSection.v15MobileExpanded .v6CustomSectionBody{
+    opacity:1!important;
+    transform:translate3d(0,0,0)!important;
+    pointer-events:auto!important;
+    transition-delay:.08s!important;
+  }
+
+  /* Close/open indicator remains smooth but inexpensive. */
+  .v6Site .v14WorldGrid>.v6Section::before,
+  .v6Site .v14WorldGrid>.v6Contact::before{
+    transition:
+      transform .28s cubic-bezier(.20,.82,.22,1),
+      background .22s ease,
+      border-color .22s ease!important;
+  }
+
+  /* Retain the liquid-glass look with a lighter blur on moving media cards. */
+  .v6Site .v6AlbumCard,
+  .v6Site .v6VideoCompactCard,
+  .v6Site .v6PosterCard,
+  .v6Site .v6MusicCard,
+  .v6Site .v6GameCard{
+    backdrop-filter:blur(8px) saturate(115%)!important;
+    -webkit-backdrop-filter:blur(8px) saturate(115%)!important;
+  }
+}
+
+@media(max-width:720px) and (prefers-reduced-motion:reduce){
+  .v6Site .v14WorldGrid>.v6Section,
+  .v6Site .v14WorldGrid>.v6Contact,
+  .v6Site #photos .v6AlbumGrid,
+  .v6Site #videos .v6VideoCompactGrid,
+  .v6Site #movies .v6PosterGrid,
+  .v6Site #music .v6MusicGrid,
+  .v6Site #games .v6GameGrid,
+  .v6Site .v14WorldGrid>.v6Contact .v6ContactLinks,
+  .v6Site .v6CustomSection .v6CustomSectionBody{
+    transition:none!important;
+  }
+}
