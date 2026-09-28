@@ -1557,3 +1557,208 @@
 @media(prefers-reduced-motion:reduce){
   .v18ThemeToggle svg,.v6Site,.v6Site *{transition-duration:.01ms!important}
 }
+
+/* Rover V19 — restore premium section motion + balanced About modal */
+@media(max-width:720px){
+  .v6Site .v14WorldGrid>.v6Section,
+  .v6Site .v14WorldGrid>.v6Contact{
+    transition:
+      height .68s cubic-bezier(.18,.78,.20,1),
+      min-height .68s cubic-bezier(.18,.78,.20,1),
+      border-color .42s ease,
+      box-shadow .55s ease,
+      background-color .52s ease!important;
+    will-change:height,min-height;
+    transform:translateZ(0);
+    backface-visibility:hidden;
+  }
+
+  .v6Site .v14WorldGrid>.v6Section{
+    height:76px!important;
+    min-height:76px!important;
+  }
+
+  .v6Site .v14WorldGrid>.v6Section.v15MobileExpanded{
+    height:430px!important;
+    min-height:430px!important;
+  }
+
+  .v6Site .v14WorldGrid>.v6Contact{
+    height:76px!important;
+    min-height:76px!important;
+  }
+
+  .v6Site .v14WorldGrid>.v6Contact.v15MobileExpanded{
+    height:300px!important;
+    min-height:300px!important;
+  }
+
+  .v6Site #photos .v6AlbumGrid,
+  .v6Site #videos .v6VideoCompactGrid,
+  .v6Site #movies .v6PosterGrid,
+  .v6Site #music .v6MusicGrid,
+  .v6Site #games .v6GameGrid{
+    transition:
+      max-height .64s cubic-bezier(.18,.78,.20,1),
+      opacity .36s ease .10s,
+      transform .58s cubic-bezier(.18,.78,.20,1),
+      padding .56s cubic-bezier(.18,.78,.20,1)!important;
+    transform:translateY(18px) scale(.985);
+  }
+
+  .v6Site #photos.v15MobileExpanded .v6AlbumGrid,
+  .v6Site #videos.v15MobileExpanded .v6VideoCompactGrid,
+  .v6Site #movies.v15MobileExpanded .v6PosterGrid,
+  .v6Site #music.v15MobileExpanded .v6MusicGrid,
+  .v6Site #games.v15MobileExpanded .v6GameGrid{
+    transform:translateY(0) scale(1);
+  }
+
+  .v6Site .v14WorldGrid>.v6Section .v6SectionHead,
+  .v6Site .v14WorldGrid>.v6Contact>div:first-of-type{
+    transition:
+      min-height .58s cubic-bezier(.18,.78,.20,1),
+      height .58s cubic-bezier(.18,.78,.20,1),
+      padding .58s cubic-bezier(.18,.78,.20,1),
+      transform .58s cubic-bezier(.18,.78,.20,1)!important;
+  }
+
+  .v6Site .v14WorldGrid>.v6Section::after,
+  .v6Site .v14WorldGrid>.v6Contact::after{
+    transition:
+      opacity .58s ease,
+      background .58s ease,
+      backdrop-filter .58s ease!important;
+  }
+
+  .v6Site .v14WorldGrid>.v6Contact .v6ContactLinks{
+    transition:
+      max-height .60s cubic-bezier(.18,.78,.20,1),
+      opacity .34s ease .10s,
+      transform .54s cubic-bezier(.18,.78,.20,1),
+      padding .52s cubic-bezier(.18,.78,.20,1)!important;
+    transform:translateY(16px);
+  }
+
+  .v6Site .v14WorldGrid>.v6Contact.v15MobileExpanded .v6ContactLinks{
+    transform:translateY(0);
+  }
+
+  .v6Site .v14WorldGrid>.v6Section::before,
+  .v6Site .v14WorldGrid>.v6Contact::before{
+    transition:
+      top .48s cubic-bezier(.18,.78,.20,1),
+      right .48s cubic-bezier(.18,.78,.20,1),
+      left .48s cubic-bezier(.18,.78,.20,1),
+      width .42s ease,
+      height .42s ease,
+      background .42s ease,
+      border-color .42s ease,
+      transform .48s cubic-bezier(.18,.78,.20,1)!important;
+  }
+
+  .v6Site .v6CustomSection.v15MobileExpanded{
+    height:330px!important;
+    min-height:330px!important;
+  }
+
+  .v6Site .v6CustomSection .v6CustomSectionBody{
+    transition:
+      max-height .62s cubic-bezier(.18,.78,.20,1),
+      opacity .34s ease .10s,
+      transform .56s cubic-bezier(.18,.78,.20,1),
+      padding .54s cubic-bezier(.18,.78,.20,1)!important;
+  }
+
+  .v6Site .v6AboutModalBackdrop{
+    padding:10px!important;
+  }
+
+  .v6Site .v6AboutModalPanel{
+    width:min(100%,620px)!important;
+    max-height:90svh!important;
+    border-radius:22px!important;
+    overflow:auto!important;
+  }
+
+  .v6Site .v6AboutModalGrid{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    min-height:0!important;
+  }
+
+  .v6Site .v6AboutModalPhoto{
+    position:relative!important;
+    height:clamp(210px,31svh,258px)!important;
+    max-height:none!important;
+    border-radius:21px 21px 0 0!important;
+    overflow:hidden!important;
+  }
+
+  .v6Site .v6AboutModalPhoto img{
+    width:100%!important;
+    height:100%!important;
+    object-fit:cover!important;
+    object-position:center 22%!important;
+  }
+
+  .v6Site .v6AboutModalContent{
+    padding:20px 20px 24px!important;
+  }
+
+  .v6Site .v6AboutModalContent h2{
+    margin:7px 0 12px!important;
+    font-size:clamp(38px,12vw,52px)!important;
+    line-height:.98!important;
+  }
+
+  .v6Site .v6AboutModalBio{
+    font-size:12px!important;
+    line-height:1.72!important;
+  }
+
+  .v6Site .v6AboutModalExperience{
+    margin-top:22px!important;
+    padding-top:17px!important;
+  }
+
+  .v6Site .v6AboutModalExperience p{
+    font-size:10px!important;
+    line-height:1.68!important;
+  }
+
+  .v6Site .v6ResumeToggle{
+    margin-top:22px!important;
+    min-height:76px!important;
+    padding:14px 16px!important;
+    border-radius:16px!important;
+  }
+
+  .v6Site .v6ModalClose{
+    width:42px!important;
+    height:42px!important;
+    top:14px!important;
+    right:14px!important;
+    border-radius:999px!important;
+    z-index:7!important;
+  }
+
+  .v6Site[dir="rtl"] .v6ModalClose{
+    right:auto!important;
+    left:14px!important;
+  }
+}
+
+@media(max-width:720px) and (prefers-reduced-motion:reduce){
+  .v6Site .v14WorldGrid>.v6Section,
+  .v6Site .v14WorldGrid>.v6Contact,
+  .v6Site #photos .v6AlbumGrid,
+  .v6Site #videos .v6VideoCompactGrid,
+  .v6Site #movies .v6PosterGrid,
+  .v6Site #music .v6MusicGrid,
+  .v6Site #games .v6GameGrid,
+  .v6Site .v14WorldGrid>.v6Contact .v6ContactLinks,
+  .v6Site .v6CustomSection .v6CustomSectionBody{
+    transition:none!important;
+  }
+}
