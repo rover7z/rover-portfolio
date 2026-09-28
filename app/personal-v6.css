@@ -1062,3 +1062,203 @@
     transition:none!important;
   }
 }
+
+
+/* Rover V16 — soft moonlight monochrome theme */
+.v6Site{
+  background:#eef1f4!important;
+  color:#161a1f!important;
+}
+.v6Site a{color:inherit}
+.v6Nav{
+  background:rgba(247,248,249,.84)!important;
+  border-color:rgba(65,74,84,.16)!important;
+  box-shadow:0 8px 30px rgba(54,64,74,.06)!important;
+}
+.v6Nav .v6Brand strong,.v6Nav nav a{color:#161a1f!important}
+.v6Nav nav a:first-child{border-bottom-color:#161a1f!important}
+.v6Lang{
+  background:rgba(255,255,255,.72)!important;
+  border-color:rgba(50,58,67,.22)!important;
+  color:#161a1f!important;
+}
+
+.v6Hero.v6HeroProfile{
+  box-shadow:0 24px 70px rgba(76,86,97,.14)!important;
+  border-color:rgba(67,77,88,.16)!important;
+}
+.v6HeroOverlay{
+  background:
+    linear-gradient(90deg,rgba(248,249,250,.97) 0%,rgba(248,249,250,.86) 30%,rgba(248,249,250,.38) 62%,rgba(248,249,250,.12) 100%),
+    linear-gradient(0deg,rgba(238,241,244,.18),transparent 48%)!important;
+}
+.v6HeroProfile .v6HeroCopy::before,
+.v6HeroProfile .v6HeroCopy h1,
+.v6HeroProfile .v6HeroCopy h2{
+  color:#14181d!important;
+  text-shadow:none!important;
+}
+.v6HeroProfile .v6HeroCopy h2{color:#39414a!important}
+.v15HeroMediaIcons a{
+  border-color:rgba(43,51,59,.18)!important;
+  background:rgba(255,255,255,.66)!important;
+  color:#20262c!important;
+  box-shadow:0 7px 18px rgba(77,87,96,.08)!important;
+}
+.v15HeroMediaIcons a:hover{background:#fff!important}
+.v15HeroActions button{
+  border-color:rgba(30,36,42,.5)!important;
+  background:rgba(255,255,255,.62)!important;
+  color:#1b2025!important;
+  box-shadow:0 8px 24px rgba(76,86,96,.09)!important;
+}
+.v15HeroActions button.primary{
+  background:#171b20!important;
+  color:#fff!important;
+  border-color:#171b20!important;
+}
+.v15Availability{
+  background:rgba(255,255,255,.76)!important;
+  border-color:rgba(41,49,58,.16)!important;
+  color:#171b20!important;
+  box-shadow:0 14px 35px rgba(77,87,97,.12)!important;
+}
+.v15Availability small{color:#69727b!important}
+.v15Availability i{background:#7d8790!important;box-shadow:none!important}
+
+.v14WorldGrid{background:#eef1f4!important}
+.v14WorldGrid>.v6Section,
+.v14WorldGrid>.v6Contact{
+  border-color:rgba(58,67,77,.14)!important;
+  box-shadow:0 15px 42px rgba(75,85,95,.10)!important;
+}
+.v14WorldGrid>.v6Section::after,
+.v14WorldGrid>.v6Contact::after{
+  background:
+    linear-gradient(90deg,rgba(249,250,251,.96) 0%,rgba(249,250,251,.82) 31%,rgba(249,250,251,.34) 68%,rgba(249,250,251,.12) 100%),
+    linear-gradient(0deg,rgba(238,241,244,.22),transparent 58%)!important;
+}
+.v15SectionNumber{color:#76808a!important}
+.v6SectionHead h2,.v6Contact h2{color:#171b20!important}
+.v6SectionHead p,.v6Contact p{color:#525b64!important}
+.v6SectionHead p::after{background:rgba(45,54,63,.12)!important}
+
+.v6AlbumCard,.v6VideoCompactCard,.v6PosterCard,.v6MusicCard,.v6GameCard{
+  border-color:rgba(50,59,67,.14)!important;
+  background:rgba(255,255,255,.78)!important;
+  box-shadow:0 10px 26px rgba(75,85,96,.10)!important;
+}
+.v6AlbumCaption,.v6VideoCompactBody,.v6PosterBody,.v6MusicBody,.v6GameInfo{
+  background:linear-gradient(180deg,rgba(255,255,255,.84),rgba(246,248,249,.96))!important;
+  color:#171b20!important;
+}
+.v6AlbumCaption small,.v6VideoCompactBody>div,.v6MusicArtist,.v6GameInfo p,.v6GameFooter small{
+  color:#6b747d!important;
+}
+.v6MusicPlatform,.v6GameBadges span{
+  background:rgba(255,255,255,.80)!important;
+  color:#20262c!important;
+  border-color:rgba(36,44,52,.18)!important;
+}
+.v6MusicPlay{
+  background:#20262c!important;
+  color:#fff!important;
+  box-shadow:0 8px 22px rgba(55,64,73,.18)!important;
+}
+.v6External{
+  background:rgba(255,255,255,.68)!important;
+  color:#252b31!important;
+  border-color:rgba(45,54,63,.18)!important;
+}
+.v6Rating{
+  background:rgba(231,235,239,.88)!important;
+  color:#404851!important;
+  border-color:rgba(57,66,75,.16)!important;
+}
+.v6ContactLinks a{
+  background:rgba(255,255,255,.72)!important;
+  color:#1f252b!important;
+  border-color:rgba(48,57,65,.16)!important;
+  box-shadow:0 8px 20px rgba(77,87,96,.07)!important;
+}
+.v6Footer{
+  background:#f7f8f9!important;
+  color:#66707a!important;
+  border-color:rgba(53,62,70,.12)!important;
+}
+
+/* Light glass modals */
+.v6MediaModal,.v6AboutModalBackdrop{
+  background:rgba(211,216,221,.68)!important;
+  backdrop-filter:blur(18px) saturate(110%)!important;
+}
+.v6MediaModalPanel,.v6AboutModalPanel{
+  background:#f8f9fa!important;
+  border-color:rgba(53,62,70,.14)!important;
+  color:#171b20!important;
+  box-shadow:0 32px 100px rgba(61,70,79,.22)!important;
+}
+.v6ModalClose{
+  background:rgba(255,255,255,.9)!important;
+  color:#1b2025!important;
+  border-color:rgba(46,55,63,.18)!important;
+}
+.v6ModalHeading p{color:#69727b!important}
+.v6AlbumGalleryItem{
+  background:#fff!important;
+  border-color:rgba(48,57,65,.13)!important;
+}
+.v6AboutModalPhoto{background:#e8ecef!important}
+.v6AboutModalBio{color:#414951!important}
+.v6AboutModalExperience{border-color:rgba(54,63,72,.12)!important}
+.v6AboutModalExperience p{color:#5d6670!important}
+.v6ResumeToggle{
+  background:rgba(239,242,245,.94)!important;
+  color:#171b20!important;
+  border-color:rgba(48,57,65,.16)!important;
+}
+.v6ResumeSheet{
+  background:#fff!important;
+  border-color:rgba(48,57,65,.13)!important;
+}
+.v6ResumeHeader p,.v6ResumeSection p{color:#5e6871!important}
+.v6ResumeHeader a{color:#2b3137!important}
+.v6ResumeSkills span{color:#4e5760!important;border-color:rgba(48,57,65,.13)!important}
+.v6HireCta{background:#171b20!important;color:#fff!important}
+
+/* Keep admin chrome dark while previewing the new light site. */
+.v6Admin{background:#050709!important}
+.v6Admin .v6AdminBar,.v6Admin .v14AdminRail,.v6Admin .v6Inspector{color:#f3f3f0!important}
+
+@media(max-width:720px){
+  .v6Nav{background:rgba(247,248,249,.91)!important}
+  .v6HeroOverlay{
+    background:
+      linear-gradient(0deg,rgba(248,249,250,.95) 0%,rgba(248,249,250,.64) 48%,rgba(248,249,250,.16) 100%),
+      linear-gradient(90deg,rgba(248,249,250,.68),transparent 75%)!important;
+  }
+  .v14WorldGrid{background:#eef1f4!important}
+  .v14WorldGrid::before{color:#171b20!important}
+  .v14WorldGrid>.v6Section::after,
+  .v14WorldGrid>.v6Contact::after{
+    background:linear-gradient(90deg,rgba(250,251,252,.96) 0%,rgba(250,251,252,.77) 47%,rgba(250,251,252,.18) 100%)!important;
+  }
+  .v6Site[dir="rtl"] .v14WorldGrid>.v6Section::after,
+  .v6Site[dir="rtl"] .v14WorldGrid>.v6Contact::after{
+    background:linear-gradient(270deg,rgba(250,251,252,.96) 0%,rgba(250,251,252,.77) 47%,rgba(250,251,252,.18) 100%)!important;
+  }
+  .v14WorldGrid>.v6Section.v15MobileExpanded::after,
+  .v14WorldGrid>.v6Contact.v15MobileExpanded::after{
+    background:linear-gradient(180deg,rgba(250,251,252,.64) 0%,rgba(250,251,252,.87) 44%,rgba(250,251,252,.98) 100%)!important;
+  }
+  .v14WorldGrid>.v6Section::before,
+  .v14WorldGrid>.v6Contact::before{
+    background:rgba(255,255,255,.76)!important;
+    color:#1d2329!important;
+    border-color:rgba(40,49,57,.26)!important;
+  }
+  .v14WorldGrid>.v6Section.v15MobileExpanded::before,
+  .v14WorldGrid>.v6Contact.v15MobileExpanded::before{
+    background:rgba(255,255,255,.88)!important;
+  }
+}
