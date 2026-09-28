@@ -1360,3 +1360,200 @@
     line-height:1.6;
   }
 }
+
+
+/* Rover V18 — day/night liquid glass */
+.v18SrOnly{
+  position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;
+  overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;
+}
+.v18HeaderTools{display:flex;align-items:center;gap:8px;position:relative;z-index:5}
+.v18ThemeToggle{
+  width:42px;height:42px;border-radius:999px;border:1px solid var(--v18-glass-line)!important;
+  display:grid;place-items:center;padding:0!important;cursor:pointer;
+  color:var(--v18-text)!important;background:var(--v18-glass)!important;
+  backdrop-filter:blur(22px) saturate(135%);-webkit-backdrop-filter:blur(22px) saturate(135%);
+  box-shadow:inset 0 1px 0 var(--v18-highlight),0 10px 28px var(--v18-shadow)!important;
+  transition:transform .3s ease,background .3s ease,border-color .3s ease!important;
+}
+.v18ThemeToggle:hover{transform:translateY(-1px) scale(1.03)}
+.v18ThemeToggle:active{transform:scale(.96)}
+.v18ThemeToggle svg{width:23px;height:23px;overflow:visible;transition:transform .55s cubic-bezier(.2,.8,.2,1)}
+.v6Site[data-v18-theme="night"] .v18ThemeToggle svg{transform:rotate(180deg)}
+.v18OrbitRing{fill:none;stroke:currentColor;stroke-width:1.7}
+.v18OrbitShade{fill:currentColor;opacity:.7}
+.v18OrbitPath{fill:none;stroke:currentColor;stroke-width:1;opacity:.46}
+
+.v6Site[data-v18-theme="day"]{
+  --v18-text:#14171a;--v18-muted:#58616a;
+  --v18-glass:linear-gradient(135deg,rgba(255,255,255,.46),rgba(255,255,255,.16));
+  --v18-glass-strong:linear-gradient(135deg,rgba(255,255,255,.62),rgba(255,255,255,.25));
+  --v18-glass-line:rgba(255,255,255,.72);--v18-highlight:rgba(255,255,255,.92);
+  --v18-shadow:rgba(34,43,52,.16);--v18-section-wash:rgba(245,247,249,.33);
+  background:#edf0f2!important;color:var(--v18-text)!important;
+}
+.v6Site[data-v18-theme="night"]{
+  --v18-text:#f7f8f9;--v18-muted:#b4bbc2;
+  --v18-glass:linear-gradient(135deg,rgba(255,255,255,.15),rgba(255,255,255,.055));
+  --v18-glass-strong:linear-gradient(135deg,rgba(255,255,255,.21),rgba(255,255,255,.075));
+  --v18-glass-line:rgba(255,255,255,.22);--v18-highlight:rgba(255,255,255,.34);
+  --v18-shadow:rgba(0,0,0,.42);--v18-section-wash:rgba(5,7,9,.30);
+  background:#06080a!important;color:var(--v18-text)!important;
+}
+
+.v6Site,
+.v6Nav,.v6Hero,.v14WorldGrid,.v6Footer,
+.v6Section,.v6Contact,.v6MediaModalPanel,.v6AboutModalPanel{
+  transition:background-color .5s ease,color .38s ease,border-color .38s ease,box-shadow .38s ease!important;
+}
+
+/* Glass navigation */
+.v6Site .v6Nav{
+  background:var(--v18-glass-strong)!important;
+  color:var(--v18-text)!important;
+  border-color:var(--v18-glass-line)!important;
+  backdrop-filter:blur(28px) saturate(140%)!important;
+  -webkit-backdrop-filter:blur(28px) saturate(140%)!important;
+  box-shadow:inset 0 1px 0 var(--v18-highlight),0 12px 34px var(--v18-shadow)!important;
+}
+.v6Site .v6Nav .v6Brand strong,.v6Site .v6Nav nav a{color:var(--v18-text)!important}
+.v6Site .v6Lang{
+  background:var(--v18-glass)!important;color:var(--v18-text)!important;
+  border-color:var(--v18-glass-line)!important;
+  backdrop-filter:blur(20px) saturate(135%)!important;-webkit-backdrop-filter:blur(20px) saturate(135%)!important;
+  box-shadow:inset 0 1px 0 var(--v18-highlight),0 9px 24px var(--v18-shadow)!important;
+}
+
+/* Hero readability by mode */
+.v6Site[data-v18-theme="day"] .v6HeroOverlay{
+  background:linear-gradient(90deg,rgba(247,249,250,.78) 0%,rgba(247,249,250,.42) 42%,rgba(247,249,250,.06) 78%)!important;
+}
+.v6Site[data-v18-theme="night"] .v6HeroOverlay{
+  background:linear-gradient(90deg,rgba(3,5,7,.78) 0%,rgba(3,5,7,.46) 42%,rgba(3,5,7,.08) 78%)!important;
+}
+.v6Site[data-v18-theme="day"] .v6HeroProfile .v6HeroCopy h1,
+.v6Site[data-v18-theme="day"] .v6HeroProfile .v6HeroCopy h2,
+.v6Site[data-v18-theme="day"] .v6HeroProfile .v6HeroCopy p,
+.v6Site[data-v18-theme="day"] .v6HeroProfile .v6HeroCopy>span{color:#14171a!important;text-shadow:none!important}
+.v6Site[data-v18-theme="night"] .v6HeroProfile .v6HeroCopy h1,
+.v6Site[data-v18-theme="night"] .v6HeroProfile .v6HeroCopy h2,
+.v6Site[data-v18-theme="night"] .v6HeroProfile .v6HeroCopy p,
+.v6Site[data-v18-theme="night"] .v6HeroProfile .v6HeroCopy>span{color:#fff!important;text-shadow:0 2px 18px rgba(0,0,0,.36)!important}
+
+/* Liquid glass surfaces */
+.v6Site .v15HeroMediaIcons a,
+.v6Site .v15HeroActions button,
+.v6Site .v15Availability,
+.v6Site .v6HeroAboutCard,
+.v6Site .v6ContactLinks a,
+.v6Site .v6External,
+.v6Site .v6MusicPlay,
+.v6Site .v6Rating,
+.v6Site .v6GameBadges span,
+.v6Site .v6MusicPlatform,
+.v6Site .v6ResumeToggle,
+.v6Site .v6ModalClose,
+.v6Site .v6CustomSectionBody a{
+  background:var(--v18-glass)!important;
+  color:var(--v18-text)!important;
+  border:1px solid var(--v18-glass-line)!important;
+  backdrop-filter:blur(22px) saturate(145%)!important;
+  -webkit-backdrop-filter:blur(22px) saturate(145%)!important;
+  box-shadow:inset 0 1px 0 var(--v18-highlight),inset 0 -1px 0 rgba(255,255,255,.05),0 12px 30px var(--v18-shadow)!important;
+}
+.v6Site .v15HeroActions button.primary{
+  background:var(--v18-glass-strong)!important;color:var(--v18-text)!important;border-color:var(--v18-glass-line)!important;
+}
+.v6Site[data-v18-theme="day"] .v15HeroActions button.primary{
+  background:linear-gradient(135deg,rgba(19,23,27,.88),rgba(19,23,27,.68))!important;color:#fff!important;
+  border-color:rgba(255,255,255,.34)!important;
+}
+.v6Site .v15Availability small,.v6Site .v6MusicArtist,.v6Site .v6GameInfo p,.v6Site .v6GameFooter small{color:var(--v18-muted)!important}
+.v6Site .v15Availability i{background:currentColor!important;box-shadow:0 0 14px currentColor!important}
+
+/* Section shells: background stays visible but gets a slight optical blur through glass wash */
+.v6Site .v14WorldGrid{background:transparent!important}
+.v6Site .v14WorldGrid>.v6Section,
+.v6Site .v14WorldGrid>.v6Contact{
+  border:1px solid var(--v18-glass-line)!important;
+  box-shadow:inset 0 1px 0 var(--v18-highlight),0 16px 42px var(--v18-shadow)!important;
+  overflow:hidden;
+}
+.v6Site .v14WorldGrid>.v6Section::after,
+.v6Site .v14WorldGrid>.v6Contact::after{
+  background:var(--v18-section-wash)!important;
+  backdrop-filter:blur(2.8px) saturate(92%)!important;
+  -webkit-backdrop-filter:blur(2.8px) saturate(92%)!important;
+}
+.v6Site .v14WorldGrid>.v6Section>*,
+.v6Site .v14WorldGrid>.v6Contact>*{position:relative;z-index:2}
+.v6Site .v6SectionHead h2,.v6Site .v6Contact h2{color:var(--v18-text)!important;text-shadow:0 1px 15px var(--v18-shadow)}
+.v6Site .v6SectionHead p,.v6Site .v6Contact p,.v6Site .v15SectionNumber{color:var(--v18-muted)!important}
+
+/* Media cards use glass instead of opaque blocks */
+.v6Site .v6AlbumCard,.v6Site .v6VideoCompactCard,.v6Site .v6PosterCard,.v6Site .v6MusicCard,.v6Site .v6GameCard{
+  background:var(--v18-glass)!important;
+  border:1px solid var(--v18-glass-line)!important;
+  backdrop-filter:blur(18px) saturate(130%)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(130%)!important;
+  box-shadow:inset 0 1px 0 var(--v18-highlight),0 12px 30px var(--v18-shadow)!important;
+}
+.v6Site .v6AlbumCaption,.v6Site .v6VideoCompactBody,.v6Site .v6PosterBody,.v6Site .v6MusicBody,.v6Site .v6GameInfo{
+  background:linear-gradient(135deg,rgba(255,255,255,.20),rgba(255,255,255,.07))!important;
+  color:var(--v18-text)!important;
+  backdrop-filter:blur(16px)!important;-webkit-backdrop-filter:blur(16px)!important;
+}
+
+/* Glass dialogs/CV */
+.v6Site .v6MediaModal,.v6Site .v6AboutModalBackdrop{
+  background:rgba(8,10,12,.38)!important;
+  backdrop-filter:blur(18px)!important;-webkit-backdrop-filter:blur(18px)!important;
+}
+.v6Site .v6MediaModalPanel,.v6Site .v6AboutModalPanel,.v6Site .v6ResumeSheet,.v6Site .v6AlbumGalleryItem{
+  background:var(--v18-glass-strong)!important;color:var(--v18-text)!important;
+  border:1px solid var(--v18-glass-line)!important;
+  backdrop-filter:blur(32px) saturate(140%)!important;-webkit-backdrop-filter:blur(32px) saturate(140%)!important;
+  box-shadow:inset 0 1px 0 var(--v18-highlight),0 28px 80px var(--v18-shadow)!important;
+}
+.v6Site .v6AboutModalBio,.v6Site .v6AboutModalExperience p,.v6Site .v6ResumeHeader p,.v6Site .v6ResumeSection p{color:var(--v18-muted)!important}
+.v6Site .v6HireCta{
+  background:var(--v18-glass-strong)!important;color:var(--v18-text)!important;
+  border:1px solid var(--v18-glass-line)!important;
+  backdrop-filter:blur(22px)!important;-webkit-backdrop-filter:blur(22px)!important;
+}
+
+/* Footer */
+.v6Site .v6Footer{
+  background:var(--v18-glass)!important;color:var(--v18-muted)!important;border-color:var(--v18-glass-line)!important;
+  backdrop-filter:blur(22px)!important;-webkit-backdrop-filter:blur(22px)!important;
+}
+
+/* Smooth theme switch without flashing */
+.v6Site .v6Hero,.v6Site .v6Section,.v6Site .v6Contact{
+  transition:background-image .55s ease,background-color .4s ease,border-color .4s ease,box-shadow .4s ease!important;
+}
+.v6Site button,.v6Site a{-webkit-tap-highlight-color:transparent}
+
+@media(max-width:720px){
+  .v18HeaderTools{gap:6px}
+  .v18ThemeToggle{width:38px;height:38px}
+  .v18ThemeToggle svg{width:21px;height:21px}
+  .v6Site .v6Nav{background:var(--v18-glass-strong)!important}
+  .v6Site[data-v18-theme="day"] .v6HeroOverlay{
+    background:linear-gradient(0deg,rgba(247,249,250,.82) 0%,rgba(247,249,250,.32) 54%,rgba(247,249,250,.04) 100%)!important;
+  }
+  .v6Site[data-v18-theme="night"] .v6HeroOverlay{
+    background:linear-gradient(0deg,rgba(3,5,7,.82) 0%,rgba(3,5,7,.33) 54%,rgba(3,5,7,.04) 100%)!important;
+  }
+  .v6Site .v14WorldGrid>.v6Section::after,
+  .v6Site .v14WorldGrid>.v6Contact::after{
+    background:var(--v18-section-wash)!important;
+    backdrop-filter:blur(2px) saturate(92%)!important;-webkit-backdrop-filter:blur(2px) saturate(92%)!important;
+  }
+  .v6Site[data-v18-theme="night"] .v14WorldGrid::before{color:#fff!important}
+  .v6Site[data-v18-theme="day"] .v14WorldGrid::before{color:#16191c!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .v18ThemeToggle svg,.v6Site,.v6Site *{transition-duration:.01ms!important}
+}

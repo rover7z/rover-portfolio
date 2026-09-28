@@ -448,6 +448,8 @@ function CustomSectionPanel({ sectionId, settings, patchSection, patchLocalized,
     <VisualColor label="اللون المميز / Accent color" value={style.accentColor || ""} onChange={(value) => patchStyle("accentColor", value)} />
     <label>صورة الخلفية / Background image<input dir="ltr" value={style.backgroundUrl || ""} onChange={(event) => patchStyle("backgroundUrl", event.target.value)} /></label>
     <Upload label="رفع خلفية / Upload background" accept="image/*" onChange={(event) => upload(event, (url: string) => patchStyle("backgroundUrl", url))} />
+    <label>الخلفية الليلية / Night background<input dir="ltr" value={style.nightBackgroundUrl || ""} onChange={(event) => patchStyle("nightBackgroundUrl", event.target.value)} /></label>
+    <Upload label="رفع خلفية ليلية / Upload night background" accept="image/*" onChange={(event) => upload(event, (url: string) => patchStyle("nightBackgroundUrl", url))} />
 
     <button className="v17DeleteSectionButton" type="button" onClick={() => deleteSection(sectionId)}>حذف القسم / Delete section</button>
   </div>;
@@ -459,6 +461,7 @@ function SectionPanel({ sectionKey, settings, patchSection, patchLocalized, uplo
     backgroundPreset: "inherit",
     backgroundColor: "",
     backgroundUrl: "",
+    nightBackgroundUrl: "",
     textColor: "",
     accentColor: "",
     panelColor: "",
@@ -488,7 +491,9 @@ function SectionPanel({ sectionKey, settings, patchSection, patchLocalized, uplo
     <VisualColor label="لون الأزرار / Button color" value={style.buttonColor || ""} onChange={(value) => patchStyle("buttonColor", value)} />
     <label>صورة خلفية خاصة / Custom background image<input dir="ltr" value={style.backgroundUrl || ""} onChange={(event) => patchStyle("backgroundUrl", event.target.value)} /></label>
     <Upload label="رفع خلفية لهذا القسم" accept="image/*" onChange={(event) => upload(event, (url: string) => patchStyle("backgroundUrl", url))} />
-    <button type="button" onClick={() => patchSection(sectionKey, { style: { backgroundPreset: "inherit", backgroundColor: "", backgroundUrl: "", textColor: "", accentColor: "", panelColor: "", buttonColor: "" } })}>إعادة مظهر القسم للوضع العام / Reset</button>
+    <label>صورة الخلفية الليلية / Night background image<input dir="ltr" value={style.nightBackgroundUrl || ""} onChange={(event) => patchStyle("nightBackgroundUrl", event.target.value)} /></label>
+    <Upload label="رفع خلفية ليلية لهذا القسم" accept="image/*" onChange={(event) => upload(event, (url: string) => patchStyle("nightBackgroundUrl", url))} />
+    <button type="button" onClick={() => patchSection(sectionKey, { style: { backgroundPreset: "inherit", backgroundColor: "", backgroundUrl: "", nightBackgroundUrl: "", textColor: "", accentColor: "", panelColor: "", buttonColor: "" } })}>إعادة مظهر القسم للوضع العام / Reset</button>
   </div>;
 }
 
@@ -509,6 +514,9 @@ function HeroPanel({ settings, updateSettings, patchLocalized, upload, t }: any)
     <p className="v6Group">{t.heroSub}</p><Pair value={settings.hero.subtitle} onChange={(l, v) => patchLocalized("hero.subtitle", l, v)} t={t} />
     <label>{t.heroBg}<input dir="ltr" value={settings.hero.backgroundUrl} onChange={(event) => patch("backgroundUrl", event.target.value)} /></label>
     <Upload label={t.heroBg} accept="image/*" onChange={(event) => upload(event, (url: string) => patch("backgroundUrl", url))} />
+    <p className="v6Group">الخلفية الليلية / Night hero background</p>
+    <label><input dir="ltr" value={settings.hero.nightBackgroundUrl || ""} onChange={(event) => patch("nightBackgroundUrl", event.target.value)} /></label>
+    <Upload label="رفع خلفية ليلية للواجهة / Upload night hero" accept="image/*" onChange={(event) => upload(event, (url: string) => patch("nightBackgroundUrl", url))} />
   </div>;
 }
 
@@ -520,6 +528,8 @@ function ThemePanel({ settings, updateSettings, upload, t }: any) {
     <VisualPresetPicker value={settings.theme.backgroundPreset || "none"} onChange={(value) => patch("backgroundPreset", value)} />
     <label>صورة خلفية عامة / Custom site background<input dir="ltr" value={settings.theme.backgroundUrl || ""} onChange={(event) => patch("backgroundUrl", event.target.value)} /></label>
     <Upload label="رفع خلفية عامة" accept="image/*" onChange={(event) => upload(event, (url: string) => patch("backgroundUrl", url))} />
+    <label>خلفية عامة ليلية / Night site background<input dir="ltr" value={settings.theme.nightBackgroundUrl || ""} onChange={(event) => patch("nightBackgroundUrl", event.target.value)} /></label>
+    <Upload label="رفع خلفية عامة ليلية" accept="image/*" onChange={(event) => upload(event, (url: string) => patch("nightBackgroundUrl", url))} />
     <p className="v6Group">الألوان العامة / Global colors</p>
     {colors.map(([key, label]) => <label key={key}>{label}<div className="v6Color"><input type="color" value={settings.theme[key]} onChange={(event) => patch(key, event.target.value)} /><input value={settings.theme[key]} onChange={(event) => patch(key, event.target.value)} /></div></label>)}
     <label>{t.radius}<input type="number" min="0" max="40" value={settings.theme.radius} onChange={(event) => patch("radius", Number(event.target.value))} /></label>
@@ -573,6 +583,7 @@ function ContactPanel({ settings, updateSettings, upload, t }: any) {
     backgroundPreset: "inherit",
     backgroundColor: "",
     backgroundUrl: "",
+    nightBackgroundUrl: "",
     textColor: "",
     accentColor: "",
     panelColor: "",
@@ -591,6 +602,7 @@ function ContactPanel({ settings, updateSettings, upload, t }: any) {
       backgroundPreset: "inherit",
       backgroundColor: "",
       backgroundUrl: "",
+      nightBackgroundUrl: "",
       textColor: "",
       accentColor: "",
       panelColor: "",
@@ -626,6 +638,10 @@ function ContactPanel({ settings, updateSettings, upload, t }: any) {
       <input dir="ltr" value={style.backgroundUrl || ""} onChange={(event) => patchContactStyle("backgroundUrl", event.target.value)} />
     </label>
     <Upload label="رفع خلفية قسم التواصل / Upload contact background" accept="image/*" onChange={(event) => upload(event, (url: string) => patchContactStyle("backgroundUrl", url))} />
+    <label>خلفية التواصل الليلية / Night contact background
+      <input dir="ltr" value={style.nightBackgroundUrl || ""} onChange={(event) => patchContactStyle("nightBackgroundUrl", event.target.value)} />
+    </label>
+    <Upload label="رفع خلفية تواصل ليلية / Upload night contact background" accept="image/*" onChange={(event) => upload(event, (url: string) => patchContactStyle("nightBackgroundUrl", url))} />
 
     {style.backgroundUrl && <div className="v17ContactBgPreview">
       <img src={style.backgroundUrl} alt="Contact background preview" />

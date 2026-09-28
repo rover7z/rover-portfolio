@@ -6,6 +6,7 @@ export type SectionVisualStyle = {
   backgroundPreset?: string;
   backgroundColor?: string;
   backgroundUrl?: string;
+  nightBackgroundUrl?: string;
   textColor?: string;
   accentColor?: string;
   panelColor?: string;
@@ -56,6 +57,7 @@ export type PersonalSiteConfig = {
     primaryTarget: PersonalSectionKey;
     secondaryTarget: PersonalSectionKey;
     backgroundUrl: string;
+    nightBackgroundUrl: string;
   };
   sections: Record<PersonalSectionKey, SectionSettings>;
   customSections: CustomSectionSettings[];
@@ -87,6 +89,9 @@ export type PersonalSiteConfig = {
     mutedColor: string;
     lineColor: string;
     radius: number;
+    backgroundPreset?: string;
+    backgroundUrl?: string;
+    nightBackgroundUrl?: string;
   };
 };
 
@@ -121,6 +126,7 @@ export const defaultPersonalSiteConfig: PersonalSiteConfig = {
     primaryTarget: "photos",
     secondaryTarget: "about",
     backgroundUrl: "",
+    nightBackgroundUrl: "/rover-v18/night-hero.webp",
   },
   sections: {
     photos: {
@@ -128,30 +134,35 @@ export const defaultPersonalSiteConfig: PersonalSiteConfig = {
       nav: { en: "Photos", ar: "الصور" },
       title: { en: "Photography", ar: "الصور" },
       subtitle: { en: "Moments, places and stories through my lens.", ar: "لحظات وأماكن وقصص من خلال عدستي." },
+      style: { nightBackgroundUrl: "/rover-v18/night-photos.webp" },
     },
     videos: {
       enabled: true, showInNav: true, order: 2,
       nav: { en: "Videos", ar: "الفيديو" },
       title: { en: "Videos", ar: "الفيديو" },
       subtitle: { en: "Videos and visual stories I create and share.", ar: "فيديوهات وقصص بصرية أصنعها وأشاركها." },
+      style: { nightBackgroundUrl: "/rover-v18/night-videos.webp" },
     },
     movies: {
       enabled: true, showInNav: true, order: 3,
       nav: { en: "Movies", ar: "الأفلام" },
       title: { en: "Favorite Movies", ar: "أفلامي المفضلة" },
       subtitle: { en: "Movies I enjoy and recommend.", ar: "أفلام أحبها وأستمتع بمشاهدتها." },
+      style: { nightBackgroundUrl: "/rover-v18/night-movies.webp" },
     },
     music: {
       enabled: true, showInNav: true, order: 4,
       nav: { en: "Music", ar: "الأغاني" },
       title: { en: "Favorite Music", ar: "أغانيي المفضلة" },
       subtitle: { en: "Songs and artists I keep coming back to.", ar: "أغانٍ وفنانون أعود للاستماع إليهم دائماً." },
+      style: { nightBackgroundUrl: "/rover-v18/night-music.webp" },
     },
     games: {
       enabled: true, showInNav: true, order: 5,
       nav: { en: "Games", ar: "الألعاب" },
       title: { en: "Favorite Games", ar: "ألعابي المفضلة" },
       subtitle: { en: "Games and worlds I enjoy spending time in.", ar: "ألعاب وعوالم أستمتع بقضاء وقتي فيها." },
+      style: { nightBackgroundUrl: "/rover-v18/night-games.webp" },
     },
     about: {
       enabled: true, showInNav: true, order: 6,
@@ -164,6 +175,7 @@ export const defaultPersonalSiteConfig: PersonalSiteConfig = {
       nav: { en: "Contact", ar: "تواصل" },
       title: { en: "Let's Connect", ar: "تواصل معي" },
       subtitle: { en: "Open to job opportunities, collaborations, and new projects.", ar: "متاح لفرص العمل، التعاون والمشاريع الجديدة." },
+      style: { nightBackgroundUrl: "/rover-v18/night-contact.webp" },
     },
   },
   customSections: [],
@@ -201,6 +213,9 @@ export const defaultPersonalSiteConfig: PersonalSiteConfig = {
     mutedColor: "#8d969c",
     lineColor: "#232a2f",
     radius: 10,
+    backgroundPreset: "none",
+    backgroundUrl: "",
+    nightBackgroundUrl: "/rover-v18/night-hero.webp",
   },
 };
 
@@ -222,6 +237,7 @@ function section(value: unknown, fallback: SectionSettings): SectionSettings {
     nav: localized(v.nav, fallback.nav),
     title: localized(v.title, fallback.title),
     subtitle: localized(v.subtitle, fallback.subtitle),
+    style: { ...(fallback.style ?? {}), ...(v.style ?? {}) },
   };
 }
 

@@ -1,8 +1,10 @@
 "use client";
 
-import { useMemo, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import type { PortfolioItem, PortfolioKind } from "../lib/content";
 import { personalSectionKeys, type CustomSectionSettings, type Lang, type PersonalSectionKey, type PersonalSiteConfig } from "../lib/personal-site";
+
+type SiteMode = "day" | "night";
 
 export type PersonalEditTarget =
   | { type: "brand" }
@@ -35,6 +37,7 @@ export function PersonalSiteClient({
   forcedLang?: Lang;
 }) {
   const [localLang, setLocalLang] = useState<Lang>(forcedLang ?? "en");
+  const [siteMode, setSiteMode] = useState<SiteMode>("day");
   const [openMusic, setOpenMusic] = useState<string | null>(null);
   const [activeAlbumKey, setActiveAlbumKey] = useState<string | null>(null);
   const [activeVideo, setActiveVideo] = useState<PortfolioItem | null>(null);
@@ -44,6 +47,21 @@ export function PersonalSiteClient({
   const [expandedCustomSection, setExpandedCustomSection] = useState<string | null>(null);
   const lang = forcedLang ?? localLang;
   const dir = lang === "ar" ? "rtl" : "ltr";
+
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem("rover-site-mode");
+      if (saved === "day" || saved === "night") setSiteMode(saved);
+    } catch {}
+  }, []);
+
+  const toggleSiteMode = () => {
+    setSiteMode((current) => {
+      const next: SiteMode = current === "day" ? "night" : "day";
+      try { window.localStorage.setItem("rover-site-mode", next); } catch {}
+      return next;
+    });
+  };
 
   const byKind = (kind: PortfolioKind) => items.filter((item) => item.kind === kind && item.is_published !== false);
   const photos = byKind("photo");
@@ -70,6 +88,10 @@ export function PersonalSiteClient({
       .filter((section) => section.enabled && section.showInNav)
       .map((section) => ({ id: section.id, label: section.nav[lang], order: section.order })),
   ].sort((a, b) => a.order - b.order);
+  const activeSiteBackground = siteMode === "night"
+    ? ((settings.theme as any).nightBackgroundUrl || (settings.theme as any).backgroundUrl || "")
+    : ((settings.theme as any).backgroundUrl || "");
+
   const style = {
     "--v6-accent": settings.theme.accentColor,
     "--v6-bg": settings.theme.backgroundColor,
@@ -79,7 +101,7 @@ export function PersonalSiteClient({
     "--v6-muted": settings.theme.mutedColor,
     "--v6-line": settings.theme.lineColor,
     "--v6-radius": `${settings.theme.radius}px`,
-    "--v6-site-bg-url": (settings.theme as any).backgroundUrl ? `url("${(settings.theme as any).backgroundUrl}")` : "none",
+    "--v6-site-bg-url": activeSiteBackground ? `url("${activeSiteBackground}")` : "none",
   } as CSSProperties;
 
   const sectionVisual = (key: PersonalSectionKey) => ((settings.sections[key] as any).style ?? {}) as any;
@@ -95,7 +117,9 @@ export function PersonalSiteClient({
 
   const sectionStyle = (key: PersonalSectionKey) => {
     const visual = sectionVisual(key);
-    const backgroundUrl = visual.backgroundUrl || fallbackSectionBackground(key);
+    const backgroundUrl = siteMode === "night"
+      ? (visual.nightBackgroundUrl || visual.backgroundUrl || fallbackSectionBackground(key))
+      : (visual.backgroundUrl || fallbackSectionBackground(key));
     return {
       ...(visual.backgroundColor ? { backgroundColor: visual.backgroundColor } : {}),
       ...(backgroundUrl ? { backgroundImage: `url("${backgroundUrl}")`, backgroundSize: "cover", backgroundPosition: "center" } : {}),
@@ -109,7 +133,9 @@ export function PersonalSiteClient({
     const visual = section.style ?? {};
     return {
       ...(visual.backgroundColor ? { backgroundColor: visual.backgroundColor } : {}),
-      ...(visual.backgroundUrl ? { backgroundImage: `url("${visual.backgroundUrl}")`, backgroundSize: "cover", backgroundPosition: "center" } : {}),
+      ...((siteMode === "night" ? (visual.nightBackgroundUrl || visual.backgroundUrl) : visual.backgroundUrl)
+        ? { backgroundImage: `url("${siteMode === "night" ? (visual.nightBackgroundUrl || visual.backgroundUrl) : visual.backgroundUrl}")`, backgroundSize: "cover", backgroundPosition: "center" }
+        : {}),
       ...(visual.textColor ? { "--v6-text": visual.textColor } : {}),
       ...(visual.accentColor ? { "--v6-accent": visual.accentColor } : {}),
       ...(visual.panelColor ? { "--v6-panel": visual.panelColor } : {}),
@@ -361,15 +387,35 @@ export function PersonalSiteClient({
     })),
   ].sort((a, b) => a.order - b.order);
 
-  return <main className={`v6Site ${editor?.enabled ? "v6Editing" : ""}`} dir={dir} style={style} data-v6-site-bg={(settings.theme as any).backgroundPreset || "none"}>
+  const heroBackgroundUrl = siteMode === "night"
+    ? ((settings.hero as any).nightBackgroundUrl || settings.hero.backgroundUrl)
+    : settings.hero.backgroundUrl;
+
+  return <main className={`v6Site ${editor?.enabled ? "v6Editing" : ""}`} dir={dir} style={style} data-v6-site-bg={(settings.theme as any).backgroundPreset || "none"} data-v18-theme={siteMode}>
     {settings.header.enabled && <header className={`v6Nav ${settings.header.sticky ? "sticky" : ""}`}>
       {edit(lang === "ar" ? "الشعار والقائمة" : "Brand & navigation", { type: "brand" })}
       <a className="v6Brand" href="#home"><Logo settings={settings} /><span>{settings.brand.showName && <strong>{settings.hero.name}</strong>}{settings.brand.showAlias && <small>{settings.hero.alias}</small>}</span></a>
       <nav><a href="#home">{settings.hero.homeNav[lang]}</a>{nav.map((item) => <a key={item.id} href={`#${item.id}`}>{item.label}</a>)}</nav>
-      {settings.header.showLanguageSwitch && <button className="v6Lang" onClick={() => !forcedLang && setLocalLang(lang === "en" ? "ar" : "en")}>{lang === "en" ? "عربي" : "EN"}</button>}
+      <div className="v18HeaderTools">
+        {settings.header.showLanguageSwitch && <button className="v6Lang" onClick={() => !forcedLang && setLocalLang(lang === "en" ? "ar" : "en")}>{lang === "en" ? "عربي" : "EN"}</button>}
+        <button
+          className="v18ThemeToggle"
+          type="button"
+          onClick={toggleSiteMode}
+          aria-label={siteMode === "day" ? (lang === "ar" ? "تفعيل المظهر الليلي" : "Switch to night mode") : (lang === "ar" ? "تفعيل المظهر النهاري" : "Switch to day mode")}
+          title={siteMode === "day" ? (lang === "ar" ? "المظهر الليلي" : "Night mode") : (lang === "ar" ? "المظهر النهاري" : "Day mode")}
+        >
+          <svg viewBox="0 0 28 28" aria-hidden="true">
+            <circle className="v18OrbitRing" cx="14" cy="14" r="7.2" />
+            <path className="v18OrbitShade" d="M14 6.8a7.2 7.2 0 0 1 0 14.4c2.15-2.3 3.15-4.7 3.15-7.2S16.15 9.1 14 6.8Z" />
+            <ellipse className="v18OrbitPath" cx="14" cy="14" rx="11" ry="4.2" transform="rotate(-28 14 14)" />
+          </svg>
+          <span className="v18SrOnly">{siteMode === "day" ? "Night" : "Day"}</span>
+        </button>
+      </div>
     </header>}
 
-    {settings.hero.enabled && <section id="home" className="v6Hero v6HeroProfile" style={settings.hero.backgroundUrl ? { backgroundImage: `url('${settings.hero.backgroundUrl}')` } : undefined}>
+    {settings.hero.enabled && <section id="home" className="v6Hero v6HeroProfile" style={heroBackgroundUrl ? { backgroundImage: `url('${heroBackgroundUrl}')` } : undefined}>
       {edit(lang === "ar" ? "تعديل الواجهة" : "Edit hero", { type: "hero" })}
       {edit(lang === "ar" ? "تعديل نبذة عني" : "Edit about", { type: "about" })}
       <div className="v6HeroOverlay" />
