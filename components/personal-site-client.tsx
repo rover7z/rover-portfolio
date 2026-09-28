@@ -113,12 +113,7 @@ export function PersonalSiteClient({
     const target = event.target as HTMLElement;
     if (target.closest("a,button,input,textarea,select,iframe,audio,video,.v6AlbumCard,.v6VideoCompactCard,.v6PosterCard,.v6MusicCard,.v6GameCard")) return;
 
-    const section = event.currentTarget as HTMLElement;
     setExpandedSection((current) => current === key ? null : key);
-
-    window.setTimeout(() => {
-      section.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 80);
   };
 
   const titleFor = (item: PortfolioItem) => lang === "ar" && item.title_ar ? item.title_ar : item.title;

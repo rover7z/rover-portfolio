@@ -909,3 +909,156 @@
     font-size:10px!important;
   }
 }
+
+
+/* Rover V15 smooth-open hotfix */
+@media(max-width:720px){
+  /* Remove Android/Chrome blue tap flash completely. */
+  .v14WorldGrid>.v6Section,
+  .v14WorldGrid>.v6Contact,
+  .v14WorldGrid>.v6Section *,
+  .v14WorldGrid>.v6Contact *{
+    -webkit-tap-highlight-color:transparent!important;
+  }
+
+  .v14WorldGrid>.v6Section:focus,
+  .v14WorldGrid>.v6Contact:focus,
+  .v14WorldGrid>.v6Section:active,
+  .v14WorldGrid>.v6Contact:active{
+    outline:none!important;
+  }
+
+  /*
+   * Use real pixel heights for both ends of the animation.
+   * 76px -> 430px can animate smoothly; 76px -> auto cannot.
+   */
+  .v14WorldGrid>.v6Section,
+  .v14WorldGrid>.v6Contact{
+    height:76px!important;
+    min-height:76px!important;
+    transition:
+      height .42s cubic-bezier(.22,.75,.22,1),
+      min-height .42s cubic-bezier(.22,.75,.22,1),
+      border-color .24s ease,
+      box-shadow .32s ease!important;
+    will-change:height;
+    transform:translateZ(0);
+    backface-visibility:hidden;
+  }
+
+  .v14WorldGrid>.v6Section.v15MobileExpanded{
+    height:430px!important;
+    min-height:430px!important;
+  }
+
+  .v14WorldGrid>.v6Contact.v15MobileExpanded{
+    height:300px!important;
+    min-height:300px!important;
+  }
+
+  /*
+   * Keep the media row mounted even while the card is closed.
+   * This lets opacity/transform/max-height animate instead of appearing instantly.
+   */
+  #photos .v6AlbumGrid,
+  #videos .v6VideoCompactGrid,
+  #movies .v6PosterGrid,
+  #music .v6MusicGrid,
+  #games .v6GameGrid{
+    display:flex!important;
+    max-height:0!important;
+    opacity:0!important;
+    transform:translateY(14px) scale(.99);
+    overflow:hidden!important;
+    pointer-events:none;
+    padding-top:0!important;
+    padding-bottom:0!important;
+    margin:0!important;
+    transition:
+      max-height .42s cubic-bezier(.22,.75,.22,1),
+      opacity .24s ease .03s,
+      transform .38s cubic-bezier(.22,.75,.22,1),
+      padding .38s cubic-bezier(.22,.75,.22,1)!important;
+    will-change:max-height,opacity,transform;
+  }
+
+  #photos.v15MobileExpanded .v6AlbumGrid,
+  #videos.v15MobileExpanded .v6VideoCompactGrid,
+  #movies.v15MobileExpanded .v6PosterGrid,
+  #music.v15MobileExpanded .v6MusicGrid,
+  #games.v15MobileExpanded .v6GameGrid{
+    max-height:310px!important;
+    opacity:1!important;
+    transform:translateY(0) scale(1);
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    pointer-events:auto;
+    padding:8px 14px 18px!important;
+  }
+
+  /* The title gently settles upward instead of snapping position. */
+  .v14WorldGrid>.v6Section .v6SectionHead{
+    transition:
+      min-height .36s cubic-bezier(.22,.75,.22,1),
+      padding .36s cubic-bezier(.22,.75,.22,1)!important;
+  }
+
+  /* Smooth background overlay change while opening. */
+  .v14WorldGrid>.v6Section::after,
+  .v14WorldGrid>.v6Contact::after{
+    transition:background .32s ease,opacity .32s ease!important;
+  }
+
+  /* Contact links use the same reveal animation. */
+  .v14WorldGrid>.v6Contact .v6ContactLinks{
+    display:grid!important;
+    max-height:0!important;
+    opacity:0!important;
+    transform:translateY(12px);
+    overflow:hidden!important;
+    pointer-events:none;
+    padding-top:0!important;
+    padding-bottom:0!important;
+    transition:
+      max-height .38s cubic-bezier(.22,.75,.22,1),
+      opacity .24s ease .05s,
+      transform .34s cubic-bezier(.22,.75,.22,1),
+      padding .34s cubic-bezier(.22,.75,.22,1)!important;
+  }
+
+  .v14WorldGrid>.v6Contact.v15MobileExpanded .v6ContactLinks{
+    max-height:170px!important;
+    opacity:1!important;
+    transform:translateY(0);
+    pointer-events:auto;
+    padding:8px 14px 18px!important;
+  }
+
+  /* Keep the close control smooth and avoid its own tap highlight. */
+  .v14WorldGrid>.v6Section::before,
+  .v14WorldGrid>.v6Contact::before{
+    transition:
+      top .30s ease,
+      right .30s ease,
+      left .30s ease,
+      width .25s ease,
+      height .25s ease,
+      background .25s ease,
+      border-color .25s ease,
+      transform .30s ease!important;
+  }
+}
+
+/* Respect users who request less motion. */
+@media(max-width:720px) and (prefers-reduced-motion:reduce){
+  .v14WorldGrid>.v6Section,
+  .v14WorldGrid>.v6Contact,
+  #photos .v6AlbumGrid,
+  #videos .v6VideoCompactGrid,
+  #movies .v6PosterGrid,
+  #music .v6MusicGrid,
+  #games .v6GameGrid,
+  .v14WorldGrid>.v6Contact .v6ContactLinks{
+    transition:none!important;
+  }
+}
