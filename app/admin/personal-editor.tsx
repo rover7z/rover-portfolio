@@ -244,10 +244,10 @@ export function PersonalEditor({ initialItems, initialSettings }: { initialItems
       <div className="v6InspectorHead"><strong>{panelTitle(panel, t, Boolean(selectedItem?._local))}</strong><button onClick={() => setPanel(null)}>×</button></div>
       <div className="v6InspectorBody">
         {panel.type === "sections" && <SectionsPanel settings={settings} patchSection={patchSection} onEdit={(key: PersonalSectionKey) => setPanel({ type: "section", key })} t={t} />}
-        {panel.type === "section" && <SectionPanel sectionKey={panel.key} settings={settings} patchSection={patchSection} patchLocalized={patchSectionLocalized} t={t} />}
+        {panel.type === "section" && <SectionPanel sectionKey={panel.key} settings={settings} patchSection={patchSection} patchLocalized={patchSectionLocalized} upload={upload} t={t} />}
         {panel.type === "brand" && <BrandPanel settings={settings} updateSettings={updateSettings} upload={upload} t={t} />}
         {panel.type === "hero" && <HeroPanel settings={settings} updateSettings={updateSettings} patchLocalized={patchLocalized} upload={upload} t={t} />}
-        {panel.type === "theme" && <ThemePanel settings={settings} updateSettings={updateSettings} t={t} />}
+        {panel.type === "theme" && <ThemePanel settings={settings} updateSettings={updateSettings} upload={upload} t={t} />}
         {panel.type === "about" && <AboutPanel settings={settings} updateSettings={updateSettings} patchLocalized={patchLocalized} upload={upload} t={t} />}
         {panel.type === "contact" && <ContactPanel settings={settings} updateSettings={updateSettings} t={t} />}
         {panel.type === "footer" && <FooterPanel settings={settings} updateSettings={updateSettings} patchLocalized={patchLocalized} t={t} />}
@@ -277,13 +277,72 @@ function Upload({ label, accept, onChange }: { label: string; accept: string; on
   return <label className="v6Upload">{label}<input type="file" accept={accept} onChange={onChange} /></label>;
 }
 
+const visualBackgroundPresets = [
+  ["none", "بدون مؤثر / None"],
+  ["stars", "نجوم / Stars"],
+  ["galaxy", "مجرة / Galaxy"],
+  ["aurora", "شفق متدرج / Aurora"],
+  ["neon", "نيون لامع / Neon"],
+  ["sunset", "غروب زاهي / Sunset"],
+  ["ocean", "أزرق محيطي / Ocean"],
+  ["emerald", "زمردي / Emerald"],
+  ["goldGlow", "ذهبي لامع / Gold Glow"],
+  ["prism", "ألوان Prism / Prism"],
+];
+
+function VisualPresetPicker({ value, onChange, allowInherit = false }: { value: string; onChange: (value: string) => void; allowInherit?: boolean }) {
+  const presets = allowInherit ? [["inherit", "نفس المظهر العام / Inherit"], ...visualBackgroundPresets] : visualBackgroundPresets;
+  return <div className="v6PresetGrid">
+    {presets.map(([key, label]) => <button key={key} type="button" className={value === key ? "active" : ""} data-preset={key} onClick={() => onChange(key)}><i />{label}</button>)}
+  </div>;
+}
+
+function VisualColor({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
+  const safe = /^#[0-9a-fA-F]{6}$/.test(value || "") ? value : "#111111";
+  return <label>{label}<div className="v6Color"><input type="color" value={safe} onChange={(event) => onChange(event.target.value)} /><input dir="ltr" value={value || ""} placeholder="اتركه فارغ للمظهر العام" onChange={(event) => onChange(event.target.value)} /></div></label>;
+}
+
 function SectionsPanel({ settings, patchSection, onEdit, t }: any) {
   return <div className="v6Form">{personalSectionKeys.filter((key) => key !== "about").sort((a, b) => settings.sections[a].order - settings.sections[b].order).map((key) => <div className="v6ManagerRow" key={key}><div><strong>{settings.sections[key].title.ar}</strong><small>{settings.sections[key].title.en}</small></div><Toggle label={t.enabled} checked={settings.sections[key].enabled} onChange={(v) => patchSection(key, { enabled: v })} /><button onClick={() => onEdit(key)}>✎</button></div>)}</div>;
 }
 
-function SectionPanel({ sectionKey, settings, patchSection, patchLocalized, t }: any) {
+function SectionPanel({ sectionKey, settings, patchSection, patchLocalized, upload, t }: any) {
   const s = settings.sections[sectionKey];
-  return <div className="v6Form"><Toggle label={t.enabled} checked={s.enabled} onChange={(v) => patchSection(sectionKey, { enabled: v })} /><Toggle label={t.nav} checked={s.showInNav} onChange={(v) => patchSection(sectionKey, { showInNav: v })} /><label>{t.order}<input type="number" value={s.order} onChange={(e) => patchSection(sectionKey, { order: Number(e.target.value) })} /></label><p className="v6Group">{t.navName}</p><Pair value={s.nav} onChange={(l, v) => patchLocalized(sectionKey, "nav", l, v)} t={t} /><p className="v6Group">{t.title}</p><Pair value={s.title} onChange={(l, v) => patchLocalized(sectionKey, "title", l, v)} t={t} /><p className="v6Group">{t.subtitle}</p><Pair value={s.subtitle} onChange={(l, v) => patchLocalized(sectionKey, "subtitle", l, v)} t={t} textarea /></div>;
+  const style = s.style ?? {
+    backgroundPreset: "inherit",
+    backgroundColor: "",
+    backgroundUrl: "",
+    textColor: "",
+    accentColor: "",
+    panelColor: "",
+    buttonColor: "",
+  };
+  const patchStyle = (key: string, value: any) => patchSection(sectionKey, { style: { ...style, [key]: value } });
+
+  return <div className="v6Form">
+    <Toggle label={t.enabled} checked={s.enabled} onChange={(v) => patchSection(sectionKey, { enabled: v })} />
+    <Toggle label={t.nav} checked={s.showInNav} onChange={(v) => patchSection(sectionKey, { showInNav: v })} />
+    <label>{t.order}<input type="number" value={s.order} onChange={(event) => patchSection(sectionKey, { order: Number(event.target.value) })} /></label>
+
+    <p className="v6Group">{t.navName}</p>
+    <Pair value={s.nav} onChange={(l, v) => patchLocalized(sectionKey, "nav", l, v)} t={t} />
+    <p className="v6Group">{t.title}</p>
+    <Pair value={s.title} onChange={(l, v) => patchLocalized(sectionKey, "title", l, v)} t={t} />
+    <p className="v6Group">{t.subtitle}</p>
+    <Pair value={s.subtitle} onChange={(l, v) => patchLocalized(sectionKey, "subtitle", l, v)} t={t} textarea />
+
+    <p className="v6Group">مظهر هذا القسم / Section appearance</p>
+    <label>خلفية جاهزة / Background preset</label>
+    <VisualPresetPicker value={style.backgroundPreset || "inherit"} allowInherit onChange={(value) => patchStyle("backgroundPreset", value)} />
+    <VisualColor label="لون الخلفية / Background color" value={style.backgroundColor || ""} onChange={(value) => patchStyle("backgroundColor", value)} />
+    <VisualColor label="لون النص / Text color" value={style.textColor || ""} onChange={(value) => patchStyle("textColor", value)} />
+    <VisualColor label="اللون المميز / Accent color" value={style.accentColor || ""} onChange={(value) => patchStyle("accentColor", value)} />
+    <VisualColor label="لون البطاقات / Card color" value={style.panelColor || ""} onChange={(value) => patchStyle("panelColor", value)} />
+    <VisualColor label="لون الأزرار / Button color" value={style.buttonColor || ""} onChange={(value) => patchStyle("buttonColor", value)} />
+    <label>صورة خلفية خاصة / Custom background image<input dir="ltr" value={style.backgroundUrl || ""} onChange={(event) => patchStyle("backgroundUrl", event.target.value)} /></label>
+    <Upload label="رفع خلفية لهذا القسم" accept="image/*" onChange={(event) => upload(event, (url: string) => patchStyle("backgroundUrl", url))} />
+    <button type="button" onClick={() => patchSection(sectionKey, { style: { backgroundPreset: "inherit", backgroundColor: "", backgroundUrl: "", textColor: "", accentColor: "", panelColor: "", buttonColor: "" } })}>إعادة مظهر القسم للوضع العام / Reset</button>
+  </div>;
 }
 
 function BrandPanel({ settings, updateSettings, upload, t }: any) {
@@ -294,19 +353,58 @@ function BrandPanel({ settings, updateSettings, upload, t }: any) {
 
 function HeroPanel({ settings, updateSettings, patchLocalized, upload, t }: any) {
   const patch = (key: string, value: any) => { const n = structuredClone(settings); n.hero[key] = value; updateSettings(n); };
-  const targetOptions = personalSectionKeys.map((key) => <option key={key} value={key}>{settings.sections[key].title.en}</option>);
-  return <div className="v6Form"><label>{t.name}<input value={settings.hero.name} onChange={(e) => patch("name", e.target.value)} /></label><label>{t.alias}<input value={settings.hero.alias} onChange={(e) => patch("alias", e.target.value)} /></label><label>{t.heading}<input value={settings.hero.heading} onChange={(e) => patch("heading", e.target.value)} /></label><p className="v6Group">{t.home}</p><Pair value={settings.hero.homeNav} onChange={(l, v) => patchLocalized("hero.homeNav", l, v)} t={t} /><p className="v6Group">{t.kicker}</p><Pair value={settings.hero.kicker} onChange={(l, v) => patchLocalized("hero.kicker", l, v)} t={t} textarea /><p className="v6Group">{t.heroSub}</p><Pair value={settings.hero.subtitle} onChange={(l, v) => patchLocalized("hero.subtitle", l, v)} t={t} /><p className="v6Group">{t.firstButton}</p><Pair value={settings.hero.primaryButton} onChange={(l, v) => patchLocalized("hero.primaryButton", l, v)} t={t} /><label>{t.firstTarget}<select value={settings.hero.primaryTarget} onChange={(e) => patch("primaryTarget", e.target.value)}>{targetOptions}</select></label><p className="v6Group">{t.secondButton}</p><Pair value={settings.hero.secondaryButton} onChange={(l, v) => patchLocalized("hero.secondaryButton", l, v)} t={t} /><label>{t.secondTarget}<select value={settings.hero.secondaryTarget} onChange={(e) => patch("secondaryTarget", e.target.value)}>{targetOptions}</select></label><label>{t.heroBg}<input dir="ltr" value={settings.hero.backgroundUrl} onChange={(e) => patch("backgroundUrl", e.target.value)} /></label><Upload label={t.heroBg} accept="image/*" onChange={(e) => upload(e, (url: string) => patch("backgroundUrl", url))} /></div>;
+  return <div className="v6Form">
+    <label>{t.name}<input value={settings.hero.name} onChange={(event) => patch("name", event.target.value)} /></label>
+    <label>{t.alias}<input value={settings.hero.alias} onChange={(event) => patch("alias", event.target.value)} /></label>
+    <label>{t.heading}<input value={settings.hero.heading} onChange={(event) => patch("heading", event.target.value)} /></label>
+    <p className="v6Group">{t.home}</p><Pair value={settings.hero.homeNav} onChange={(l, v) => patchLocalized("hero.homeNav", l, v)} t={t} />
+    <p className="v6Group">{t.kicker}</p><Pair value={settings.hero.kicker} onChange={(l, v) => patchLocalized("hero.kicker", l, v)} t={t} textarea />
+    <p className="v6Group">{t.heroSub}</p><Pair value={settings.hero.subtitle} onChange={(l, v) => patchLocalized("hero.subtitle", l, v)} t={t} />
+    <label>{t.heroBg}<input dir="ltr" value={settings.hero.backgroundUrl} onChange={(event) => patch("backgroundUrl", event.target.value)} /></label>
+    <Upload label={t.heroBg} accept="image/*" onChange={(event) => upload(event, (url: string) => patch("backgroundUrl", url))} />
+  </div>;
 }
 
-function ThemePanel({ settings, updateSettings, t }: any) {
+function ThemePanel({ settings, updateSettings, upload, t }: any) {
   const patch = (key: string, value: any) => { const n = structuredClone(settings); n.theme[key] = value; updateSettings(n); };
   const colors = [["accentColor", t.accent], ["backgroundColor", t.bg], ["alternateBackgroundColor", t.bg2], ["panelColor", t.panel], ["textColor", t.text], ["mutedColor", t.muted], ["lineColor", t.line]];
-  return <div className="v6Form">{colors.map(([key, label]) => <label key={key}>{label}<div className="v6Color"><input type="color" value={settings.theme[key]} onChange={(e) => patch(key, e.target.value)} /><input value={settings.theme[key]} onChange={(e) => patch(key, e.target.value)} /></div></label>)}<label>{t.radius}<input type="number" min="0" max="40" value={settings.theme.radius} onChange={(e) => patch("radius", Number(e.target.value))} /></label></div>;
+  return <div className="v6Form">
+    <p className="v6Group">خلفية الموقع / Site background</p>
+    <VisualPresetPicker value={settings.theme.backgroundPreset || "none"} onChange={(value) => patch("backgroundPreset", value)} />
+    <label>صورة خلفية عامة / Custom site background<input dir="ltr" value={settings.theme.backgroundUrl || ""} onChange={(event) => patch("backgroundUrl", event.target.value)} /></label>
+    <Upload label="رفع خلفية عامة" accept="image/*" onChange={(event) => upload(event, (url: string) => patch("backgroundUrl", url))} />
+    <p className="v6Group">الألوان العامة / Global colors</p>
+    {colors.map(([key, label]) => <label key={key}>{label}<div className="v6Color"><input type="color" value={settings.theme[key]} onChange={(event) => patch(key, event.target.value)} /><input value={settings.theme[key]} onChange={(event) => patch(key, event.target.value)} /></div></label>)}
+    <label>{t.radius}<input type="number" min="0" max="40" value={settings.theme.radius} onChange={(event) => patch("radius", Number(event.target.value))} /></label>
+  </div>;
 }
 
 function AboutPanel({ settings, updateSettings, patchLocalized, upload, t }: any) {
   const patch = (key: string, value: any) => { const n = structuredClone(settings); n.about[key] = value; updateSettings(n); };
-  return <div className="v6Form"><p className="v6Group">{t.aboutPhoto}</p><label><input dir="ltr" value={settings.about.imageUrl} onChange={(e) => patch("imageUrl", e.target.value)} /></label><Upload label={t.aboutPhoto} accept="image/*" onChange={(e) => upload(e, (url: string) => patch("imageUrl", url))} /><p className="v6Group">{t.aboutText}</p><Pair value={settings.about.text} onChange={(l, v) => patchLocalized("about.text", l, v)} t={t} textarea /><p className="v6Group">{t.expTitle}</p><Pair value={settings.about.experienceTitle} onChange={(l, v) => patchLocalized("about.experienceTitle", l, v)} t={t} /><p className="v6Group">{t.expText}</p><Pair value={settings.about.experienceText} onChange={(l, v) => patchLocalized("about.experienceText", l, v)} t={t} textarea /></div>;
+  const patchExtraLocalized = (key: string, language: Lang, value: string) => {
+    const n = structuredClone(settings);
+    const current = n.about[key] ?? { en: "", ar: "" };
+    n.about[key] = { ...current, [language]: value };
+    updateSettings(n);
+  };
+  const education = settings.about.resumeEducation ?? { en: "Karbala Vocational Secondary School for Tourism & Hospitality — Tourism and Hotel Studies.", ar: "إعدادية كربلاء للسياحة والفندقة المهنية — اختصاص السياحة والفندقة." };
+  const languages = settings.about.resumeLanguages ?? { en: "Arabic • English • Persian", ar: "العربية • الإنكليزية • الفارسية" };
+  const skills = settings.about.resumeSkills ?? { en: "Microsoft Excel\nMicrosoft Word\nComputer skills\nPromotion & sales\nBusiness management\nWorking under pressure", ar: "Microsoft Excel\nMicrosoft Word\nمهارات الحاسوب\nالترويج والمبيعات\nإدارة الأعمال\nالعمل تحت الضغط" };
+
+  return <div className="v6Form">
+    <p className="v6Group">{t.aboutPhoto}</p>
+    <label><input dir="ltr" value={settings.about.imageUrl} onChange={(event) => patch("imageUrl", event.target.value)} /></label>
+    <Upload label={t.aboutPhoto} accept="image/*" onChange={(event) => upload(event, (url: string) => patch("imageUrl", url))} />
+    <p className="v6Group">{t.aboutText}</p><Pair value={settings.about.text} onChange={(l, v) => patchLocalized("about.text", l, v)} t={t} textarea />
+    <p className="v6Group">{t.expTitle}</p><Pair value={settings.about.experienceTitle} onChange={(l, v) => patchLocalized("about.experienceTitle", l, v)} t={t} />
+    <p className="v6Group">{t.expText}</p><Pair value={settings.about.experienceText} onChange={(l, v) => patchLocalized("about.experienceText", l, v)} t={t} textarea />
+    <p className="v6Group">التعليم داخل السيرة / CV Education</p><Pair value={education} onChange={(l, v) => patchExtraLocalized("resumeEducation", l, v)} t={t} textarea />
+    <p className="v6Group">اللغات داخل السيرة / CV Languages</p><Pair value={languages} onChange={(l, v) => patchExtraLocalized("resumeLanguages", l, v)} t={t} />
+    <p className="v6Group">المهارات — كل مهارة بسطر / CV Skills</p><Pair value={skills} onChange={(l, v) => patchExtraLocalized("resumeSkills", l, v)} t={t} textarea />
+    <p className="v6Group">نسخة PDF اختيارية / Optional CV PDF</p>
+    <label><input dir="ltr" value={settings.about.resumeFileUrl || ""} onChange={(event) => patch("resumeFileUrl", event.target.value)} /></label>
+    <Upload label="رفع ملف السيرة PDF" accept=".pdf,application/pdf" onChange={(event) => upload(event, (url: string) => patch("resumeFileUrl", url))} />
+  </div>;
 }
 
 function ContactPanel({ settings, updateSettings, t }: any) {

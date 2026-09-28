@@ -37,6 +37,8 @@ export function PersonalSiteClient({
   const [openMusic, setOpenMusic] = useState<string | null>(null);
   const [activeAlbumKey, setActiveAlbumKey] = useState<string | null>(null);
   const [activeVideo, setActiveVideo] = useState<PortfolioItem | null>(null);
+  const [aboutOpen, setAboutOpen] = useState(false);
+  const [resumeOpen, setResumeOpen] = useState(false);
   const lang = forcedLang ?? localLang;
   const dir = lang === "ar" ? "rtl" : "ltr";
 
@@ -66,7 +68,22 @@ export function PersonalSiteClient({
     "--v6-muted": settings.theme.mutedColor,
     "--v6-line": settings.theme.lineColor,
     "--v6-radius": `${settings.theme.radius}px`,
+    "--v6-site-bg-url": (settings.theme as any).backgroundUrl ? `url("${(settings.theme as any).backgroundUrl}")` : "none",
   } as CSSProperties;
+
+  const sectionVisual = (key: PersonalSectionKey) => ((settings.sections[key] as any).style ?? {}) as any;
+  const sectionPreset = (key: PersonalSectionKey) => sectionVisual(key).backgroundPreset || "inherit";
+  const sectionStyle = (key: PersonalSectionKey) => {
+    const visual = sectionVisual(key);
+    return {
+      ...(visual.backgroundColor ? { backgroundColor: visual.backgroundColor } : {}),
+      ...(visual.backgroundUrl ? { backgroundImage: `url("${visual.backgroundUrl}")`, backgroundSize: "cover", backgroundPosition: "center" } : {}),
+      ...(visual.textColor ? { "--v6-text": visual.textColor } : {}),
+      ...(visual.accentColor ? { "--v6-accent": visual.accentColor } : {}),
+      ...(visual.panelColor ? { "--v6-panel": visual.panelColor } : {}),
+      ...(visual.buttonColor ? { "--v6-button": visual.buttonColor } : {}),
+    } as CSSProperties;
+  };
 
   const edit = (label: string, target: PersonalEditTarget) => editor?.enabled && editor.controlsVisible ? (
     <button className="v6Edit" type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); editor.onEdit(target); }}>✎ {label}</button>
@@ -93,7 +110,7 @@ export function PersonalSiteClient({
 
   const nodes: Record<PersonalSectionKey, ReactNode> = {
     photos: (
-      <section id="photos" className="v6Section v6Dark" key="photos">
+      <section id="photos" className="v6Section v6Dark" key="photos" data-v6-bg={sectionPreset("photos")} style={sectionStyle("photos")}>
         {sectionTitle("photos")}
         <div className="v6AlbumGrid">
           {photoAlbums.map((album) => {
@@ -123,7 +140,7 @@ export function PersonalSiteClient({
       </section>
     ),
     videos: (
-      <section id="videos" className="v6Section v6Black" key="videos">
+      <section id="videos" className="v6Section v6Black" key="videos" data-v6-bg={sectionPreset("videos")} style={sectionStyle("videos")}>
         {sectionTitle("videos")}
         <div className="v6VideoCompactGrid">
           {videos.map((item, i) => {
@@ -154,7 +171,7 @@ export function PersonalSiteClient({
       </section>
     ),
     movies: (
-      <section id="movies" className="v6Section v6Dark" key="movies">
+      <section id="movies" className="v6Section v6Dark" key="movies" data-v6-bg={sectionPreset("movies")} style={sectionStyle("movies")}>
         {sectionTitle("movies")}
         <div className="v6PosterGrid">
           {movies.map((item, i) => (
@@ -170,7 +187,7 @@ export function PersonalSiteClient({
       </section>
     ),
     music: (
-      <section id="music" className="v6Section v6Black" key="music">
+      <section id="music" className="v6Section v6Black" key="music" data-v6-bg={sectionPreset("music")} style={sectionStyle("music")}>
         {sectionTitle("music")}
         <div className="v6MusicGrid">
           {music.map((item, i) => {
@@ -205,7 +222,7 @@ export function PersonalSiteClient({
       </section>
     ),
     games: (
-      <section id="games" className="v6Section v6Dark" key="games">
+      <section id="games" className="v6Section v6Dark" key="games" data-v6-bg={sectionPreset("games")} style={sectionStyle("games")}>
         {sectionTitle("games")}
         <div className="v6GameGrid">
           {games.map((item, i) => (
@@ -235,7 +252,7 @@ export function PersonalSiteClient({
     ),
     about: null,
     contact: (
-      <section id="contact" className="v6Contact" key="contact">
+      <section id="contact" className="v6Contact" key="contact" data-v6-bg={sectionPreset("contact")} style={sectionStyle("contact")}>
         {edit(lang === "ar" ? "تعديل التواصل" : "Edit contact", { type: "contact" })}
         <div><span>{settings.contact.eyebrow[lang]}</span><h2>{settings.sections.contact.title[lang]}</h2><p>{settings.sections.contact.subtitle[lang]}</p></div>
         <div className="v6ContactLinks">
@@ -249,7 +266,7 @@ export function PersonalSiteClient({
     ),
   };
 
-  return <main className={`v6Site ${editor?.enabled ? "v6Editing" : ""}`} dir={dir} style={style}>
+  return <main className={`v6Site ${editor?.enabled ? "v6Editing" : ""}`} dir={dir} style={style} data-v6-site-bg={(settings.theme as any).backgroundPreset || "none"}>
     {settings.header.enabled && <header className={`v6Nav ${settings.header.sticky ? "sticky" : ""}`}>
       {edit(lang === "ar" ? "الشعار والقائمة" : "Brand & navigation", { type: "brand" })}
       <a className="v6Brand" href="#home"><Logo settings={settings} /><span>{settings.brand.showName && <strong>{settings.hero.name}</strong>}{settings.brand.showAlias && <small>{settings.hero.alias}</small>}</span></a>
@@ -267,12 +284,21 @@ export function PersonalSiteClient({
           <h1>{settings.hero.heading}</h1>
           <h2>{settings.hero.kicker[lang]}</h2>
           <p>{settings.hero.subtitle[lang]}</p>
-          <div className="v6HeroActions">
-            <a className="primary" href={`#${settings.hero.primaryTarget}`}>{settings.hero.primaryButton[lang]}</a>
-            <a href={`#${settings.hero.secondaryTarget}`}>{settings.hero.secondaryButton[lang]}</a>
-          </div>
         </div>
-        <aside className="v6HeroAboutCard">
+        <aside
+          className="v6HeroAboutCard v6HeroAboutCardClickable"
+          role="button"
+          tabIndex={0}
+          aria-label={lang === "ar" ? "فتح النبذة والخبرة" : "Open about and experience"}
+          onClick={() => { setAboutOpen(true); setResumeOpen(false); }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setAboutOpen(true);
+              setResumeOpen(false);
+            }
+          }}
+        >
           <div className="v6HeroAboutPhoto">
             {settings.about.imageUrl ? <img src={settings.about.imageUrl} alt={settings.hero.name} /> : <div className="v6AboutLetter">{settings.brand.letter || "R"}</div>}
           </div>
@@ -284,6 +310,7 @@ export function PersonalSiteClient({
               <strong>{settings.about.experienceTitle[lang]}</strong>
               <p>{settings.about.experienceText[lang]}</p>
             </div>}
+            <small className="v6AboutExpandHint">{lang === "ar" ? "اضغط للتكبير وقراءة التفاصيل" : "Tap to expand and read more"} ↗</small>
           </div>
         </aside>
       </div>
@@ -294,6 +321,94 @@ export function PersonalSiteClient({
     </section>}
 
     {ordered.map((key) => nodes[key])}
+
+    {aboutOpen && <div className="v6MediaModal v6AboutModalBackdrop" onClick={() => { setAboutOpen(false); setResumeOpen(false); }}>
+      <div className="v6MediaModalPanel v6AboutModalPanel" onClick={(e) => e.stopPropagation()}>
+        <button className="v6ModalClose" type="button" onClick={() => { setAboutOpen(false); setResumeOpen(false); }}>×</button>
+        <div className="v6AboutModalGrid">
+          <div className="v6AboutModalPhoto">
+            {settings.about.imageUrl ? <img src={settings.about.imageUrl} alt={settings.hero.name} /> : <div className="v6AboutLetter">{settings.brand.letter || "R"}</div>}
+          </div>
+          <div className="v6AboutModalContent">
+            <span className="v6AboutModalEyebrow">{settings.about.eyebrow[lang]}</span>
+            <h2>{lang === "ar" ? "نبذة عني" : "About me"}</h2>
+            <p className="v6AboutModalBio">{settings.about.text[lang]}</p>
+
+            {settings.about.experienceText[lang] && <section className="v6AboutModalExperience">
+              <span>{settings.about.experienceTitle[lang]}</span>
+              <p>{settings.about.experienceText[lang]}</p>
+            </section>}
+
+            <button className="v6ResumeToggle" type="button" onClick={() => setResumeOpen((value) => !value)}>
+              <span>{lang === "ar" ? "السيرة الذاتية" : "Curriculum Vitae"}</span>
+              <strong>{resumeOpen
+                ? (lang === "ar" ? "إخفاء السيرة الذاتية" : "Hide CV")
+                : (lang === "ar" ? "اضغط لعرض السيرة الذاتية" : "Tap to view my CV")}</strong>
+              <b>{resumeOpen ? "−" : "+"}</b>
+            </button>
+
+            {resumeOpen && <div className="v6ResumeSheet">
+              <header className="v6ResumeHeader">
+                <div>
+                  <span>ROVER / CV</span>
+                  <h3>{settings.hero.name}</h3>
+                  <p>{lang === "ar" ? "السياحة والفندقة • المبيعات • إدارة الأعمال" : "Tourism & Hospitality • Sales • Business Operations"}</p>
+                </div>
+                {settings.contact.email && <a href={`mailto:${settings.contact.email}`}>{settings.contact.email}</a>}
+              </header>
+
+              <section className="v6ResumeSection">
+                <h4>{lang === "ar" ? "الملخص المهني" : "Professional Profile"}</h4>
+                <p>{settings.about.text[lang]}</p>
+              </section>
+
+              <section className="v6ResumeSection">
+                <h4>{lang === "ar" ? "الخبرة المهنية" : "Professional Experience"}</h4>
+                <p className="v6ResumePre">{settings.about.experienceText[lang]}</p>
+              </section>
+
+              <section className="v6ResumeTwoCol">
+                <div className="v6ResumeSection">
+                  <h4>{lang === "ar" ? "التعليم" : "Education"}</h4>
+                  <p>{((settings.about as any).resumeEducation?.[lang]) || (lang === "ar"
+                    ? "إعدادية كربلاء للسياحة والفندقة المهنية — اختصاص السياحة والفندقة."
+                    : "Karbala Vocational Secondary School for Tourism & Hospitality — Tourism and Hotel Studies.")}</p>
+                </div>
+                <div className="v6ResumeSection">
+                  <h4>{lang === "ar" ? "اللغات" : "Languages"}</h4>
+                  <p>{((settings.about as any).resumeLanguages?.[lang]) || (lang === "ar"
+                    ? "العربية • الإنكليزية • الفارسية"
+                    : "Arabic • English • Persian")}</p>
+                </div>
+              </section>
+
+              <section className="v6ResumeSection">
+                <h4>{lang === "ar" ? "المهارات" : "Skills"}</h4>
+                <div className="v6ResumeSkills">
+                  {((((settings.about as any).resumeSkills?.[lang]) || (lang === "ar"
+                    ? "Microsoft Excel\nMicrosoft Word\nمهارات الحاسوب\nالترويج والمبيعات\nإدارة الأعمال\nالعمل تحت الضغط"
+                    : "Microsoft Excel\nMicrosoft Word\nComputer skills\nPromotion & sales\nBusiness management\nWorking under pressure")) as string)
+                    .split("\n").filter(Boolean).map((skill) => <span key={skill}>{skill}</span>)}
+                </div>
+              </section>
+
+              {(settings.about as any).resumeFileUrl && <a className="v6ResumePdf" href={(settings.about as any).resumeFileUrl} target="_blank" rel="noreferrer">
+                {lang === "ar" ? "فتح نسخة PDF من السيرة الذاتية" : "Open PDF copy of my CV"} ↗
+              </a>}
+
+              <button className="v6HireCta" type="button" onClick={() => {
+                setAboutOpen(false);
+                setResumeOpen(false);
+                window.setTimeout(() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth", block: "start" }), 40);
+              }}>
+                <span>{lang === "ar" ? "متاح للتوظيف" : "Available for work"}</span>
+                <strong>{lang === "ar" ? "اضغط للتواصل" : "Tap to contact me"} →</strong>
+              </button>
+            </div>}
+          </div>
+        </div>
+      </div>
+    </div>}
 
     {activeAlbum && <div className="v6MediaModal" onClick={() => setActiveAlbumKey(null)}>
       <div className="v6MediaModalPanel v6AlbumModal" onClick={(e) => e.stopPropagation()}>
