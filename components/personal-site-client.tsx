@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import type { PortfolioItem, PortfolioKind } from "../lib/content";
-import { personalSectionKeys, type Lang, type PersonalSectionKey, type PersonalSiteConfig } from "../lib/personal-site";
+import { personalSectionKeys, type CustomSectionSettings, type Lang, type PersonalSectionKey, type PersonalSiteConfig } from "../lib/personal-site";
 
 export type PersonalEditTarget =
   | { type: "brand" }
@@ -10,6 +10,7 @@ export type PersonalEditTarget =
   | { type: "hero" }
   | { type: "sections" }
   | { type: "section"; key: PersonalSectionKey }
+  | { type: "customSection"; id: string }
   | { type: "about" }
   | { type: "contact" }
   | { type: "footer" };
@@ -40,6 +41,7 @@ export function PersonalSiteClient({
   const [aboutOpen, setAboutOpen] = useState(false);
   const [resumeOpen, setResumeOpen] = useState(false);
   const [expandedSection, setExpandedSection] = useState<PersonalSectionKey | null>(null);
+  const [expandedCustomSection, setExpandedCustomSection] = useState<string | null>(null);
   const lang = forcedLang ?? localLang;
   const dir = lang === "ar" ? "rtl" : "ltr";
 
@@ -51,6 +53,7 @@ export function PersonalSiteClient({
   const games = byKind("game");
   const photoAlbums = groupPhotoAlbums(photos, lang);
   const activeAlbum = photoAlbums.find((album) => album.key === activeAlbumKey) ?? null;
+  const customSections = settings.customSections ?? [];
 
   const ordered = useMemo(
     () => personalSectionKeys
@@ -59,7 +62,14 @@ export function PersonalSiteClient({
     [settings.sections],
   );
 
-  const nav = ordered.filter((key) => settings.sections[key].showInNav);
+  const nav = [
+    ...ordered
+      .filter((key) => settings.sections[key].showInNav)
+      .map((key) => ({ id: key, label: settings.sections[key].nav[lang], order: settings.sections[key].order })),
+    ...customSections
+      .filter((section) => section.enabled && section.showInNav)
+      .map((section) => ({ id: section.id, label: section.nav[lang], order: section.order })),
+  ].sort((a, b) => a.order - b.order);
   const style = {
     "--v6-accent": settings.theme.accentColor,
     "--v6-bg": settings.theme.backgroundColor,
@@ -95,6 +105,18 @@ export function PersonalSiteClient({
       ...(visual.buttonColor ? { "--v6-button": visual.buttonColor } : {}),
     } as CSSProperties;
   };
+  const customSectionStyle = (section: CustomSectionSettings) => {
+    const visual = section.style ?? {};
+    return {
+      ...(visual.backgroundColor ? { backgroundColor: visual.backgroundColor } : {}),
+      ...(visual.backgroundUrl ? { backgroundImage: `url("${visual.backgroundUrl}")`, backgroundSize: "cover", backgroundPosition: "center" } : {}),
+      ...(visual.textColor ? { "--v6-text": visual.textColor } : {}),
+      ...(visual.accentColor ? { "--v6-accent": visual.accentColor } : {}),
+      ...(visual.panelColor ? { "--v6-panel": visual.panelColor } : {}),
+      ...(visual.buttonColor ? { "--v6-button": visual.buttonColor } : {}),
+    } as CSSProperties;
+  };
+
 
   const edit = (label: string, target: PersonalEditTarget) => editor?.enabled && editor.controlsVisible ? (
     <button className="v6Edit" type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); editor.onEdit(target); }}>✎ {label}</button>
@@ -115,6 +137,13 @@ export function PersonalSiteClient({
 
     setExpandedSection((current) => current === key ? null : key);
   };
+  const toggleMobileCustomSection = (id: string, event: any) => {
+    if (typeof window === "undefined" || !window.matchMedia("(max-width: 720px)").matches) return;
+    const target = event.target as HTMLElement;
+    if (target.closest("a,button,input,textarea,select,iframe,audio,video")) return;
+    setExpandedCustomSection((current) => current === id ? null : id);
+  };
+
 
   const titleFor = (item: PortfolioItem) => lang === "ar" && item.title_ar ? item.title_ar : item.title;
   const subtitleFor = (item: PortfolioItem) => lang === "ar" && item.subtitle_ar ? item.subtitle_ar : item.subtitle;
@@ -139,6 +168,30 @@ export function PersonalSiteClient({
       </div>
       {edit(lang === "ar" ? "تعديل القسم" : "Edit section", { type: "section", key })}
     </div>
+  );
+
+  const customSectionNode = (section: CustomSectionSettings) => (
+    <section
+      id={section.id}
+      key={section.id}
+      className={`v6Section v6CustomSection ${expandedCustomSection === section.id ? "v15MobileExpanded" : ""}`}
+      style={customSectionStyle(section)}
+      onClick={(event) => toggleMobileCustomSection(section.id, event)}
+    >
+      <div className="v6SectionHead">
+        <div>
+          <span className="v15SectionNumber">{String(section.order).padStart(2, "0")}</span>
+          <span className="v15SectionEyebrow">ROVER / {section.nav[lang]}</span>
+          <h2>{section.title[lang]}</h2>
+          <p>{section.subtitle[lang]}</p>
+        </div>
+        {edit(lang === "ar" ? "تعديل القسم" : "Edit section", { type: "customSection", id: section.id })}
+      </div>
+      <div className="v6CustomSectionBody">
+        {section.body[lang] && <p>{section.body[lang]}</p>}
+        {section.buttonUrl && section.buttonLabel[lang] && <a href={section.buttonUrl} target="_blank" rel="noreferrer">{section.buttonLabel[lang]} ↗</a>}
+      </div>
+    </section>
   );
 
   const nodes: Record<PersonalSectionKey, ReactNode> = {
@@ -299,11 +352,20 @@ export function PersonalSiteClient({
     ),
   };
 
+  const worldNodes = [
+    ...ordered.map((key) => ({ id: key, order: settings.sections[key].order, node: nodes[key] })),
+    ...customSections.filter((section) => section.enabled).map((section) => ({
+      id: section.id,
+      order: section.order,
+      node: customSectionNode(section),
+    })),
+  ].sort((a, b) => a.order - b.order);
+
   return <main className={`v6Site ${editor?.enabled ? "v6Editing" : ""}`} dir={dir} style={style} data-v6-site-bg={(settings.theme as any).backgroundPreset || "none"}>
     {settings.header.enabled && <header className={`v6Nav ${settings.header.sticky ? "sticky" : ""}`}>
       {edit(lang === "ar" ? "الشعار والقائمة" : "Brand & navigation", { type: "brand" })}
       <a className="v6Brand" href="#home"><Logo settings={settings} /><span>{settings.brand.showName && <strong>{settings.hero.name}</strong>}{settings.brand.showAlias && <small>{settings.hero.alias}</small>}</span></a>
-      <nav><a href="#home">{settings.hero.homeNav[lang]}</a>{nav.map((key) => <a key={key} href={`#${key}`}>{settings.sections[key].nav[lang]}</a>)}</nav>
+      <nav><a href="#home">{settings.hero.homeNav[lang]}</a>{nav.map((item) => <a key={item.id} href={`#${item.id}`}>{item.label}</a>)}</nav>
       {settings.header.showLanguageSwitch && <button className="v6Lang" onClick={() => !forcedLang && setLocalLang(lang === "en" ? "ar" : "en")}>{lang === "en" ? "عربي" : "EN"}</button>}
     </header>}
 
@@ -376,7 +438,7 @@ export function PersonalSiteClient({
       </a>
     </section>}
 
-    <div className="v14WorldGrid">{ordered.map((key) => nodes[key])}</div>
+    <div className="v14WorldGrid">{worldNodes.map((entry) => entry.node)}</div>
 
     {aboutOpen && <div className="v6MediaModal v6AboutModalBackdrop" onClick={() => { setAboutOpen(false); setResumeOpen(false); }}>
       <div className="v6MediaModalPanel v6AboutModalPanel" onClick={(e) => e.stopPropagation()}>
@@ -543,55 +605,17 @@ function musicEmbed(url: string, autoPlay = false) {
 }
 
 function SpotifyInlinePlayer({ url, title }: { url: string; title: string }) {
-  const holder = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    let disposed = false;
-    let controller: any = null;
-    const win = window as any;
-
-    const create = (api: any) => {
-      if (disposed || !holder.current) return;
-      holder.current.innerHTML = "";
-      api.createController(holder.current, { url, width: "100%", height: 80 }, (next: any) => {
-        if (disposed) {
-          next?.destroy?.();
-          return;
-        }
-        controller = next;
-        const tryPlay = () => {
-          try { controller?.play?.(); } catch {}
-        };
-        controller?.addListener?.("ready", tryPlay);
-        tryPlay();
-      });
-    };
-
-    if (win.__roverSpotifyIframeApi) {
-      create(win.__roverSpotifyIframeApi);
-    } else {
-      const previous = win.onSpotifyIframeApiReady;
-      win.onSpotifyIframeApiReady = (api: any) => {
-        win.__roverSpotifyIframeApi = api;
-        if (typeof previous === "function") previous(api);
-        create(api);
-      };
-      if (!document.querySelector('script[data-rover-spotify-api="1"]')) {
-        const script = document.createElement("script");
-        script.src = "https://open.spotify.com/embed/iframe-api/v1";
-        script.async = true;
-        script.dataset.roverSpotifyApi = "1";
-        document.body.appendChild(script);
-      }
-    }
-
-    return () => {
-      disposed = true;
-      try { controller?.destroy?.(); } catch {}
-    };
-  }, [url]);
-
-  return <div className="v6SpotifyApiPlayer" aria-label={title} ref={holder}><span>Spotify</span></div>;
+  const src = spotifyEmbed(url);
+  if (!src) return null;
+  return <iframe
+    className="v6MusicMiniPlayer v6SpotifyStablePlayer"
+    src={src}
+    width="100%"
+    height="152"
+    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+    loading="lazy"
+    title={title}
+  />;
 }
 
 function groupPhotoAlbums(items: PortfolioItem[], lang: Lang) {

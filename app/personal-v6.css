@@ -1262,3 +1262,101 @@
     background:rgba(255,255,255,.88)!important;
   }
 }
+
+
+/* Rover V17 — functional fixes */
+@media (min-width:721px) and (max-width:1100px){
+  .v15Availability{display:none!important}
+}
+
+.v6SpotifyStablePlayer{
+  width:100%;
+  min-height:152px;
+  border:0;
+  border-radius:10px;
+  overflow:hidden;
+  background:transparent;
+}
+
+.v6CustomSectionBody{
+  grid-column:2!important;
+  grid-row:1!important;
+  align-self:center;
+  max-width:560px;
+  padding:clamp(22px,3vw,42px);
+  color:var(--v6-text);
+}
+.v6CustomSectionBody p{
+  margin:0 0 16px;
+  font-size:13px;
+  line-height:1.75;
+  white-space:pre-line;
+}
+.v6CustomSectionBody a{
+  display:inline-flex;
+  align-items:center;
+  min-height:40px;
+  padding:0 16px;
+  border:1px solid rgba(40,48,56,.22);
+  border-radius:999px;
+  background:rgba(255,255,255,.72);
+  color:#171b20!important;
+  text-decoration:none;
+  font-size:11px;
+  font-weight:700;
+  box-shadow:0 8px 24px rgba(70,80,90,.08);
+}
+
+.v17AddSectionButton{
+  min-height:46px!important;
+  border:1px dashed rgba(216,165,79,.48)!important;
+  background:rgba(216,165,79,.08)!important;
+  color:#efc36f!important;
+  border-radius:11px!important;
+  font-weight:800!important;
+}
+.v17DeleteSectionButton{
+  margin-top:8px!important;
+  min-height:44px!important;
+  border:1px solid rgba(255,90,90,.35)!important;
+  background:rgba(255,60,60,.08)!important;
+  color:#ff9d9d!important;
+  border-radius:10px!important;
+}
+.v17SectionState{
+  min-width:34px;
+  padding:5px 7px;
+  border-radius:999px;
+  background:rgba(255,255,255,.06);
+  color:#aab2b9;
+  font-size:8px;
+  text-align:center;
+}
+
+@media(max-width:720px){
+  .v6CustomSectionBody{
+    display:block!important;
+    max-height:0;
+    opacity:0;
+    transform:translateY(12px);
+    overflow:hidden;
+    pointer-events:none;
+    padding:0 14px!important;
+    transition:max-height .4s cubic-bezier(.22,.75,.22,1),opacity .25s ease,transform .35s ease,padding .35s ease;
+  }
+  .v6CustomSection.v15MobileExpanded{
+    height:330px!important;
+    min-height:330px!important;
+  }
+  .v6CustomSection.v15MobileExpanded .v6CustomSectionBody{
+    max-height:205px;
+    opacity:1;
+    transform:none;
+    pointer-events:auto;
+    padding:8px 14px 18px!important;
+  }
+  .v6CustomSectionBody p{
+    font-size:11px;
+    line-height:1.6;
+  }
+}

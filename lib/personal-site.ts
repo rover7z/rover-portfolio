@@ -2,6 +2,16 @@ export type Lang = "en" | "ar";
 export type LocalizedText = { en: string; ar: string };
 export type PersonalSectionKey = "photos" | "videos" | "movies" | "music" | "games" | "about" | "contact";
 
+export type SectionVisualStyle = {
+  backgroundPreset?: string;
+  backgroundColor?: string;
+  backgroundUrl?: string;
+  textColor?: string;
+  accentColor?: string;
+  panelColor?: string;
+  buttonColor?: string;
+};
+
 export type SectionSettings = {
   enabled: boolean;
   showInNav: boolean;
@@ -9,6 +19,14 @@ export type SectionSettings = {
   nav: LocalizedText;
   title: LocalizedText;
   subtitle: LocalizedText;
+  style?: SectionVisualStyle;
+};
+
+export type CustomSectionSettings = SectionSettings & {
+  id: string;
+  body: LocalizedText;
+  buttonLabel: LocalizedText;
+  buttonUrl: string;
 };
 
 export type PersonalSiteConfig = {
@@ -40,6 +58,7 @@ export type PersonalSiteConfig = {
     backgroundUrl: string;
   };
   sections: Record<PersonalSectionKey, SectionSettings>;
+  customSections: CustomSectionSettings[];
   about: {
     eyebrow: LocalizedText;
     text: LocalizedText;
@@ -147,6 +166,7 @@ export const defaultPersonalSiteConfig: PersonalSiteConfig = {
       subtitle: { en: "Open to job opportunities, collaborations, and new projects.", ar: "متاح لفرص العمل، التعاون والمشاريع الجديدة." },
     },
   },
+  customSections: [],
   about: {
     eyebrow: { en: "ALI MOHAMMED (ROVER)", ar: "ALI MOHAMMED (ROVER)" },
     text: {
@@ -222,6 +242,26 @@ export function mergePersonalSiteConfig(value: unknown): PersonalSiteConfig {
   }
   if (raw.sections && typeof raw.sections === "object") {
     for (const key of personalSectionKeys) result.sections[key] = section(raw.sections[key], defaultPersonalSiteConfig.sections[key]);
+  }
+  if (Array.isArray(raw.customSections)) {
+    result.customSections = raw.customSections.map((entry, index) => {
+      const source = entry && typeof entry === "object" ? entry as Partial<CustomSectionSettings> : {};
+      const base = section(source, {
+        enabled: true,
+        showInNav: true,
+        order: 20 + index,
+        nav: { en: "Section", ar: "قسم" },
+        title: { en: "New Section", ar: "قسم جديد" },
+        subtitle: { en: "Add a description for this section.", ar: "أضف وصفاً لهذا القسم." },
+      });
+      return {
+        ...base,
+        id: typeof source.id === "string" && source.id.trim() ? source.id.trim() : `custom-${index + 1}`,
+        body: localized(source.body, { en: "", ar: "" }),
+        buttonLabel: localized(source.buttonLabel, { en: "", ar: "" }),
+        buttonUrl: typeof source.buttonUrl === "string" ? source.buttonUrl : "",
+      };
+    });
   }
   if (raw.about && typeof raw.about === "object") {
     result.about = { ...result.about, ...raw.about } as PersonalSiteConfig["about"];

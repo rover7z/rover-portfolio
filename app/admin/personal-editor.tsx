@@ -98,6 +98,62 @@ export function PersonalEditor({ initialItems, initialSettings }: { initialItems
     updateSettings(next);
   }
 
+  function addCustomSection() {
+    const next = structuredClone(settings);
+    const allOrders = [
+      ...personalSectionKeys.map((key) => next.sections[key].order),
+      ...(next.customSections ?? []).map((section) => section.order),
+    ];
+    const order = Math.max(0, ...allOrders) + 1;
+    const id = `custom-${Date.now().toString(36)}`;
+    next.customSections = [...(next.customSections ?? []), {
+      id,
+      enabled: true,
+      showInNav: true,
+      order,
+      nav: { en: "New", ar: "جديد" },
+      title: { en: "New Section", ar: "قسم جديد" },
+      subtitle: { en: "Add your section description.", ar: "أضف وصف هذا القسم." },
+      body: { en: "", ar: "" },
+      buttonLabel: { en: "", ar: "" },
+      buttonUrl: "",
+      style: {
+        backgroundPreset: "inherit",
+        backgroundColor: "",
+        backgroundUrl: "",
+        textColor: "",
+        accentColor: "",
+        panelColor: "",
+        buttonColor: "",
+      },
+    }];
+    updateSettings(next);
+    setPanel({ type: "customSection", id });
+    setPreview(false);
+  }
+
+  function patchCustomSection(id: string, patch: any) {
+    const next = structuredClone(settings);
+    next.customSections = (next.customSections ?? []).map((section) => section.id === id ? { ...section, ...patch } : section);
+    updateSettings(next);
+  }
+
+  function patchCustomLocalized(id: string, field: "nav" | "title" | "subtitle" | "body" | "buttonLabel", language: Lang, value: string) {
+    const next = structuredClone(settings);
+    const section = (next.customSections ?? []).find((entry) => entry.id === id);
+    if (!section) return;
+    section[field][language] = value;
+    updateSettings(next);
+  }
+
+  function deleteCustomSection(id: string) {
+    if (!window.confirm(lang === "ar" ? "حذف هذا القسم؟" : "Delete this section?")) return;
+    const next = structuredClone(settings);
+    next.customSections = (next.customSections ?? []).filter((section) => section.id !== id);
+    updateSettings(next);
+    setPanel(null);
+  }
+
   async function saveSettings() {
     setBusy(true);
     setMessage("");
@@ -258,6 +314,11 @@ export function PersonalEditor({ initialItems, initialSettings }: { initialItems
           <span>{settings.sections[key].nav[lang]}</span>
         </button>
       ))}
+      {(settings.customSections ?? []).filter((section) => section.enabled).sort((a, b) => a.order - b.order).map((section) => (
+        <button key={section.id} className={panel?.type === "customSection" && panel.id === section.id ? "active" : ""} onClick={() => openWorkspace(section.id, { type: "customSection", id: section.id })}>
+          <b>＋</b><span>{section.nav[lang]}</span>
+        </button>
+      ))}
       <button className={panel?.type === "contact" ? "active" : ""} onClick={() => openWorkspace("contact", { type: "contact" })}><b>✉</b><span>{settings.sections.contact.nav[lang]}</span></button>
       <div className="v14RailDivider" />
       <button className={panel?.type === "about" ? "active" : ""} onClick={() => { setPanel({ type: "about" }); setPreview(false); }}><b>CV</b><span>{lang === "ar" ? "نبذتي والسيرة" : "About & CV"}</span></button>
@@ -270,8 +331,9 @@ export function PersonalEditor({ initialItems, initialSettings }: { initialItems
     {panel && !preview && <aside className="v6Inspector">
       <div className="v6InspectorHead"><strong>{panelTitle(panel, t, Boolean(selectedItem?._local))}</strong><button onClick={() => setPanel(null)}>×</button></div>
       <div className="v6InspectorBody">
-        {panel.type === "sections" && <SectionsPanel settings={settings} patchSection={patchSection} onEdit={(key: PersonalSectionKey) => setPanel({ type: "section", key })} t={t} />}
+        {panel.type === "sections" && <SectionsPanel settings={settings} patchSection={patchSection} onEdit={(key: PersonalSectionKey) => setPanel({ type: "section", key })} onEditCustom={(id: string) => setPanel({ type: "customSection", id })} onAddCustom={addCustomSection} t={t} />}
         {panel.type === "section" && <SectionPanel sectionKey={panel.key} settings={settings} patchSection={patchSection} patchLocalized={patchSectionLocalized} upload={upload} t={t} />}
+        {panel.type === "customSection" && <CustomSectionPanel sectionId={panel.id} settings={settings} patchSection={patchCustomSection} patchLocalized={patchCustomLocalized} deleteSection={deleteCustomSection} upload={upload} t={t} />}
         {panel.type === "brand" && <BrandPanel settings={settings} updateSettings={updateSettings} upload={upload} t={t} />}
         {panel.type === "hero" && <HeroPanel settings={settings} updateSettings={updateSettings} patchLocalized={patchLocalized} upload={upload} t={t} />}
         {panel.type === "theme" && <ThemePanel settings={settings} updateSettings={updateSettings} upload={upload} t={t} />}
@@ -288,6 +350,7 @@ export function PersonalEditor({ initialItems, initialSettings }: { initialItems
 function panelTitle(panel: Panel, t: any, isNew: boolean) {
   if (!panel) return "";
   if (panel.type === "item") return isNew ? t.newItem : t.item;
+  if (panel.type === "customSection") return "Custom section / قسم مخصص";
   return t[panel.type] ?? t.section;
 }
 
@@ -329,8 +392,65 @@ function VisualColor({ label, value, onChange }: { label: string; value: string;
   return <label>{label}<div className="v6Color"><input type="color" value={safe} onChange={(event) => onChange(event.target.value)} /><input dir="ltr" value={value || ""} placeholder="اتركه فارغ للمظهر العام" onChange={(event) => onChange(event.target.value)} /></div></label>;
 }
 
-function SectionsPanel({ settings, patchSection, onEdit, t }: any) {
-  return <div className="v6Form">{personalSectionKeys.filter((key) => key !== "about").sort((a, b) => settings.sections[a].order - settings.sections[b].order).map((key) => <div className="v6ManagerRow" key={key}><div><strong>{settings.sections[key].title.ar}</strong><small>{settings.sections[key].title.en}</small></div><Toggle label={t.enabled} checked={settings.sections[key].enabled} onChange={(v) => patchSection(key, { enabled: v })} /><button onClick={() => onEdit(key)}>✎</button></div>)}</div>;
+function SectionsPanel({ settings, patchSection, onEdit, onEditCustom, onAddCustom, t }: any) {
+  const custom = [...(settings.customSections ?? [])].sort((a: any, b: any) => a.order - b.order);
+  return <div className="v6Form">
+    <button className="v17AddSectionButton" type="button" onClick={onAddCustom}>＋ إضافة قسم جديد / Add new section</button>
+    {personalSectionKeys.filter((key) => key !== "about").sort((a, b) => settings.sections[a].order - settings.sections[b].order).map((key) => (
+      <div className="v6ManagerRow" key={key}>
+        <div><strong>{settings.sections[key].title.ar}</strong><small>{settings.sections[key].title.en}</small></div>
+        <Toggle label={t.enabled} checked={settings.sections[key].enabled} onChange={(v) => patchSection(key, { enabled: v })} />
+        <button onClick={() => onEdit(key)}>✎</button>
+      </div>
+    ))}
+    {custom.length > 0 && <p className="v6Group">الأقسام المضافة / Custom sections</p>}
+    {custom.map((section: any) => (
+      <div className="v6ManagerRow v17CustomManagerRow" key={section.id}>
+        <div><strong>{section.title.ar || section.nav.ar}</strong><small>{section.title.en || section.nav.en}</small></div>
+        <span className="v17SectionState">{section.enabled ? "ON" : "OFF"}</span>
+        <button onClick={() => onEditCustom(section.id)}>✎</button>
+      </div>
+    ))}
+  </div>;
+}
+
+function CustomSectionPanel({ sectionId, settings, patchSection, patchLocalized, deleteSection, upload, t }: any) {
+  const section = (settings.customSections ?? []).find((entry: any) => entry.id === sectionId);
+  if (!section) return <div className="v6Form"><p>Section not found.</p></div>;
+  const style = section.style ?? {
+    backgroundPreset: "inherit", backgroundColor: "", backgroundUrl: "", textColor: "",
+    accentColor: "", panelColor: "", buttonColor: "",
+  };
+  const patchStyle = (key: string, value: any) => patchSection(sectionId, { style: { ...style, [key]: value } });
+
+  return <div className="v6Form">
+    <Toggle label={t.enabled} checked={section.enabled} onChange={(v) => patchSection(sectionId, { enabled: v })} />
+    <Toggle label={t.nav} checked={section.showInNav} onChange={(v) => patchSection(sectionId, { showInNav: v })} />
+    <label>{t.order}<input type="number" value={section.order} onChange={(event) => patchSection(sectionId, { order: Number(event.target.value) })} /></label>
+
+    <p className="v6Group">{t.navName}</p>
+    <Pair value={section.nav} onChange={(l, v) => patchLocalized(sectionId, "nav", l, v)} t={t} />
+    <p className="v6Group">{t.title}</p>
+    <Pair value={section.title} onChange={(l, v) => patchLocalized(sectionId, "title", l, v)} t={t} />
+    <p className="v6Group">{t.subtitle}</p>
+    <Pair value={section.subtitle} onChange={(l, v) => patchLocalized(sectionId, "subtitle", l, v)} t={t} textarea />
+
+    <p className="v6Group">محتوى القسم / Section content</p>
+    <Pair value={section.body} onChange={(l, v) => patchLocalized(sectionId, "body", l, v)} t={t} textarea />
+    <p className="v6Group">زر اختياري / Optional button</p>
+    <Pair value={section.buttonLabel} onChange={(l, v) => patchLocalized(sectionId, "buttonLabel", l, v)} t={t} />
+    <label>الرابط / URL<input dir="ltr" value={section.buttonUrl || ""} onChange={(event) => patchSection(sectionId, { buttonUrl: event.target.value })} /></label>
+
+    <p className="v6Group">مظهر القسم / Section appearance</p>
+    <VisualPresetPicker value={style.backgroundPreset || "inherit"} allowInherit onChange={(value) => patchStyle("backgroundPreset", value)} />
+    <VisualColor label="لون الخلفية / Background color" value={style.backgroundColor || ""} onChange={(value) => patchStyle("backgroundColor", value)} />
+    <VisualColor label="لون النص / Text color" value={style.textColor || ""} onChange={(value) => patchStyle("textColor", value)} />
+    <VisualColor label="اللون المميز / Accent color" value={style.accentColor || ""} onChange={(value) => patchStyle("accentColor", value)} />
+    <label>صورة الخلفية / Background image<input dir="ltr" value={style.backgroundUrl || ""} onChange={(event) => patchStyle("backgroundUrl", event.target.value)} /></label>
+    <Upload label="رفع خلفية / Upload background" accept="image/*" onChange={(event) => upload(event, (url: string) => patchStyle("backgroundUrl", url))} />
+
+    <button className="v17DeleteSectionButton" type="button" onClick={() => deleteSection(sectionId)}>حذف القسم / Delete section</button>
+  </div>;
 }
 
 function SectionPanel({ sectionKey, settings, patchSection, patchLocalized, upload, t }: any) {
