@@ -338,7 +338,7 @@ export function PersonalEditor({ initialItems, initialSettings }: { initialItems
         {panel.type === "hero" && <HeroPanel settings={settings} updateSettings={updateSettings} patchLocalized={patchLocalized} upload={upload} t={t} />}
         {panel.type === "theme" && <ThemePanel settings={settings} updateSettings={updateSettings} upload={upload} t={t} />}
         {panel.type === "about" && <AboutPanel settings={settings} updateSettings={updateSettings} patchLocalized={patchLocalized} upload={upload} t={t} />}
-        {panel.type === "contact" && <ContactPanel settings={settings} updateSettings={updateSettings} t={t} />}
+        {panel.type === "contact" && <ContactPanel settings={settings} updateSettings={updateSettings} upload={upload} t={t} />}
         {panel.type === "footer" && <FooterPanel settings={settings} updateSettings={updateSettings} patchLocalized={patchLocalized} t={t} />}
         {panel.type === "item" && selectedItem && <ItemPanel item={selectedItem} patchItem={patchItem} saveItem={saveItem} deleteItem={deleteItem} upload={upload} busy={busy} lang={lang} t={t} />}
         {message && <p className="v6AdminMessage">{message}</p>}
@@ -554,10 +554,85 @@ function AboutPanel({ settings, updateSettings, patchLocalized, upload, t }: any
   </div>;
 }
 
-function ContactPanel({ settings, updateSettings, t }: any) {
-  const patch = (key: string, value: any) => { const n = structuredClone(settings); n.contact[key] = value; updateSettings(n); };
-  const setLink = (i: number, field: "url" | "label", value: any) => { const n = structuredClone(settings); if (field === "url") n.contact.customLinks[i].url = value; else n.contact.customLinks[i].label = value; updateSettings(n); };
-  return <div className="v6Form"><label>{t.email}<input dir="ltr" value={settings.contact.email} onChange={(e) => patch("email", e.target.value)} /></label><label>{t.instagram}<input dir="ltr" value={settings.contact.instagram} onChange={(e) => patch("instagram", e.target.value)} /></label><label>{t.youtube}<input dir="ltr" value={settings.contact.youtube} onChange={(e) => patch("youtube", e.target.value)} /></label><label>{t.github}<input dir="ltr" value={settings.contact.github} onChange={(e) => patch("github", e.target.value)} /></label><p className="v6Group">{t.links}</p>{settings.contact.customLinks.map((link: any, i: number) => <div className="v6Nested" key={i}><Pair value={link.label} onChange={(l, v) => setLink(i, "label", { ...link.label, [l]: v })} t={t} /><label>{t.linkUrl}<input dir="ltr" value={link.url} onChange={(e) => setLink(i, "url", e.target.value)} /></label><button className="danger" onClick={() => patch("customLinks", settings.contact.customLinks.filter((_: any, index: number) => index !== i))}>×</button></div>)}<button onClick={() => patch("customLinks", [...settings.contact.customLinks, { label: { en: "Link", ar: "رابط" }, url: "" }])}>{t.addLink}</button></div>;
+function ContactPanel({ settings, updateSettings, upload, t }: any) {
+  const patch = (key: string, value: any) => {
+    const n = structuredClone(settings);
+    n.contact[key] = value;
+    updateSettings(n);
+  };
+
+  const setLink = (i: number, field: "url" | "label", value: any) => {
+    const n = structuredClone(settings);
+    if (field === "url") n.contact.customLinks[i].url = value;
+    else n.contact.customLinks[i].label = value;
+    updateSettings(n);
+  };
+
+  const contactSection = settings.sections.contact;
+  const style = contactSection.style ?? {
+    backgroundPreset: "inherit",
+    backgroundColor: "",
+    backgroundUrl: "",
+    textColor: "",
+    accentColor: "",
+    panelColor: "",
+    buttonColor: "",
+  };
+
+  const patchContactStyle = (key: string, value: any) => {
+    const n = structuredClone(settings);
+    n.sections.contact.style = { ...style, [key]: value };
+    updateSettings(n);
+  };
+
+  const resetContactStyle = () => {
+    const n = structuredClone(settings);
+    n.sections.contact.style = {
+      backgroundPreset: "inherit",
+      backgroundColor: "",
+      backgroundUrl: "",
+      textColor: "",
+      accentColor: "",
+      panelColor: "",
+      buttonColor: "",
+    };
+    updateSettings(n);
+  };
+
+  return <div className="v6Form">
+    <label>{t.email}<input dir="ltr" value={settings.contact.email} onChange={(e) => patch("email", e.target.value)} /></label>
+    <label>{t.instagram}<input dir="ltr" value={settings.contact.instagram} onChange={(e) => patch("instagram", e.target.value)} /></label>
+    <label>{t.youtube}<input dir="ltr" value={settings.contact.youtube} onChange={(e) => patch("youtube", e.target.value)} /></label>
+    <label>{t.github}<input dir="ltr" value={settings.contact.github} onChange={(e) => patch("github", e.target.value)} /></label>
+
+    <p className="v6Group">{t.links}</p>
+    {settings.contact.customLinks.map((link: any, i: number) => <div className="v6Nested" key={i}>
+      <Pair value={link.label} onChange={(l, v) => setLink(i, "label", { ...link.label, [l]: v })} t={t} />
+      <label>{t.linkUrl}<input dir="ltr" value={link.url} onChange={(e) => setLink(i, "url", e.target.value)} /></label>
+      <button className="danger" onClick={() => patch("customLinks", settings.contact.customLinks.filter((_: any, index: number) => index !== i))}>×</button>
+    </div>)}
+    <button onClick={() => patch("customLinks", [...settings.contact.customLinks, { label: { en: "Link", ar: "رابط" }, url: "" }])}>{t.addLink}</button>
+
+    <p className="v6Group">مظهر قسم التواصل / Contact appearance</p>
+    <label>خلفية جاهزة / Background preset</label>
+    <VisualPresetPicker value={style.backgroundPreset || "inherit"} allowInherit onChange={(value) => patchContactStyle("backgroundPreset", value)} />
+    <VisualColor label="لون الخلفية / Background color" value={style.backgroundColor || ""} onChange={(value) => patchContactStyle("backgroundColor", value)} />
+    <VisualColor label="لون النص / Text color" value={style.textColor || ""} onChange={(value) => patchContactStyle("textColor", value)} />
+    <VisualColor label="اللون المميز / Accent color" value={style.accentColor || ""} onChange={(value) => patchContactStyle("accentColor", value)} />
+    <VisualColor label="لون البطاقات / Card color" value={style.panelColor || ""} onChange={(value) => patchContactStyle("panelColor", value)} />
+    <VisualColor label="لون الأزرار / Button color" value={style.buttonColor || ""} onChange={(value) => patchContactStyle("buttonColor", value)} />
+
+    <label>صورة خلفية خاصة / Custom background image
+      <input dir="ltr" value={style.backgroundUrl || ""} onChange={(event) => patchContactStyle("backgroundUrl", event.target.value)} />
+    </label>
+    <Upload label="رفع خلفية قسم التواصل / Upload contact background" accept="image/*" onChange={(event) => upload(event, (url: string) => patchContactStyle("backgroundUrl", url))} />
+
+    {style.backgroundUrl && <div className="v17ContactBgPreview">
+      <img src={style.backgroundUrl} alt="Contact background preview" />
+    </div>}
+
+    <button type="button" onClick={resetContactStyle}>إعادة مظهر التواصل للوضع العام / Reset contact appearance</button>
+  </div>;
 }
 
 function FooterPanel({ settings, updateSettings, patchLocalized, t }: any) {
