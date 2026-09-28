@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import type { PortfolioItem, PortfolioKind } from "../lib/content";
 import { personalSectionKeys, type CustomSectionSettings, type Lang, type PersonalSectionKey, type PersonalSiteConfig } from "../lib/personal-site";
 
@@ -39,6 +39,11 @@ export function PersonalSiteClient({
   const [localLang, setLocalLang] = useState<Lang>(forcedLang ?? "en");
   const [siteMode, setSiteMode] = useState<SiteMode>("day");
   const [openMusic, setOpenMusic] = useState<string | null>(null);
+  const [spotifyFallbackKey, setSpotifyFallbackKey] = useState<string | null>(null);
+  const spotifyControllersRef = useRef<Map<string, any>>(new Map());
+  const spotifyPendingPlayRef = useRef<string | null>(null);
+  const spotifyPlayingRef = useRef<string | null>(null);
+  const spotifyAttemptRef = useRef(0);
   const [activeAlbumKey, setActiveAlbumKey] = useState<string | null>(null);
   const [activeVideo, setActiveVideo] = useState<PortfolioItem | null>(null);
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -61,6 +66,62 @@ export function PersonalSiteClient({
       try { window.localStorage.setItem("rover-site-mode", next); } catch {}
       return next;
     });
+  };
+
+  const pauseSpotifyControllers = (exceptKey?: string) => {
+    spotifyControllersRef.current.forEach((controller, key) => {
+      if (key === exceptKey) return;
+      try { controller?.pause?.(); } catch {}
+    });
+  };
+
+  const registerSpotifyController = (key: string, controller: any | null) => {
+    if (!controller) {
+      spotifyControllersRef.current.delete(key);
+      return;
+    }
+    spotifyControllersRef.current.set(key, controller);
+    if (spotifyPendingPlayRef.current === key) {
+      spotifyPendingPlayRef.current = null;
+      try { controller.play?.(); } catch { setSpotifyFallbackKey(key); }
+    }
+  };
+
+  const markSpotifyStarted = (key: string) => {
+    spotifyPlayingRef.current = key;
+    setSpotifyFallbackKey((current) => current === key ? null : current);
+    setOpenMusic(key);
+  };
+
+  const toggleSpotifyPlayback = (key: string) => {
+    const isActive = openMusic === key;
+    const attempt = ++spotifyAttemptRef.current;
+    const controller = spotifyControllersRef.current.get(key);
+
+    if (isActive) {
+      spotifyPendingPlayRef.current = null;
+      spotifyPlayingRef.current = null;
+      try { controller?.pause?.(); } catch {}
+      setSpotifyFallbackKey(null);
+      setOpenMusic(null);
+      return;
+    }
+
+    pauseSpotifyControllers(key);
+    spotifyPlayingRef.current = null;
+    spotifyPendingPlayRef.current = controller ? null : key;
+    setSpotifyFallbackKey(null);
+    setOpenMusic(key);
+
+    if (controller) {
+      try { controller.play?.(); } catch { setSpotifyFallbackKey(key); }
+    }
+
+    window.setTimeout(() => {
+      if (spotifyAttemptRef.current === attempt && spotifyPlayingRef.current !== key) {
+        setSpotifyFallbackKey(key);
+      }
+    }, 1500);
   };
 
   const byKind = (kind: PortfolioKind) => items.filter((item) => item.kind === kind && item.is_published !== false);
@@ -312,7 +373,23 @@ export function PersonalSiteClient({
               <div className="v6MusicCover">
                 {item.cover_url ? <img src={item.cover_url} alt={titleFor(item)} /> : <div className="v6Placeholder">♪</div>}
                 {item.category && <span className="v6MusicPlatform">{item.category}</span>}
-                {(spotify || embed || item.video_url) && <button className="v6MusicPlay" type="button" aria-label={lang === "ar" ? "تشغيل الأغنية" : "Play song"} onClick={() => setOpenMusic(isOpen ? null : cardKey)}>{isOpen ? "×" : "▶"}</button>}
+                {(spotify || embed || item.video_url) && <button
+                  className="v6MusicPlay"
+                  type="button"
+                  aria-label={isOpen ? (lang === "ar" ? "إيقاف الأغنية مؤقتاً" : "Pause song") : (lang === "ar" ? "تشغيل الأغنية" : "Play song")}
+                  onClick={() => {
+                    if (spotify) {
+                      toggleSpotifyPlayback(cardKey);
+                      return;
+                    }
+                    spotifyAttemptRef.current += 1;
+                    spotifyPendingPlayRef.current = null;
+                    spotifyPlayingRef.current = null;
+                    pauseSpotifyControllers();
+                    setSpotifyFallbackKey(null);
+                    setOpenMusic(isOpen ? null : cardKey);
+                  }}
+                >{isOpen ? "❚❚" : "▶"}</button>}
               </div>
               <div className="v6MusicBody">
                 <h3>{titleFor(item)}</h3>
@@ -321,7 +398,14 @@ export function PersonalSiteClient({
                   {item.year && <span>{item.year}</span>}
                   {item.source_rating_text && <span>★ {item.source_rating_label ? `${item.source_rating_label} ` : ""}{item.source_rating_text}</span>}
                 </div>
-                {isOpen && spotify && <SpotifyInlinePlayer url={item.external_url ?? ""} title={titleFor(item)} />}
+                {spotify && <SpotifyInlinePlayer
+                  url={item.external_url ?? ""}
+                  title={titleFor(item)}
+                  playerKey={cardKey}
+                  showFallback={isOpen && spotifyFallbackKey === cardKey}
+                  onController={registerSpotifyController}
+                  onStarted={markSpotifyStarted}
+                />}
                 {isOpen && !spotify && embed && <iframe className="v6MusicMiniPlayer" src={embed} width="100%" height="160" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" title={titleFor(item)} />}
                 {isOpen && !spotify && !embed && item.video_url && <audio className="v6MusicAudio" controls autoPlay preload="none" src={item.video_url} />}
                 {item.external_url && <a className="v6External v6MusicVisit" href={item.external_url} target="_blank" rel="noreferrer">{lang === "ar" ? "زيارة المنصة" : "Visit platform"} ↗</a>}
@@ -650,18 +734,128 @@ function musicEmbed(url: string, autoPlay = false) {
   return "";
 }
 
-function SpotifyInlinePlayer({ url, title }: { url: string; title: string }) {
+let roverSpotifyApiPromise: Promise<any> | null = null;
+
+function loadRoverSpotifyIframeApi() {
+  if (typeof window === "undefined") return Promise.reject(new Error("Spotify API requires a browser"));
+  const roverWindow = window as any;
+
+  if (roverWindow.__roverSpotifyIframeApi) {
+    return Promise.resolve(roverWindow.__roverSpotifyIframeApi);
+  }
+
+  if (roverSpotifyApiPromise) return roverSpotifyApiPromise;
+
+  roverSpotifyApiPromise = new Promise((resolve, reject) => {
+    const previousReady = roverWindow.onSpotifyIframeApiReady;
+
+    roverWindow.onSpotifyIframeApiReady = (IFrameAPI: any) => {
+      roverWindow.__roverSpotifyIframeApi = IFrameAPI;
+      try { previousReady?.(IFrameAPI); } catch {}
+      resolve(IFrameAPI);
+    };
+
+    const existing = document.querySelector<HTMLScriptElement>('script[data-rover-spotify-iframe-api="1"]');
+    if (existing) {
+      existing.addEventListener("error", () => reject(new Error("Spotify iframe API failed to load")), { once: true });
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://open.spotify.com/embed/iframe-api/v1";
+    script.async = true;
+    script.dataset.roverSpotifyIframeApi = "1";
+    script.addEventListener("error", () => reject(new Error("Spotify iframe API failed to load")), { once: true });
+    document.body.appendChild(script);
+  });
+
+  return roverSpotifyApiPromise;
+}
+
+function SpotifyInlinePlayer({
+  url,
+  title,
+  playerKey,
+  showFallback,
+  onController,
+  onStarted,
+}: {
+  url: string;
+  title: string;
+  playerKey: string;
+  showFallback: boolean;
+  onController: (key: string, controller: any | null) => void;
+  onStarted: (key: string) => void;
+}) {
+  const hostRef = useRef<HTMLDivElement | null>(null);
+  const controllerRef = useRef<any | null>(null);
+  const createdRef = useRef(false);
+  const [apiFailed, setApiFailed] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    loadRoverSpotifyIframeApi()
+      .then((IFrameAPI) => {
+        if (cancelled || createdRef.current || !hostRef.current) return;
+        createdRef.current = true;
+
+        IFrameAPI.createController(
+          hostRef.current,
+          { url, width: "100%", height: 152 },
+          (controller: any) => {
+            if (cancelled) {
+              try { controller?.pause?.(); } catch {}
+              return;
+            }
+
+            controllerRef.current = controller;
+            onController(playerKey, controller);
+
+            try {
+              controller.addListener?.("playback_started", () => onStarted(playerKey));
+              controller.addListener?.("playback_update", (event: any) => {
+                const data = event?.data;
+                if (data && data.isPaused === false && data.isBuffering === false) {
+                  onStarted(playerKey);
+                }
+              });
+            } catch {}
+          },
+        );
+      })
+      .catch(() => {
+        if (!cancelled) setApiFailed(true);
+      });
+
+    return () => {
+      cancelled = true;
+      try { controllerRef.current?.pause?.(); } catch {}
+      onController(playerKey, null);
+    };
+  }, [url, playerKey]);
+
   const src = spotifyEmbed(url);
   if (!src) return null;
-  return <iframe
-    className="v6MusicMiniPlayer v6SpotifyStablePlayer"
-    src={src}
-    width="100%"
-    height="152"
-    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-    loading="lazy"
-    title={title}
-  />;
+
+  if (apiFailed && showFallback) {
+    return <iframe
+      className="v6MusicMiniPlayer v6SpotifyStablePlayer v22SpotifyFallbackFrame"
+      src={src}
+      width="100%"
+      height="152"
+      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+      loading="eager"
+      title={title}
+    />;
+  }
+
+  return <div
+    className={`v22SpotifyEngine ${showFallback ? "v22SpotifyFallback" : ""}`}
+    aria-hidden={showFallback ? undefined : true}
+  >
+    <div ref={hostRef} />
+  </div>;
 }
 
 function groupPhotoAlbums(items: PortfolioItem[], lang: Lang) {

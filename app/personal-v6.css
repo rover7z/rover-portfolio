@@ -2188,3 +2188,60 @@
     border-radius:18px!important;
   }
 }
+
+/* Rover V22 - one-tap Spotify controller */
+.v6MusicBody{position:relative}
+
+.v22SpotifyEngine{
+  position:absolute!important;
+  left:-10000px!important;
+  top:0!important;
+  width:360px!important;
+  height:152px!important;
+  overflow:hidden!important;
+  opacity:.001!important;
+  pointer-events:none!important;
+}
+
+.v22SpotifyEngine iframe{
+  width:100%!important;
+  height:152px!important;
+  border:0!important;
+  border-radius:14px!important;
+}
+
+.v22SpotifyEngine.v22SpotifyFallback{
+  position:relative!important;
+  left:auto!important;
+  top:auto!important;
+  width:100%!important;
+  height:152px!important;
+  margin:12px 0 2px!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+  overflow:visible!important;
+  animation:v22SpotifyFallbackReveal .24s ease both;
+}
+
+.v22SpotifyFallbackFrame{
+  display:block!important;
+  margin:12px 0 2px!important;
+  border:0!important;
+  border-radius:14px!important;
+  animation:v22SpotifyFallbackReveal .24s ease both;
+}
+
+@keyframes v22SpotifyFallbackReveal{
+  from{opacity:0;transform:translateY(6px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.v6MusicPlay{font-variant-numeric:tabular-nums}
+
+@media(max-width:720px){
+  .v22SpotifyEngine.v22SpotifyFallback,
+  .v22SpotifyFallbackFrame{
+    height:152px!important;
+    border-radius:13px!important;
+  }
+}
