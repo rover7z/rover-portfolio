@@ -2245,3 +2245,129 @@
     border-radius:13px!important;
   }
 }
+
+/* Rover V23 - restore movie/game details in desktop layouts */
+@media(min-width:721px){
+  /* Movies: bring back source, rating and visit button that V15 compact desktop hid. */
+  .v6Site #movies .v6PosterBody>small{
+    display:block!important;
+    margin:0 0 4px!important;
+    font-size:7px!important;
+    line-height:1.2!important;
+    opacity:.72!important;
+  }
+
+  .v6Site #movies .v6PosterBody>.v6Rating{
+    display:inline-flex!important;
+    align-items:center!important;
+    width:max-content!important;
+    max-width:100%!important;
+    margin:0 0 5px!important;
+    padding:3px 5px!important;
+    font-size:6.5px!important;
+    line-height:1.2!important;
+    border-radius:999px!important;
+    white-space:nowrap!important;
+  }
+
+  .v6Site #movies .v6PosterBody h3{
+    margin:0 0 6px!important;
+    font-size:10px!important;
+    line-height:1.2!important;
+  }
+
+  .v6Site #movies .v6PosterBody>.v6External{
+    display:inline-flex!important;
+    align-items:center!important;
+    width:max-content!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:5px 7px!important;
+    font-size:6.5px!important;
+    line-height:1.15!important;
+    border-radius:999px!important;
+    white-space:nowrap!important;
+  }
+
+  /* Games: bring back description/year/visit footer in desktop mode. */
+  .v6Site #games .v6GameInfo p{
+    display:-webkit-box!important;
+    margin:4px 0 0!important;
+    font-size:7px!important;
+    line-height:1.35!important;
+    -webkit-line-clamp:2!important;
+    -webkit-box-orient:vertical!important;
+    overflow:hidden!important;
+  }
+
+  .v6Site #games .v6GameFooter{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:5px!important;
+    margin-top:7px!important;
+    min-width:0!important;
+  }
+
+  .v6Site #games .v6GameFooter small{
+    display:block!important;
+    flex:0 0 auto!important;
+    font-size:6.5px!important;
+    white-space:nowrap!important;
+  }
+
+  .v6Site #games .v6GameFooter .v6External{
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    min-width:0!important;
+    max-width:100%!important;
+    margin:0!important;
+    padding:5px 7px!important;
+    font-size:6.5px!important;
+    line-height:1.15!important;
+    border-radius:999px!important;
+    white-space:nowrap!important;
+  }
+
+  /* Slightly taller content area gives compact desktop cards breathing room. */
+  .v6Site #movies .v6PosterBody,
+  .v6Site #games .v6GameInfo{
+    min-height:74px!important;
+  }
+}
+
+/* Medium desktop / browser "Desktop site" on phones */
+@media(min-width:721px) and (max-width:1100px){
+  .v6Site #movies .v6PosterBody{
+    padding:7px!important;
+  }
+
+  .v6Site #games .v6GameInfo{
+    padding:7px!important;
+  }
+
+  .v6Site #movies .v6PosterBody>.v6External,
+  .v6Site #games .v6GameFooter .v6External{
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+  }
+}
+
+/* On real wide desktops the details can breathe a little more. */
+@media(min-width:1101px){
+  .v6Site #movies .v6PosterBody>small{
+    font-size:8px!important;
+  }
+
+  .v6Site #movies .v6PosterBody>.v6Rating,
+  .v6Site #movies .v6PosterBody>.v6External,
+  .v6Site #games .v6GameFooter .v6External,
+  .v6Site #games .v6GameFooter small{
+    font-size:7.5px!important;
+  }
+
+  .v6Site #games .v6GameInfo p{
+    font-size:8px!important;
+  }
+}
