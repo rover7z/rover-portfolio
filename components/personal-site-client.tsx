@@ -320,7 +320,7 @@ export function PersonalSiteClient({
       </a>
     </section>}
 
-    {ordered.map((key) => nodes[key])}
+    <div className="v14WorldGrid">{ordered.map((key) => nodes[key])}</div>
 
     {aboutOpen && <div className="v6MediaModal v6AboutModalBackdrop" onClick={() => { setAboutOpen(false); setResumeOpen(false); }}>
       <div className="v6MediaModalPanel v6AboutModalPanel" onClick={(e) => e.stopPropagation()}>

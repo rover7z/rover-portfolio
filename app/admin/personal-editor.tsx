@@ -215,6 +215,14 @@ export function PersonalEditor({ initialItems, initialSettings }: { initialItems
     router.refresh();
   }
 
+  function openWorkspace(id: string, target: PersonalEditTarget) {
+    setPanel(target);
+    setPreview(false);
+    window.setTimeout(() => {
+      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 80);
+  }
+
   const bridge = {
     enabled: true,
     controlsVisible: !preview,
@@ -223,7 +231,7 @@ export function PersonalEditor({ initialItems, initialSettings }: { initialItems
     onAddItem: startAdd,
   };
 
-  return <div className={`v6Admin ${preview ? "preview" : ""}`} dir={lang === "ar" ? "rtl" : "ltr"}>
+  return <div className={`v6Admin ${preview ? "preview" : ""} ${panel && !preview ? "panelOpen" : ""}`} dir={lang === "ar" ? "rtl" : "ltr"}>
     <div className="v6AdminBar">
       <div className="v6AdminTitle"><strong>{t.editor}</strong>{dirty && <span>● {t.unsaved}</span>}</div>
       <div className="v6AdminActions">
@@ -237,6 +245,25 @@ export function PersonalEditor({ initialItems, initialSettings }: { initialItems
         <button onClick={signOut}>{t.signout}</button>
       </div>
     </div>
+
+    {!preview && <nav className="v14AdminRail" aria-label={lang === "ar" ? "اختصارات تعديل الموقع" : "Website editing shortcuts"}>
+      <div className="v14RailBrand">
+        <span>R</span>
+        <div><strong>Rover</strong><small>{lang === "ar" ? "مساحة التعديل" : "Studio"}</small></div>
+      </div>
+      <button className={panel?.type === "hero" ? "active" : ""} onClick={() => openWorkspace("home", { type: "hero" })}><b>⌂</b><span>{lang === "ar" ? "الرئيسية" : "Home"}</span></button>
+      {(["photos","videos","movies","music","games"] as PersonalSectionKey[]).map((key) => (
+        <button key={key} className={panel?.type === "section" && panel.key === key ? "active" : ""} onClick={() => openWorkspace(key, { type: "section", key })}>
+          <b>{key === "photos" ? "◉" : key === "videos" ? "▶" : key === "movies" ? "▣" : key === "music" ? "♫" : "✦"}</b>
+          <span>{settings.sections[key].nav[lang]}</span>
+        </button>
+      ))}
+      <button className={panel?.type === "contact" ? "active" : ""} onClick={() => openWorkspace("contact", { type: "contact" })}><b>✉</b><span>{settings.sections.contact.nav[lang]}</span></button>
+      <div className="v14RailDivider" />
+      <button className={panel?.type === "about" ? "active" : ""} onClick={() => { setPanel({ type: "about" }); setPreview(false); }}><b>CV</b><span>{lang === "ar" ? "نبذتي والسيرة" : "About & CV"}</span></button>
+      <button className={panel?.type === "theme" ? "active" : ""} onClick={() => { setPanel({ type: "theme" }); setPreview(false); }}><b>◐</b><span>{lang === "ar" ? "المظهر" : "Appearance"}</span></button>
+      <button className={panel?.type === "brand" ? "active" : ""} onClick={() => { setPanel({ type: "brand" }); setPreview(false); }}><b>R</b><span>{lang === "ar" ? "الشعار والقائمة" : "Brand"}</span></button>
+    </nav>}
 
     <div className="v6AdminSite"><PersonalSiteClient items={items} settings={settings} editor={bridge} forcedLang={lang} /></div>
 
