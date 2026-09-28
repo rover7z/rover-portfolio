@@ -766,3 +766,146 @@
 .v6Admin.panelOpen .v6AdminSite{background:#020304}
 .v14AdminRail button.active{box-shadow:inset 3px 0 0 #d8a54f}
 .v6Admin[dir="rtl"] .v14AdminRail button.active{box-shadow:inset -3px 0 0 #d8a54f}
+
+
+/* Rover V15 hotfix — clickable mobile sections */
+@media(max-width:720px){
+  .v14WorldGrid>.v6Section,
+  .v14WorldGrid>.v6Contact{
+    cursor:pointer;
+    transition:min-height .28s ease,height .28s ease,border-color .22s ease,box-shadow .22s ease;
+  }
+
+  .v14WorldGrid>.v6Section.v15MobileExpanded,
+  .v14WorldGrid>.v6Contact.v15MobileExpanded{
+    height:auto!important;
+    min-height:330px!important;
+    cursor:default;
+    border-color:rgba(255,255,255,.28)!important;
+    box-shadow:0 18px 55px rgba(0,0,0,.42)!important;
+  }
+
+  .v14WorldGrid>.v6Section.v15MobileExpanded::after,
+  .v14WorldGrid>.v6Contact.v15MobileExpanded::after{
+    background:linear-gradient(180deg,rgba(1,3,5,.56) 0%,rgba(1,3,5,.78) 45%,rgba(1,3,5,.95) 100%)!important;
+  }
+
+  .v14WorldGrid>.v6Section.v15MobileExpanded::before,
+  .v14WorldGrid>.v6Contact.v15MobileExpanded::before{
+    content:"×"!important;
+    top:18px!important;
+    right:14px!important;
+    transform:none!important;
+    width:29px!important;
+    height:29px!important;
+    font-size:19px!important;
+    background:rgba(0,0,0,.66)!important;
+  }
+
+  .v6Site[dir="rtl"] .v14WorldGrid>.v6Section.v15MobileExpanded::before,
+  .v6Site[dir="rtl"] .v14WorldGrid>.v6Contact.v15MobileExpanded::before{
+    right:auto!important;
+    left:14px!important;
+  }
+
+  .v15MobileExpanded .v6SectionHead{
+    height:auto!important;
+    min-height:98px!important;
+    padding:18px 16px 10px!important;
+    align-items:flex-start!important;
+  }
+
+  .v15MobileExpanded .v6SectionHead h2,
+  .v15MobileExpanded.v6Contact h2{
+    font-size:30px!important;
+  }
+
+  .v15MobileExpanded .v6SectionHead p,
+  .v15MobileExpanded.v6Contact p{
+    max-width:82%;
+    font-size:11px!important;
+    line-height:1.4!important;
+  }
+
+  #photos.v15MobileExpanded .v6AlbumGrid,
+  #videos.v15MobileExpanded .v6VideoCompactGrid,
+  #movies.v15MobileExpanded .v6PosterGrid,
+  #music.v15MobileExpanded .v6MusicGrid,
+  #games.v15MobileExpanded .v6GameGrid{
+    display:flex!important;
+    width:100%!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    gap:10px!important;
+    padding:8px 14px 18px!important;
+    scroll-snap-type:x proximity;
+    scrollbar-width:none;
+  }
+
+  #photos.v15MobileExpanded .v6AlbumCard{flex:0 0 72vw!important}
+  #videos.v15MobileExpanded .v6VideoCompactCard{flex:0 0 78vw!important}
+  #movies.v15MobileExpanded .v6PosterCard{flex:0 0 43vw!important}
+  #music.v15MobileExpanded .v6MusicCard{flex:0 0 52vw!important}
+  #games.v15MobileExpanded .v6GameCard{flex:0 0 72vw!important}
+
+  .v15MobileExpanded .v6AlbumCaption small{display:block!important}
+  .v15MobileExpanded .v6VideoCompactBody h3{font-size:13px!important}
+
+  .v15MobileExpanded .v6PosterBody>small,
+  .v15MobileExpanded .v6PosterBody>.v6Rating{
+    display:inline-flex!important;
+  }
+
+  .v15MobileExpanded .v6PosterBody h3{
+    margin:7px 0!important;
+    font-size:14px!important;
+  }
+
+  .v15MobileExpanded .v6PosterBody>.v6External{
+    display:inline-flex!important;
+    margin-top:7px!important;
+    padding:7px 9px!important;
+    font-size:9px!important;
+  }
+
+  .v15MobileExpanded .v6MusicMeta{display:flex!important}
+  .v15MobileExpanded .v6MusicVisit{display:inline-flex!important}
+
+  .v15MobileExpanded .v6GameInfo h3{
+    font-size:14px!important;
+    margin-bottom:7px!important;
+  }
+
+  .v15MobileExpanded .v6GameInfo p{
+    display:-webkit-box!important;
+    font-size:10px!important;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+  }
+
+  .v15MobileExpanded .v6GameFooter{display:flex!important}
+
+  .v14WorldGrid>.v6Contact.v15MobileExpanded{
+    min-height:280px!important;
+  }
+
+  .v15MobileExpanded.v6Contact>div:first-of-type{
+    height:auto!important;
+    min-height:105px;
+    padding:18px 16px 10px!important;
+    justify-content:flex-start!important;
+  }
+
+  .v15MobileExpanded.v6Contact .v6ContactLinks{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:8px!important;
+    padding:8px 14px 18px!important;
+  }
+
+  .v15MobileExpanded.v6Contact .v6ContactLinks a{
+    min-height:48px!important;
+    font-size:10px!important;
+  }
+}

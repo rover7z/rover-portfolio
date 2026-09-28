@@ -39,6 +39,7 @@ export function PersonalSiteClient({
   const [activeVideo, setActiveVideo] = useState<PortfolioItem | null>(null);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [resumeOpen, setResumeOpen] = useState(false);
+  const [expandedSection, setExpandedSection] = useState<PersonalSectionKey | null>(null);
   const lang = forcedLang ?? localLang;
   const dir = lang === "ar" ? "rtl" : "ltr";
 
@@ -107,6 +108,19 @@ export function PersonalSiteClient({
     <button className="v6Add" type="button" onClick={() => editor.onAddItem(kind)}>＋ {lang === "ar" ? ar : en}</button>
   ) : null;
 
+  const toggleMobileSection = (key: PersonalSectionKey, event: any) => {
+    if (typeof window === "undefined" || !window.matchMedia("(max-width: 720px)").matches) return;
+    const target = event.target as HTMLElement;
+    if (target.closest("a,button,input,textarea,select,iframe,audio,video,.v6AlbumCard,.v6VideoCompactCard,.v6PosterCard,.v6MusicCard,.v6GameCard")) return;
+
+    const section = event.currentTarget as HTMLElement;
+    setExpandedSection((current) => current === key ? null : key);
+
+    window.setTimeout(() => {
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
+  };
+
   const titleFor = (item: PortfolioItem) => lang === "ar" && item.title_ar ? item.title_ar : item.title;
   const subtitleFor = (item: PortfolioItem) => lang === "ar" && item.subtitle_ar ? item.subtitle_ar : item.subtitle;
   const descriptionFor = (item: PortfolioItem) => lang === "ar" && item.description_ar ? item.description_ar : item.description;
@@ -134,7 +148,7 @@ export function PersonalSiteClient({
 
   const nodes: Record<PersonalSectionKey, ReactNode> = {
     photos: (
-      <section id="photos" className="v6Section v6Dark" key="photos" data-v6-bg={sectionPreset("photos")} style={sectionStyle("photos")}>
+      <section id="photos" className={`v6Section v6Dark ${expandedSection === "photos" ? "v15MobileExpanded" : ""}`} key="photos" data-v6-bg={sectionPreset("photos")} style={sectionStyle("photos")} onClick={(event) => toggleMobileSection("photos", event)}>
         {sectionTitle("photos")}
         <div className="v6AlbumGrid">
           {photoAlbums.map((album) => {
@@ -164,7 +178,7 @@ export function PersonalSiteClient({
       </section>
     ),
     videos: (
-      <section id="videos" className="v6Section v6Black" key="videos" data-v6-bg={sectionPreset("videos")} style={sectionStyle("videos")}>
+      <section id="videos" className={`v6Section v6Black ${expandedSection === "videos" ? "v15MobileExpanded" : ""}`} key="videos" data-v6-bg={sectionPreset("videos")} style={sectionStyle("videos")} onClick={(event) => toggleMobileSection("videos", event)}>
         {sectionTitle("videos")}
         <div className="v6VideoCompactGrid">
           {videos.map((item, i) => {
@@ -195,7 +209,7 @@ export function PersonalSiteClient({
       </section>
     ),
     movies: (
-      <section id="movies" className="v6Section v6Dark" key="movies" data-v6-bg={sectionPreset("movies")} style={sectionStyle("movies")}>
+      <section id="movies" className={`v6Section v6Dark ${expandedSection === "movies" ? "v15MobileExpanded" : ""}`} key="movies" data-v6-bg={sectionPreset("movies")} style={sectionStyle("movies")} onClick={(event) => toggleMobileSection("movies", event)}>
         {sectionTitle("movies")}
         <div className="v6PosterGrid">
           {movies.map((item, i) => (
@@ -211,7 +225,7 @@ export function PersonalSiteClient({
       </section>
     ),
     music: (
-      <section id="music" className="v6Section v6Black" key="music" data-v6-bg={sectionPreset("music")} style={sectionStyle("music")}>
+      <section id="music" className={`v6Section v6Black ${expandedSection === "music" ? "v15MobileExpanded" : ""}`} key="music" data-v6-bg={sectionPreset("music")} style={sectionStyle("music")} onClick={(event) => toggleMobileSection("music", event)}>
         {sectionTitle("music")}
         <div className="v6MusicGrid">
           {music.map((item, i) => {
@@ -246,7 +260,7 @@ export function PersonalSiteClient({
       </section>
     ),
     games: (
-      <section id="games" className="v6Section v6Dark" key="games" data-v6-bg={sectionPreset("games")} style={sectionStyle("games")}>
+      <section id="games" className={`v6Section v6Dark ${expandedSection === "games" ? "v15MobileExpanded" : ""}`} key="games" data-v6-bg={sectionPreset("games")} style={sectionStyle("games")} onClick={(event) => toggleMobileSection("games", event)}>
         {sectionTitle("games")}
         <div className="v6GameGrid">
           {games.map((item, i) => (
@@ -276,7 +290,7 @@ export function PersonalSiteClient({
     ),
     about: null,
     contact: (
-      <section id="contact" className="v6Contact" key="contact" data-v6-bg={sectionPreset("contact")} style={sectionStyle("contact")}>
+      <section id="contact" className={`v6Contact ${expandedSection === "contact" ? "v15MobileExpanded" : ""}`} key="contact" data-v6-bg={sectionPreset("contact")} style={sectionStyle("contact")} onClick={(event) => toggleMobileSection("contact", event)}>
         {edit(lang === "ar" ? "تعديل التواصل" : "Edit contact", { type: "contact" })}
         <div><span>{settings.contact.eyebrow[lang]}</span><h2>{settings.sections.contact.title[lang]}</h2><p>{settings.sections.contact.subtitle[lang]}</p></div>
         <div className="v6ContactLinks">
