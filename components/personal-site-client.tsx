@@ -161,13 +161,13 @@ export function PersonalSiteClient({
   const activeSiteBackground = defaultBackgrounds.home;
 
   const style = {
-    "--v6-accent": "#d8b56a",
-    "--v6-bg": "#0b1014",
-    "--v6-bg2": "#121a20",
-    "--v6-panel": "rgba(255,255,255,.075)",
-    "--v6-text": "#f4f5f5",
-    "--v6-muted": "#c2c9ce",
-    "--v6-line": "rgba(255,255,255,.16)",
+    "--v6-accent": "#eeeeee",
+    "--v6-bg": "#0b0b0b",
+    "--v6-bg2": "#151515",
+    "--v6-panel": "#1d1d1d",
+    "--v6-text": "#f2f2f2",
+    "--v6-muted": "#a5a5a5",
+    "--v6-line": "#4a4a4a",
     "--v6-radius": "20px",
     "--v6-site-bg-url": activeSiteBackground ? `url("${activeSiteBackground}")` : "none",
   } as CSSProperties;
@@ -175,7 +175,7 @@ export function PersonalSiteClient({
   const sectionVisual = (key: PersonalSectionKey) => ((settings.sections[key] as any).style ?? {}) as any;
   const sectionPreset = (key: PersonalSectionKey) => sectionVisual(key).backgroundPreset || "inherit";
   const fallbackSectionBackground = (key: PersonalSectionKey) => {
-    if (key === "photos") return defaultBackgrounds.projects || photoAlbums[0]?.items[0]?.cover_url || "";
+    if (key === "photos") return defaultBackgrounds.about || photoAlbums[0]?.items[0]?.cover_url || "";
     if (key === "videos") return defaultBackgrounds.projects || (videos[0] ? videoPoster(videos[0]) : "");
     if (key === "movies") return defaultBackgrounds.moviesGames || movies[0]?.cover_url || "";
     if (key === "music") return defaultBackgrounds.music || music[0]?.cover_url || "";
@@ -189,7 +189,7 @@ export function PersonalSiteClient({
     const backgroundUrl = fallbackSectionBackground(key);
     return {
       ...(visual.backgroundColor ? { backgroundColor: visual.backgroundColor } : {}),
-      ...(backgroundUrl ? { backgroundImage: `url("${backgroundUrl}")`, backgroundSize: "cover", backgroundPosition: "center" } : {}),
+      ...(backgroundUrl ? { backgroundImage: `url("${backgroundUrl}")`, backgroundSize: "cover", backgroundPosition: "center", backgroundColor: "#777", backgroundBlendMode: "luminosity" } : {}),
       ...(visual.textColor ? { "--v6-text": visual.textColor } : {}),
       ...(visual.accentColor ? { "--v6-accent": visual.accentColor } : {}),
       ...(visual.panelColor ? { "--v6-panel": visual.panelColor } : {}),
@@ -503,7 +503,7 @@ export function PersonalSiteClient({
       </div>
     </header>}
 
-    {settings.hero.enabled && <section id="home" className="v6Hero v6HeroProfile" style={heroBackgroundUrl ? { backgroundImage: `url('${heroBackgroundUrl}')` } : undefined}>
+    {settings.hero.enabled && <section id="home" className="v6Hero v6HeroProfile" style={heroBackgroundUrl ? { backgroundImage: `url('${heroBackgroundUrl}')`, backgroundColor: "#777", backgroundBlendMode: "luminosity" } : undefined}>
       {edit(lang === "ar" ? "تعديل الواجهة" : "Edit hero", { type: "hero" })}
       {edit(lang === "ar" ? "تعديل نبذة عني" : "Edit about", { type: "about" })}
       <div className="v6HeroOverlay" />
