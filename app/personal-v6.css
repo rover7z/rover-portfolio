@@ -1089,8 +1089,8 @@
 }
 .v6HeroOverlay{
   background:
-    linear-gradient(90deg,rgba(248,249,250,.97) 0%,rgba(248,249,250,.86) 30%,rgba(248,249,250,.38) 62%,rgba(248,249,250,.12) 100%),
-    linear-gradient(0deg,rgba(238,241,244,.18),transparent 48%)!important;
+    linear-gradient(90deg,rgba(248,249,250,.58) 0%,rgba(248,249,250,.34) 30%,rgba(248,249,250,.10) 62%,rgba(248,249,250,.03) 100%),
+    linear-gradient(0deg,rgba(238,241,244,.08),transparent 48%)!important;
 }
 .v6HeroProfile .v6HeroCopy::before,
 .v6HeroProfile .v6HeroCopy h1,
@@ -1135,8 +1135,8 @@
 .v14WorldGrid>.v6Section::after,
 .v14WorldGrid>.v6Contact::after{
   background:
-    linear-gradient(90deg,rgba(249,250,251,.96) 0%,rgba(249,250,251,.82) 31%,rgba(249,250,251,.34) 68%,rgba(249,250,251,.12) 100%),
-    linear-gradient(0deg,rgba(238,241,244,.22),transparent 58%)!important;
+    linear-gradient(90deg,rgba(249,250,251,.42) 0%,rgba(249,250,251,.24) 31%,rgba(249,250,251,.08) 68%,rgba(249,250,251,.02) 100%),
+    linear-gradient(0deg,rgba(238,241,244,.06),transparent 58%)!important;
 }
 .v15SectionNumber{color:#76808a!important}
 .v6SectionHead h2,.v6Contact h2{color:#171b20!important}
