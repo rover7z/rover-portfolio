@@ -604,7 +604,7 @@ export function PersonalSiteClient({
       <div
         className="v6MediaModalPanel v6AboutModalPanel"
         style={{
-          backgroundImage: `linear-gradient(rgba(5,8,10,.76), rgba(5,8,10,.9)), url("${defaultBackgrounds.about}")`,
+          backgroundImage: `linear-gradient(rgba(5,8,10,.50), rgba(5,8,10,.76)), url("${backgroundSet.about}")`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
