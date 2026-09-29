@@ -158,9 +158,7 @@ export function PersonalSiteClient({
     contact: "/backgrounds/rover-contact.webp",
   } as const;
 
-  const activeSiteBackground = siteMode === "night"
-    ? ((settings.theme as any).nightBackgroundUrl || (settings.theme as any).backgroundUrl || defaultBackgrounds.home)
-    : ((settings.theme as any).backgroundUrl || defaultBackgrounds.home);
+  const activeSiteBackground = defaultBackgrounds.home;
 
   const style = {
     "--v6-accent": settings.theme.accentColor,
@@ -188,9 +186,7 @@ export function PersonalSiteClient({
 
   const sectionStyle = (key: PersonalSectionKey) => {
     const visual = sectionVisual(key);
-    const backgroundUrl = siteMode === "night"
-      ? (visual.nightBackgroundUrl || visual.backgroundUrl || fallbackSectionBackground(key))
-      : (visual.backgroundUrl || fallbackSectionBackground(key));
+    const backgroundUrl = fallbackSectionBackground(key);
     return {
       ...(visual.backgroundColor ? { backgroundColor: visual.backgroundColor } : {}),
       ...(backgroundUrl ? { backgroundImage: `url("${backgroundUrl}")`, backgroundSize: "cover", backgroundPosition: "center" } : {}),
