@@ -38,6 +38,7 @@ export function PersonalSiteClient({
 }) {
   const [localLang, setLocalLang] = useState<Lang>(forcedLang ?? "en");
   const [siteMode, setSiteMode] = useState<SiteMode>("day");
+  const [activeNav, setActiveNav] = useState("home");
   const [openMusic, setOpenMusic] = useState<string | null>(null);
   const [spotifyFallbackKey, setSpotifyFallbackKey] = useState<string | null>(null);
   const spotifyControllersRef = useRef<Map<string, any>>(new Map());
@@ -52,6 +53,16 @@ export function PersonalSiteClient({
   const [expandedCustomSection, setExpandedCustomSection] = useState<string | null>(null);
   const lang = forcedLang ?? localLang;
   const dir = lang === "ar" ? "rtl" : "ltr";
+
+  useEffect(() => {
+    const ids = ["home", ...nav.map((item) => item.id)];
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+      if (visible[0]?.target?.id) setActiveNav(visible[0].target.id);
+    }, { root: null, threshold: [0.2, 0.45, 0.7], rootMargin: "-18% 0px -58% 0px" });
+    ids.forEach((id) => { const el = document.getElementById(id); if (el) observer.observe(el); });
+    return () => observer.disconnect();
+  }, [nav]);
 
   useEffect(() => {
     try {
@@ -496,7 +507,7 @@ export function PersonalSiteClient({
     {settings.header.enabled && <header className={`v6Nav ${settings.header.sticky ? "sticky" : ""}`}>
       {edit(lang === "ar" ? "الشعار والقائمة" : "Brand & navigation", { type: "brand" })}
       <a className="v6Brand" href="#home"><Logo settings={settings} /><span>{settings.brand.showName && <strong>{settings.hero.name}</strong>}{settings.brand.showAlias && <small>{settings.hero.alias}</small>}</span></a>
-      <nav><a href="#home">{settings.hero.homeNav[lang]}</a>{nav.map((item) => <a key={item.id} href={`#${item.id}`}>{item.label}</a>)}</nav>
+      <nav aria-label="Primary navigation"><a className={activeNav === "home" ? "active" : ""} href="#home">{settings.hero.homeNav[lang]}</a>{nav.map((item) => <a className={activeNav === item.id ? "active" : ""} key={item.id} href={`#${item.id}`}>{item.label}</a>)}</nav>
       <div className="v18HeaderTools">
         {settings.header.showLanguageSwitch && <button className="v6Lang" onClick={() => !forcedLang && setLocalLang(lang === "en" ? "ar" : "en")}>{lang === "en" ? "عربي" : "EN"}</button>}
         <button
@@ -536,6 +547,7 @@ export function PersonalSiteClient({
           </div>
 
           <div className="v15HeroActions">
+            <a className="v24Explore" href="#photos"><span>↓</span>{lang === "ar" ? "استكشف أعمالي" : "Explore my work"}</a>
             <button type="button" className="primary" onClick={() => { setAboutOpen(true); setResumeOpen(true); }}>
               <span>▣</span>{lang === "ar" ? "عرض سيرتي الذاتية" : "View My CV"}
             </button>
