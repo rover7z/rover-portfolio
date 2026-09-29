@@ -149,9 +149,18 @@ export function PersonalSiteClient({
       .filter((section) => section.enabled && section.showInNav)
       .map((section) => ({ id: section.id, label: section.nav[lang], order: section.order })),
   ].sort((a, b) => a.order - b.order);
+  const defaultBackgrounds = {
+    home: "/backgrounds/rover-home.webp",
+    about: "/backgrounds/rover-about.webp",
+    projects: "/backgrounds/rover-projects.webp",
+    moviesGames: "/backgrounds/rover-movies-games.webp",
+    music: "/backgrounds/rover-music.webp",
+    contact: "/backgrounds/rover-contact.webp",
+  } as const;
+
   const activeSiteBackground = siteMode === "night"
-    ? ((settings.theme as any).nightBackgroundUrl || (settings.theme as any).backgroundUrl || "")
-    : ((settings.theme as any).backgroundUrl || "");
+    ? ((settings.theme as any).nightBackgroundUrl || (settings.theme as any).backgroundUrl || defaultBackgrounds.home)
+    : ((settings.theme as any).backgroundUrl || defaultBackgrounds.home);
 
   const style = {
     "--v6-accent": settings.theme.accentColor,
@@ -168,11 +177,12 @@ export function PersonalSiteClient({
   const sectionVisual = (key: PersonalSectionKey) => ((settings.sections[key] as any).style ?? {}) as any;
   const sectionPreset = (key: PersonalSectionKey) => sectionVisual(key).backgroundPreset || "inherit";
   const fallbackSectionBackground = (key: PersonalSectionKey) => {
-    if (key === "photos") return photoAlbums[0]?.items[0]?.cover_url || "";
-    if (key === "videos") return videos[0] ? videoPoster(videos[0]) : "";
-    if (key === "movies") return movies[0]?.cover_url || "";
-    if (key === "music") return music[0]?.cover_url || "";
-    if (key === "games") return games[0]?.cover_url || "";
+    if (key === "photos") return defaultBackgrounds.projects || photoAlbums[0]?.items[0]?.cover_url || "";
+    if (key === "videos") return defaultBackgrounds.projects || (videos[0] ? videoPoster(videos[0]) : "");
+    if (key === "movies") return defaultBackgrounds.moviesGames || movies[0]?.cover_url || "";
+    if (key === "music") return defaultBackgrounds.music || music[0]?.cover_url || "";
+    if (key === "games") return defaultBackgrounds.moviesGames || games[0]?.cover_url || "";
+    if (key === "contact") return defaultBackgrounds.contact;
     return "";
   };
 
@@ -571,7 +581,15 @@ export function PersonalSiteClient({
     <div className="v14WorldGrid">{worldNodes.map((entry) => entry.node)}</div>
 
     {aboutOpen && <div className="v6MediaModal v6AboutModalBackdrop" onClick={() => { setAboutOpen(false); setResumeOpen(false); }}>
-      <div className="v6MediaModalPanel v6AboutModalPanel" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="v6MediaModalPanel v6AboutModalPanel"
+        style={{
+          backgroundImage: `linear-gradient(rgba(5,8,10,.76), rgba(5,8,10,.9)), url("${defaultBackgrounds.about}")`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
         <button className="v6ModalClose" type="button" onClick={() => { setAboutOpen(false); setResumeOpen(false); }}>×</button>
         <div className="v6AboutModalGrid">
           <div className="v6AboutModalPhoto">
