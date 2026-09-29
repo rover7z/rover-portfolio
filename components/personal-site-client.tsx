@@ -182,6 +182,7 @@ export function PersonalSiteClient({
     "--v6-line": "#4a4a4a",
     "--v6-radius": "20px",
     "--v6-site-bg-url": activeSiteBackground ? `url("${activeSiteBackground}")` : "none",
+    "--v18-section-wash": "transparent",
   } as CSSProperties;
 
   const sectionVisual = (key: PersonalSectionKey) => ((settings.sections[key] as any).style ?? {}) as any;
@@ -518,7 +519,7 @@ export function PersonalSiteClient({
     {settings.hero.enabled && <section id="home" className="v6Hero v6HeroProfile" style={heroBackgroundUrl ? { backgroundImage: `url('${heroBackgroundUrl}')`, backgroundColor: "#777" } : undefined}>
       {edit(lang === "ar" ? "تعديل الواجهة" : "Edit hero", { type: "hero" })}
       {edit(lang === "ar" ? "تعديل نبذة عني" : "Edit about", { type: "about" })}
-      <div className="v6HeroOverlay" />
+
       <div className="v6HeroProfileGrid">
         <div className="v6HeroCopy">
           <span>{settings.hero.name.toUpperCase()}</span>
