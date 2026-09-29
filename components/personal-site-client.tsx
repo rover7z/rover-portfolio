@@ -179,7 +179,7 @@ export function PersonalSiteClient({
     if (key === "videos") return defaultBackgrounds.projects || (videos[0] ? videoPoster(videos[0]) : "");
     if (key === "movies") return defaultBackgrounds.moviesGames || movies[0]?.cover_url || "";
     if (key === "music") return defaultBackgrounds.music || music[0]?.cover_url || "";
-    if (key === "games") return defaultBackgrounds.moviesGames || games[0]?.cover_url || "";
+    if (key === "games") return games[0]?.cover_url || defaultBackgrounds.projects;
     if (key === "contact") return defaultBackgrounds.contact;
     return "";
   };
@@ -189,7 +189,7 @@ export function PersonalSiteClient({
     const backgroundUrl = fallbackSectionBackground(key);
     return {
       ...(visual.backgroundColor ? { backgroundColor: visual.backgroundColor } : {}),
-      ...(backgroundUrl ? { backgroundImage: `url("${backgroundUrl}")`, backgroundSize: "cover", backgroundPosition: "center", backgroundColor: "#777", backgroundBlendMode: "luminosity" } : {}),
+      ...(backgroundUrl ? { backgroundImage: `url("${backgroundUrl}")`, backgroundSize: "cover", backgroundPosition: "center", backgroundColor: "#777" } : {}),
       ...(visual.textColor ? { "--v6-text": visual.textColor } : {}),
       ...(visual.accentColor ? { "--v6-accent": visual.accentColor } : {}),
       ...(visual.panelColor ? { "--v6-panel": visual.panelColor } : {}),
@@ -503,7 +503,7 @@ export function PersonalSiteClient({
       </div>
     </header>}
 
-    {settings.hero.enabled && <section id="home" className="v6Hero v6HeroProfile" style={heroBackgroundUrl ? { backgroundImage: `url('${heroBackgroundUrl}')`, backgroundColor: "#777", backgroundBlendMode: "luminosity" } : undefined}>
+    {settings.hero.enabled && <section id="home" className="v6Hero v6HeroProfile" style={heroBackgroundUrl ? { backgroundImage: `url('${heroBackgroundUrl}')`, backgroundColor: "#777" } : undefined}>
       {edit(lang === "ar" ? "تعديل الواجهة" : "Edit hero", { type: "hero" })}
       {edit(lang === "ar" ? "تعديل نبذة عني" : "Edit about", { type: "about" })}
       <div className="v6HeroOverlay" />
