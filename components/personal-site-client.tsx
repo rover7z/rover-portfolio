@@ -156,9 +156,21 @@ export function PersonalSiteClient({
     moviesGames: "/backgrounds/rover-movies-games.webp",
     music: "/backgrounds/rover-music.webp",
     contact: "/backgrounds/rover-contact.webp",
+    games: "https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=2200&q=88",
   } as const;
 
-  const activeSiteBackground = defaultBackgrounds.home;
+  const nightBackgrounds = {
+    home: "https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=2200&q=88",
+    about: "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=2200&q=88",
+    projects: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=2200&q=88",
+    moviesGames: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=2200&q=88",
+    music: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=2200&q=88",
+    contact: "https://images.unsplash.com/photo-1444723121867-7a241cacace9?auto=format&fit=crop&w=2200&q=88",
+    games: "https://images.unsplash.com/photo-1603481546238-487240415921?auto=format&fit=crop&w=2200&q=88",
+  } as const;
+
+  const backgroundSet = siteMode === "night" ? nightBackgrounds : defaultBackgrounds;
+  const activeSiteBackground = backgroundSet.home;
 
   const style = {
     "--v6-accent": "#eeeeee",
@@ -175,12 +187,12 @@ export function PersonalSiteClient({
   const sectionVisual = (key: PersonalSectionKey) => ((settings.sections[key] as any).style ?? {}) as any;
   const sectionPreset = (key: PersonalSectionKey) => sectionVisual(key).backgroundPreset || "inherit";
   const fallbackSectionBackground = (key: PersonalSectionKey) => {
-    if (key === "photos") return defaultBackgrounds.about || photoAlbums[0]?.items[0]?.cover_url || "";
-    if (key === "videos") return defaultBackgrounds.projects || (videos[0] ? videoPoster(videos[0]) : "");
-    if (key === "movies") return defaultBackgrounds.moviesGames || movies[0]?.cover_url || "";
-    if (key === "music") return defaultBackgrounds.music || music[0]?.cover_url || "";
-    if (key === "games") return games[0]?.cover_url || defaultBackgrounds.projects;
-    if (key === "contact") return defaultBackgrounds.contact;
+    if (key === "photos") return backgroundSet.about || photoAlbums[0]?.items[0]?.cover_url || "";
+    if (key === "videos") return backgroundSet.projects || (videos[0] ? videoPoster(videos[0]) : "");
+    if (key === "movies") return backgroundSet.moviesGames || movies[0]?.cover_url || "";
+    if (key === "music") return backgroundSet.music || music[0]?.cover_url || "";
+    if (key === "games") return backgroundSet.games;
+    if (key === "contact") return backgroundSet.contact;
     return "";
   };
 
@@ -477,7 +489,7 @@ export function PersonalSiteClient({
     })),
   ].sort((a, b) => a.order - b.order);
 
-  const heroBackgroundUrl = defaultBackgrounds.home;
+  const heroBackgroundUrl = backgroundSet.home;
 
   return <main className={`v6Site ${editor?.enabled ? "v6Editing" : ""}`} dir={dir} style={style} data-v6-site-bg={(settings.theme as any).backgroundPreset || "none"} data-v18-theme={siteMode}>
     {settings.header.enabled && <header className={`v6Nav ${settings.header.sticky ? "sticky" : ""}`}>
