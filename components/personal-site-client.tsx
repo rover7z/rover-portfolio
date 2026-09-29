@@ -55,16 +55,6 @@ export function PersonalSiteClient({
   const dir = lang === "ar" ? "rtl" : "ltr";
 
   useEffect(() => {
-    const ids = ["home", ...nav.map((item) => item.id)];
-    const observer = new IntersectionObserver((entries) => {
-      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-      if (visible[0]?.target?.id) setActiveNav(visible[0].target.id);
-    }, { root: null, threshold: [0.2, 0.45, 0.7], rootMargin: "-18% 0px -58% 0px" });
-    ids.forEach((id) => { const el = document.getElementById(id); if (el) observer.observe(el); });
-    return () => observer.disconnect();
-  }, [nav]);
-
-  useEffect(() => {
     try {
       const saved = window.localStorage.getItem("rover-site-mode");
       if (saved === "day" || saved === "night") setSiteMode(saved);
@@ -500,6 +490,16 @@ export function PersonalSiteClient({
       node: customSectionNode(section),
     })),
   ].sort((a, b) => a.order - b.order);
+
+  useEffect(() => {
+    const ids = ["home", ...nav.map((item) => item.id)];
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+      if (visible[0]?.target?.id) setActiveNav(visible[0].target.id);
+    }, { root: null, threshold: [0.2, 0.45, 0.7], rootMargin: "-18% 0px -58% 0px" });
+    ids.forEach((id) => { const el = document.getElementById(id); if (el) observer.observe(el); });
+    return () => observer.disconnect();
+  }, [nav]);
 
   const heroBackgroundUrl = backgroundSet.home;
 
