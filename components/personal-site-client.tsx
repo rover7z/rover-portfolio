@@ -161,14 +161,14 @@ export function PersonalSiteClient({
   const activeSiteBackground = defaultBackgrounds.home;
 
   const style = {
-    "--v6-accent": settings.theme.accentColor,
-    "--v6-bg": settings.theme.backgroundColor,
-    "--v6-bg2": settings.theme.alternateBackgroundColor,
-    "--v6-panel": settings.theme.panelColor,
-    "--v6-text": settings.theme.textColor,
-    "--v6-muted": settings.theme.mutedColor,
-    "--v6-line": settings.theme.lineColor,
-    "--v6-radius": `${settings.theme.radius}px`,
+    "--v6-accent": "#d8b56a",
+    "--v6-bg": "#0b1014",
+    "--v6-bg2": "#121a20",
+    "--v6-panel": "rgba(255,255,255,.075)",
+    "--v6-text": "#f4f5f5",
+    "--v6-muted": "#c2c9ce",
+    "--v6-line": "rgba(255,255,255,.16)",
+    "--v6-radius": "20px",
     "--v6-site-bg-url": activeSiteBackground ? `url("${activeSiteBackground}")` : "none",
   } as CSSProperties;
 
@@ -477,9 +477,7 @@ export function PersonalSiteClient({
     })),
   ].sort((a, b) => a.order - b.order);
 
-  const heroBackgroundUrl = siteMode === "night"
-    ? ((settings.hero as any).nightBackgroundUrl || settings.hero.backgroundUrl)
-    : settings.hero.backgroundUrl;
+  const heroBackgroundUrl = defaultBackgrounds.home;
 
   return <main className={`v6Site ${editor?.enabled ? "v6Editing" : ""}`} dir={dir} style={style} data-v6-site-bg={(settings.theme as any).backgroundPreset || "none"} data-v18-theme={siteMode}>
     {settings.header.enabled && <header className={`v6Nav ${settings.header.sticky ? "sticky" : ""}`}>
