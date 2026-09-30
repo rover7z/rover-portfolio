@@ -38,7 +38,6 @@ export function PersonalSiteClient({
 }) {
   const [localLang, setLocalLang] = useState<Lang>(forcedLang ?? "en");
   const [siteMode, setSiteMode] = useState<SiteMode>("day");
-  const [activeNav, setActiveNav] = useState("home");
   const [openMusic, setOpenMusic] = useState<string | null>(null);
   const [spotifyFallbackKey, setSpotifyFallbackKey] = useState<string | null>(null);
   const spotifyControllersRef = useRef<Map<string, any>>(new Map());
@@ -150,60 +149,41 @@ export function PersonalSiteClient({
       .filter((section) => section.enabled && section.showInNav)
       .map((section) => ({ id: section.id, label: section.nav[lang], order: section.order })),
   ].sort((a, b) => a.order - b.order);
-  const defaultBackgrounds = {
-    home: "/backgrounds/rover-home.webp",
-    about: "/backgrounds/rover-about.webp",
-    projects: "/backgrounds/rover-projects.webp",
-    moviesGames: "/backgrounds/rover-movies-games.webp",
-    music: "/backgrounds/rover-music.webp",
-    contact: "/backgrounds/rover-contact.webp",
-    games: "https://images.unsplash.com/photo-1593305841991-05c297ba4575?auto=format&fit=crop&w=2200&q=88",
-  } as const;
-
-  const nightBackgrounds = {
-    home: "https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&w=2200&q=88",
-    about: "https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=2200&q=88",
-    projects: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=2200&q=88",
-    moviesGames: "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?auto=format&fit=crop&w=2200&q=88",
-    music: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=2200&q=88",
-    contact: "https://images.unsplash.com/photo-1444723121867-7a241cacace9?auto=format&fit=crop&w=2200&q=88",
-    games: "https://images.unsplash.com/photo-1603481546238-487240415921?auto=format&fit=crop&w=2200&q=88",
-  } as const;
-
-  const backgroundSet = siteMode === "night" ? nightBackgrounds : defaultBackgrounds;
-  const activeSiteBackground = backgroundSet.home;
+  const activeSiteBackground = siteMode === "night"
+    ? ((settings.theme as any).nightBackgroundUrl || (settings.theme as any).backgroundUrl || "")
+    : ((settings.theme as any).backgroundUrl || "");
 
   const style = {
-    "--v6-accent": "#eeeeee",
-    "--v6-bg": "#0b0b0b",
-    "--v6-bg2": "#151515",
-    "--v6-panel": "#1d1d1d",
-    "--v6-text": "#f2f2f2",
-    "--v6-muted": "#a5a5a5",
-    "--v6-line": "#4a4a4a",
-    "--v6-radius": "20px",
+    "--v6-accent": settings.theme.accentColor,
+    "--v6-bg": settings.theme.backgroundColor,
+    "--v6-bg2": settings.theme.alternateBackgroundColor,
+    "--v6-panel": settings.theme.panelColor,
+    "--v6-text": settings.theme.textColor,
+    "--v6-muted": settings.theme.mutedColor,
+    "--v6-line": settings.theme.lineColor,
+    "--v6-radius": `${settings.theme.radius}px`,
     "--v6-site-bg-url": activeSiteBackground ? `url("${activeSiteBackground}")` : "none",
-    "--v18-section-wash": "transparent",
   } as CSSProperties;
 
   const sectionVisual = (key: PersonalSectionKey) => ((settings.sections[key] as any).style ?? {}) as any;
   const sectionPreset = (key: PersonalSectionKey) => sectionVisual(key).backgroundPreset || "inherit";
   const fallbackSectionBackground = (key: PersonalSectionKey) => {
-    if (key === "photos") return backgroundSet.about || photoAlbums[0]?.items[0]?.cover_url || "";
-    if (key === "videos") return backgroundSet.projects || (videos[0] ? videoPoster(videos[0]) : "");
-    if (key === "movies") return backgroundSet.moviesGames || movies[0]?.cover_url || "";
-    if (key === "music") return backgroundSet.music || music[0]?.cover_url || "";
-    if (key === "games") return backgroundSet.games;
-    if (key === "contact") return backgroundSet.contact;
+    if (key === "photos") return photoAlbums[0]?.items[0]?.cover_url || "";
+    if (key === "videos") return videos[0] ? videoPoster(videos[0]) : "";
+    if (key === "movies") return movies[0]?.cover_url || "";
+    if (key === "music") return music[0]?.cover_url || "";
+    if (key === "games") return games[0]?.cover_url || "";
     return "";
   };
 
   const sectionStyle = (key: PersonalSectionKey) => {
     const visual = sectionVisual(key);
-    const backgroundUrl = fallbackSectionBackground(key);
+    const backgroundUrl = siteMode === "night"
+      ? (visual.nightBackgroundUrl || visual.backgroundUrl || fallbackSectionBackground(key))
+      : (visual.backgroundUrl || fallbackSectionBackground(key));
     return {
       ...(visual.backgroundColor ? { backgroundColor: visual.backgroundColor } : {}),
-      ...(backgroundUrl ? { backgroundImage: `url("${backgroundUrl}")`, backgroundSize: "cover", backgroundPosition: "center", backgroundColor: "#777" } : {}),
+      ...(backgroundUrl ? { backgroundImage: `url("${backgroundUrl}")`, backgroundSize: "cover", backgroundPosition: "center" } : {}),
       ...(visual.textColor ? { "--v6-text": visual.textColor } : {}),
       ...(visual.accentColor ? { "--v6-accent": visual.accentColor } : {}),
       ...(visual.panelColor ? { "--v6-panel": visual.panelColor } : {}),
@@ -491,24 +471,15 @@ export function PersonalSiteClient({
     })),
   ].sort((a, b) => a.order - b.order);
 
-  useEffect(() => {
-    const ids = ["home", ...nav.map((item) => item.id)];
-    const root = document.querySelector(".v6Site");
-    const observer = new IntersectionObserver((entries) => {
-      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-      if (visible[0]?.target?.id) setActiveNav(visible[0].target.id);
-    }, { root, threshold: [0.2, 0.45, 0.7], rootMargin: "-18% 0px -58% 0px" });
-    ids.forEach((id) => { const el = document.getElementById(id); if (el) observer.observe(el); });
-    return () => observer.disconnect();
-  }, [nav]);
-
-  const heroBackgroundUrl = backgroundSet.home;
+  const heroBackgroundUrl = siteMode === "night"
+    ? ((settings.hero as any).nightBackgroundUrl || settings.hero.backgroundUrl)
+    : settings.hero.backgroundUrl;
 
   return <main className={`v6Site ${editor?.enabled ? "v6Editing" : ""}`} dir={dir} style={style} data-v6-site-bg={(settings.theme as any).backgroundPreset || "none"} data-v18-theme={siteMode}>
     {settings.header.enabled && <header className={`v6Nav ${settings.header.sticky ? "sticky" : ""}`}>
       {edit(lang === "ar" ? "الشعار والقائمة" : "Brand & navigation", { type: "brand" })}
       <a className="v6Brand" href="#home"><Logo settings={settings} /><span>{settings.brand.showName && <strong>{settings.hero.name}</strong>}{settings.brand.showAlias && <small>{settings.hero.alias}</small>}</span></a>
-      <nav aria-label="Primary navigation"><a className={activeNav === "home" ? "active" : ""} href="#home">{settings.hero.homeNav[lang]}</a>{nav.map((item) => <a className={activeNav === item.id ? "active" : ""} key={item.id} href={`#${item.id}`}>{item.label}</a>)}</nav>
+      <nav><a href="#home">{settings.hero.homeNav[lang]}</a>{nav.map((item) => <a key={item.id} href={`#${item.id}`}>{item.label}</a>)}</nav>
       <div className="v18HeaderTools">
         {settings.header.showLanguageSwitch && <button className="v6Lang" onClick={() => !forcedLang && setLocalLang(lang === "en" ? "ar" : "en")}>{lang === "en" ? "عربي" : "EN"}</button>}
         <button
@@ -528,10 +499,10 @@ export function PersonalSiteClient({
       </div>
     </header>}
 
-    {settings.hero.enabled && <section id="home" className="v6Hero v6HeroProfile" style={heroBackgroundUrl ? { backgroundImage: `url('${heroBackgroundUrl}')`, backgroundColor: "#777" } : undefined}>
+    {settings.hero.enabled && <section id="home" className="v6Hero v6HeroProfile" style={heroBackgroundUrl ? { backgroundImage: `url('${heroBackgroundUrl}')` } : undefined}>
       {edit(lang === "ar" ? "تعديل الواجهة" : "Edit hero", { type: "hero" })}
       {edit(lang === "ar" ? "تعديل نبذة عني" : "Edit about", { type: "about" })}
-
+      <div className="v6HeroOverlay" />
       <div className="v6HeroProfileGrid">
         <div className="v6HeroCopy">
           <span>{settings.hero.name.toUpperCase()}</span>
@@ -548,7 +519,6 @@ export function PersonalSiteClient({
           </div>
 
           <div className="v15HeroActions">
-            <a className="v24Explore" href="#photos"><span>↓</span>{lang === "ar" ? "استكشف أعمالي" : "Explore my work"}</a>
             <button type="button" className="primary" onClick={() => { setAboutOpen(true); setResumeOpen(true); }}>
               <span>▣</span>{lang === "ar" ? "عرض سيرتي الذاتية" : "View My CV"}
             </button>
@@ -601,15 +571,7 @@ export function PersonalSiteClient({
     <div className="v14WorldGrid">{worldNodes.map((entry) => entry.node)}</div>
 
     {aboutOpen && <div className="v6MediaModal v6AboutModalBackdrop" onClick={() => { setAboutOpen(false); setResumeOpen(false); }}>
-      <div
-        className="v6MediaModalPanel v6AboutModalPanel"
-        style={{
-          backgroundImage: `linear-gradient(rgba(5,8,10,.50), rgba(5,8,10,.76)), url("${backgroundSet.about}")`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className="v6MediaModalPanel v6AboutModalPanel" onClick={(e) => e.stopPropagation()}>
         <button className="v6ModalClose" type="button" onClick={() => { setAboutOpen(false); setResumeOpen(false); }}>×</button>
         <div className="v6AboutModalGrid">
           <div className="v6AboutModalPhoto">
