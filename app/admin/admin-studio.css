@@ -72,6 +72,17 @@
 .v20CoverPreview>img{width:100%;height:100%;object-fit:cover;opacity:.86}.v20CoverPreview>span{position:absolute;inset-inline-start:10px;inset-block-end:10px;padding:5px 8px;border-radius:6px;background:rgba(3,5,6,.72);color:#fff;font-size:9px}
 .v20EmptyState{min-height:260px;padding:30px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.v20EmptyState>span{width:46px;height:46px;margin-bottom:15px;border:1px solid rgba(216,165,79,.22);border-radius:13px;display:grid;place-items:center;background:rgba(216,165,79,.08);color:#ecc371;font-size:21px}
 .v20EmptyState>strong{font-size:15px}.v20EmptyState>p{max-width:380px;margin:9px 0 17px;color:#929da1;font-size:11px;line-height:1.65}
+.v20AlbumOrdering{margin:0 0 22px;padding:16px;border:1px solid rgba(216,165,79,.18);border-radius:12px;background:linear-gradient(140deg,rgba(216,165,79,.055),rgba(255,255,255,.012))}
+.v20AlbumOrderHeading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.v20AlbumOrderHeading>div{display:grid;gap:5px}.v20AlbumOrderHeading strong{font-size:12px;color:#f1eee7}.v20AlbumOrderHeading small{font-size:10px;color:#929da1;line-height:1.5}.v20AlbumOrderHeading>span{width:30px;height:30px;display:grid;place-items:center;border-radius:8px;background:rgba(216,165,79,.12);color:#edc778}
+.v20AlbumOrderList{display:grid;gap:7px}
+.v20AlbumOrderCard{min-width:0;min-height:62px;padding:7px 10px;border:1px solid rgba(255,255,255,.08);border-radius:9px;display:flex;align-items:center;gap:11px;background:rgba(5,8,9,.65);transition:border-color .15s,background .15s,opacity .15s}
+.v20AlbumOrderCard:hover{border-color:rgba(216,165,79,.28);background:rgba(255,255,255,.035)}.v20AlbumOrderCard.dragging{opacity:.45;border-color:var(--v20-gold)}
+.v20AlbumDragHandle{width:30px;height:36px;flex:none;border:0;border-radius:7px;background:transparent;color:#abb1b2;font-size:19px;cursor:grab;touch-action:none}.v20AlbumDragHandle:active{cursor:grabbing}
+.v20AlbumOrderCover{width:52px;height:44px;flex:none;overflow:hidden;border:1px solid rgba(255,255,255,.09);border-radius:6px;display:grid;place-items:center;background:#111719;color:#d7b568}.v20AlbumOrderCover img{width:100%;height:100%;object-fit:cover}.v20AlbumOrderCover i{font-style:normal}
+.v20AlbumOrderDetails{min-width:0;flex:1;display:grid;gap:4px}.v20AlbumOrderDetails strong{overflow:hidden;color:#eeeae2;font-size:11px;text-overflow:ellipsis;white-space:nowrap}.v20AlbumOrderDetails small{color:#828d91;font-size:9px}
+.v20AlbumOrderPosition{color:#d9b56c;font:500 14px Georgia,serif}.v20AlbumOrderArrows{display:flex;gap:4px}.v20AlbumOrderArrows button{width:30px;height:30px;border:1px solid rgba(255,255,255,.09);border-radius:7px;background:rgba(255,255,255,.03);color:#e8e6df;font-size:15px;cursor:pointer}.v20AlbumOrderArrows button:hover:not(:disabled){border-color:rgba(216,165,79,.4);background:rgba(216,165,79,.1);color:#f1c976}.v20AlbumOrderArrows button:disabled{opacity:.28;cursor:not-allowed}
+.v20AlbumOrderStatus{margin:10px 0 0;color:#e7bf6d;font-size:10px}
 .v20PreviewCanvas{min-height:calc(100svh - 72px)}.v20PreviewCanvas .v6Site{height:auto!important;min-height:calc(100svh - 72px);overflow:visible!important}
 @media(max-width:900px){.v20Layout{grid-template-columns:212px minmax(0,1fr)}.v20Main{padding:26px 20px}.v20Stats{grid-template-columns:repeat(2,minmax(0,1fr))}.v20ContentTiles{grid-template-columns:repeat(3,minmax(0,1fr))}.v20ItemGrid{grid-template-columns:1fr}}
 @media(max-width:680px){
@@ -90,5 +101,6 @@
   .v20PanelCard,.v20ContentManager .v20PanelCard{padding:14px;border-radius:12px}.v20ListToolbar{align-items:stretch;flex-wrap:wrap;gap:8px}.v20Search{max-width:none;min-width:100%;height:38px}
   .v20FilterTabs{flex:1}.v20FilterTabs button{flex:1;padding-inline:6px}.v20ResultCount{align-self:center}.v20ItemGrid{grid-template-columns:1fr;gap:8px}
   .v20ItemCard{grid-template-columns:95px minmax(0,1fr);min-height:112px}.v20ItemThumb{min-height:112px}.v20ItemInfo{padding:10px}.v20ItemInfo>strong{font-size:11px}
+  .v20AlbumOrdering{padding:12px;margin-bottom:18px}.v20AlbumOrderCard{gap:7px;padding:6px}.v20AlbumDragHandle{width:24px;font-size:17px}.v20AlbumOrderCover{width:43px;height:40px}.v20AlbumOrderDetails strong{font-size:10px}.v20AlbumOrderDetails small{font-size:8px}.v20AlbumOrderPosition{font-size:12px}.v20AlbumOrderArrows{gap:3px}.v20AlbumOrderArrows button{width:27px;height:28px}
   .v20PreviewCanvas{min-height:calc(100svh - 104px)}
 }
