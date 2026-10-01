@@ -2422,29 +2422,28 @@
 @media(max-width:720px){.v6Site .v6OwnershipMark{right:8px;bottom:8px;padding:4px 7px;gap:5px;font-size:8px}.v6Site .v6OwnershipMark svg{width:12px;height:12px;flex-basis:12px}.v6Site[dir="rtl"] .v6OwnershipMark{right:8px;left:auto}}
 
 
-/* Keep the background wash separate from crisp foreground text.
-   Language changes its direction; only the selected theme changes its color. */
-.v6Site{
-  --v27-wash-direction:90deg;
-}
-.v6Site[dir="rtl"]{
-  --v27-wash-direction:270deg;
-}
+/* Original backgrounds, with a small glow on the lettering only. */
 .v6Site[data-v18-theme="day"]{
-  --v27-section-wash:linear-gradient(var(--v27-wash-direction),rgba(249,250,251,.94) 0%,rgba(249,250,251,.60) 48%,rgba(249,250,251,.08) 100%);
-  --v27-expanded-wash:linear-gradient(180deg,rgba(249,250,251,.78) 0%,rgba(249,250,251,.90) 52%,rgba(249,250,251,.96) 100%);
+  --v27-letter-edge:rgba(240,253,255,.90);
+  --v27-letter-glow:rgba(94,211,232,.58);
 }
 .v6Site[data-v18-theme="night"]{
-  --v27-section-wash:linear-gradient(var(--v27-wash-direction),rgba(3,5,7,.70) 0%,rgba(3,5,7,.44) 48%,rgba(3,5,7,.10) 100%);
-  --v27-expanded-wash:linear-gradient(180deg,rgba(3,5,7,.38) 0%,rgba(3,5,7,.62) 52%,rgba(3,5,7,.86) 100%);
+  --v27-letter-edge:rgba(137,226,240,.70);
+  --v27-letter-glow:rgba(94,211,232,.48);
 }
-.v6Site[data-v18-theme] .v14WorldGrid>:is(.v6Section,.v6Contact)::after{
-  background:var(--v27-section-wash)!important;
-  z-index:0;
-  pointer-events:none;
-}
+.v6Site[data-v18-theme] .v14WorldGrid>:is(.v6Section,.v6Contact)::after,
 .v6Site[data-v18-theme] .v14WorldGrid>:is(.v6Section,.v6Contact).v15MobileExpanded::after{
-  background:var(--v27-expanded-wash)!important;
+  content:none!important;
+  display:none!important;
+  background:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+.v6Site[data-v18-theme] .v6HeroOverlay{
+  display:none!important;
+  background:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
 }
 .v6Site[data-v18-theme] .v14WorldGrid .v6SectionHead,
 .v6Site[data-v18-theme] .v14WorldGrid>.v6Contact>div:first-of-type{
@@ -2457,12 +2456,15 @@
   opacity:1;
 }
 .v6Site[data-v18-theme] .v14WorldGrid .v6SectionHead h2,
-.v6Site[data-v18-theme] .v14WorldGrid>.v6Contact h2{
+.v6Site[data-v18-theme] .v14WorldGrid>.v6Contact h2,
+.v6Site[data-v18-theme] .v6HeroProfile .v6HeroCopy h1,
+.v6Site[data-v18-theme] .v6HeroProfile .v6HeroCopy h2{
   color:var(--v18-text)!important;
-  text-shadow:none!important;
+  -webkit-text-stroke:.3px var(--v27-letter-edge);
+  text-shadow:0 0 2px var(--v27-letter-glow)!important;
 }
 .v6Site[data-v18-theme] .v14WorldGrid .v6SectionHead p,
 .v6Site[data-v18-theme] .v14WorldGrid>.v6Contact>div:first-of-type p{
   color:var(--v18-muted)!important;
-  text-shadow:none!important;
+  text-shadow:0 0 1px var(--v27-letter-edge)!important;
 }
