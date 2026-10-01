@@ -3,6 +3,7 @@ import { loadPersonalSiteConfig } from "../lib/personal-data";
 import { VisitorTracker } from "../components/visitor-tracker";
 import "./globals.css";
 import "./personal-v6.css";
+import "./rover-backgrounds.css";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await loadPersonalSiteConfig();
