@@ -20,3 +20,49 @@
   .v6Site[data-v18-theme] .v14WorldGrid > #contact { background-position: 0% center !important; }
   .v6Site[data-v18-theme] #home.v6HeroProfile { background-position: 34% center !important; }
 }
+
+/* Responsive section rhythm: use the desktop grid's final column for contact,
+   and keep tablet and phone layouts compact and easy to tap. */
+@media (min-width: 1101px) {
+  .v6Site .v14WorldGrid > #contact {
+    grid-column: 1 / -1 !important;
+    height: clamp(280px, 24vw, 340px) !important;
+    min-height: 280px !important;
+    grid-template-columns: minmax(0, 40%) minmax(0, 35%) minmax(0, 25%) !important;
+  }
+
+  .v6Site #contact .v6ContactLinks {
+    width: 100% !important;
+    max-width: 620px !important;
+    justify-self: center !important;
+    gap: 12px !important;
+  }
+
+  .v6Site #contact .v6ContactLinks a {
+    min-height: 56px !important;
+    font-size: 12px !important;
+  }
+}
+
+@media (min-width: 721px) and (max-width: 1100px) {
+  .v6Site .v14WorldGrid > #contact {
+    height: clamp(300px, 38vw, 360px) !important;
+    min-height: 300px !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .v6Site .v14WorldGrid > #contact {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+  }
+
+  .v6Site .v14WorldGrid > #contact.v15MobileExpanded {
+    height: 320px !important;
+    min-height: 320px !important;
+  }
+
+  .v6Site #contact .v6ContactLinks a {
+    min-height: 46px !important;
+  }
+}
