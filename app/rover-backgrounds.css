@@ -11,11 +11,12 @@
 .v6Site[data-v18-theme="night"] .v14WorldGrid > #music { background-image: url("/rover-backgrounds/music-night.webp") !important; background-position: 65% center !important; background-size: cover !important; }
 .v6Site[data-v18-theme="day"] .v14WorldGrid > #games { background-image: url("/rover-backgrounds/games-day.webp") !important; background-position: 65% center !important; background-size: cover !important; }
 .v6Site[data-v18-theme="night"] .v14WorldGrid > #games { background-image: url("/rover-backgrounds/games-night.webp") !important; background-position: 65% center !important; background-size: cover !important; }
-.v6Site[data-v18-theme="day"] .v14WorldGrid > #contact { background-image: url("/rover-backgrounds/contact-day.webp") !important; background-position: 65% center !important; background-size: cover !important; }
-.v6Site[data-v18-theme="night"] .v14WorldGrid > #contact { background-image: url("/rover-backgrounds/contact-night.webp") !important; background-position: 65% center !important; background-size: cover !important; }
+.v6Site[data-v18-theme="day"] .v14WorldGrid > #contact { background-image: url("/rover-backgrounds/contact-day.webp") !important; background-position: 40% center !important; background-size: cover !important; }
+.v6Site[data-v18-theme="night"] .v14WorldGrid > #contact { background-image: url("/rover-backgrounds/contact-night.webp") !important; background-position: 40% center !important; background-size: cover !important; }
 .v6Site[data-v18-theme="day"] .v6AboutModalPanel { background-image: url("/rover-backgrounds/about-day.webp") !important; background-position: 65% center !important; background-size: cover !important; }
 .v6Site[data-v18-theme="night"] .v6AboutModalPanel { background-image: url("/rover-backgrounds/about-night.webp") !important; background-position: 65% center !important; background-size: cover !important; }
 @media (max-width: 720px) {
   .v6Site[data-v18-theme] .v14WorldGrid > :is(.v6Section, .v6Contact) { background-position: center center !important; }
+  .v6Site[data-v18-theme] .v14WorldGrid > #contact { background-position: 40% center !important; }
   .v6Site[data-v18-theme] #home.v6HeroProfile { background-position: 34% center !important; }
 }
