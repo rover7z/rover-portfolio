@@ -350,6 +350,7 @@ export function PersonalEditor({ initialItems, initialSettings }: { initialItems
           dirty={dirty}
           onOpen={openPanel}
           contentKinds={contentKinds}
+          sectionCount={personalSectionKeys.length + (settings.customSections ?? []).length}
         /> : panel.type === "content" ? <ContentManager
           kind={panel.kind}
           items={items.filter((item) => item.kind === panel.kind)}
@@ -382,9 +383,8 @@ export function PersonalEditor({ initialItems, initialSettings }: { initialItems
   </div>;
 }
 
-function AdminOverview({ lang, items, publishedCount, draftCount, dirty, onOpen, contentKinds }: any) {
+function AdminOverview({ lang, items, publishedCount, draftCount, dirty, onOpen, contentKinds, sectionCount }: any) {
   const ar = lang === "ar";
-  const totalSections = personalSectionKeys.length;
   const settingsTiles: Array<[Panel, string, string, string]> = [
     [{ type: "hero" }, ar ? "الواجهة الرئيسية" : "Homepage", ar ? "الاسم والعناوين والأزرار والخلفيات" : "Name, copy, buttons, and hero images", "⌂"],
     [{ type: "sections" }, ar ? "الأقسام والترتيب" : "Sections & order", ar ? "إظهار الأقسام وترتيبها وتعديل بياناتها" : "Visibility, order, and section details", "▤"],
@@ -403,7 +403,7 @@ function AdminOverview({ lang, items, publishedCount, draftCount, dirty, onOpen,
       <article><span>{ar ? "كل المحتوى" : "All content"}</span><strong>{items.length}</strong><small>{ar ? "صور، فيديو، أفلام، أغاني وألعاب" : "Photos, videos, movies, music, and games"}</small></article>
       <article><span>{ar ? "منشور" : "Published"}</span><strong>{publishedCount}</strong><small>{ar ? "ظاهر للزوار" : "Visible to visitors"}</small></article>
       <article><span>{ar ? "مسودات" : "Drafts"}</span><strong>{draftCount}</strong><small>{ar ? "محفوظة وغير منشورة" : "Saved but hidden"}</small></article>
-      <article><span>{ar ? "أقسام الموقع" : "Website sections"}</span><strong>{totalSections}</strong><small>{ar ? "إعدادات مستقلة لكل قسم" : "Independent settings for each section"}</small></article>
+      <article><span>{ar ? "أقسام الموقع" : "Website sections"}</span><strong>{sectionCount}</strong><small>{ar ? "إعدادات مستقلة لكل قسم" : "Independent settings for each section"}</small></article>
     </div>
     <section className="v20QuickSection">
       <div className="v20SectionHeading"><div><p className="v20Eyebrow">{ar ? "تعديل مباشر" : "QUICK ACCESS"}</p><h2>{ar ? "المحتوى" : "Your content"}</h2></div></div>
