@@ -103,6 +103,8 @@
 .v6AlbumGalleryItem{position:relative;border:1px solid var(--v6-line);border-radius:12px;overflow:hidden;background:#0f1315}
 .v6AlbumGalleryItem>a{display:block;aspect-ratio:4/5}
 .v6AlbumGalleryItem img{width:100%;height:100%;object-fit:cover;display:block}
+.v6AlbumGalleryItem>img{width:100%;aspect-ratio:4/5;height:auto;object-fit:cover;display:block}
+.v6AlbumGalleryItem>.v6Placeholder{aspect-ratio:4/5;display:grid;place-items:center}
 .v6AlbumGalleryItem>div:last-child{padding:9px 10px;font-size:10px}
 .v6VideoModal{width:min(900px,100%);overflow:visible}
 .v6VideoModalFrame{background:#000;border-radius:18px 18px 0 0;overflow:hidden}
