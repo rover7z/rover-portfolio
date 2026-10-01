@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useMemo, useState } from "react";
+import { ChangeEvent, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PersonalSiteClient, type PersonalEditTarget } from "../../components/personal-site-client";
 import type { PortfolioItem, PortfolioKind } from "../../lib/content";
@@ -71,9 +71,11 @@ export function PersonalEditor({ initialItems, initialSettings }: { initialItems
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [dirty, setDirty] = useState(false);
+  const settingsRevisionRef = useRef(0);
   const t = labels[lang];
 
   function updateSettings(next: PersonalSiteConfig) {
+    settingsRevisionRef.current += 1;
     setSettings(next);
     setDirty(true);
     setMessage("");
@@ -155,18 +157,29 @@ export function PersonalEditor({ initialItems, initialSettings }: { initialItems
   }
 
   async function saveSettings() {
+    if (busy) return;
+    const snapshot = structuredClone(settings);
+    const revision = settingsRevisionRef.current;
     setBusy(true);
     setMessage("");
-    const { error } = await supabase.from("site_settings").upsert({ key: "site_config_v6", value: settings }, { onConflict: "key" });
-    setBusy(false);
-    if (error) return setMessage(error.message);
-    setSavedSettings(structuredClone(settings));
-    setDirty(false);
-    setMessage(t.saved);
-    router.refresh();
+    try {
+      const { error } = await supabase.from("site_settings").upsert({ key: "site_config_v6", value: snapshot }, { onConflict: "key" });
+      if (error) throw error;
+      setSavedSettings(snapshot);
+      const hasNewChanges = settingsRevisionRef.current !== revision;
+      setDirty(hasNewChanges);
+      setMessage(hasNewChanges ? t.unsaved : t.saved);
+      router.refresh();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : (error as { message?: string })?.message || (lang === "ar" ? "تعذر الحفظ. حاول مرة أخرى." : "Could not save. Try again."));
+    } finally {
+      setBusy(false);
+    }
   }
 
   function discardSettings() {
+    if (busy) return;
+    settingsRevisionRef.current += 1;
     setSettings(structuredClone(savedSettings));
     setDirty(false);
     setMessage("");
@@ -296,7 +309,7 @@ export function PersonalEditor({ initialItems, initialSettings }: { initialItems
         <button onClick={() => { setPanel({ type: "brand" }); setPreview(false); }}>{t.brand}</button>
         <button onClick={() => { setPanel({ type: "theme" }); setPreview(false); }}>{t.theme}</button>
         <button onClick={() => setLang((x) => x === "ar" ? "en" : "ar")}>{lang === "ar" ? "EN" : "عربي"}</button>
-        {dirty && <button onClick={discardSettings}>{lang === "ar" ? "تراجع" : "Discard"}</button>}
+        {dirty && <button disabled={busy} onClick={discardSettings}>{lang === "ar" ? "تراجع" : "Discard"}</button>}
         <button className="save" disabled={busy || !dirty} onClick={saveSettings}>{busy ? t.saving : t.save}</button>
         <button onClick={signOut}>{t.signout}</button>
       </div>

@@ -10,24 +10,39 @@ function makeId(prefix: string) {
   return `${prefix}_${random}`;
 }
 
+let memoryVisitorId: string | null = null;
+let memorySessionId: string | null = null;
+
 function getVisitorId() {
   const key = "rover_visitor_id";
-  let id = localStorage.getItem(key);
-  if (!id) {
-    id = makeId("rv");
-    localStorage.setItem(key, id);
+  try {
+    let id = localStorage.getItem(key);
+    if (!id) {
+      id = memoryVisitorId ?? makeId("rv");
+      memoryVisitorId = id;
+      localStorage.setItem(key, id);
+    }
+    memoryVisitorId = id;
+    return id;
+  } catch {
+    return memoryVisitorId ??= makeId("rv");
   }
-  return id;
 }
 
 function getSessionId() {
   const key = "rover_session_id";
-  let id = sessionStorage.getItem(key);
-  if (!id) {
-    id = makeId("rs");
-    sessionStorage.setItem(key, id);
+  try {
+    let id = sessionStorage.getItem(key);
+    if (!id) {
+      id = memorySessionId ?? makeId("rs");
+      memorySessionId = id;
+      sessionStorage.setItem(key, id);
+    }
+    memorySessionId = id;
+    return id;
+  } catch {
+    return memorySessionId ??= makeId("rs");
   }
-  return id;
 }
 
 export function VisitorTracker() {
