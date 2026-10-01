@@ -1,3 +1,6 @@
+Warning: truncated output (original token count: 33164)
+Total output lines: 2513
+
 /* Rover V6 — personal hub + inline visual editor */
 .v6Site{min-height:100vh;background:var(--v6-bg);color:var(--v6-text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow:hidden}.v6Site *{box-sizing:border-box}.v6Site a{color:inherit;text-decoration:none}.v6Site button,.v6Site input,.v6Site textarea,.v6Site select{font:inherit}.v6Nav{height:74px;padding:0 clamp(18px,5vw,72px);display:flex;align-items:center;gap:26px;border-bottom:1px solid var(--v6-line);background:color-mix(in srgb,var(--v6-bg) 91%,transparent);backdrop-filter:blur(16px);z-index:60}.v6Nav.sticky{position:sticky;top:0}.v6Brand{display:flex;align-items:center;gap:11px;min-width:max-content}.v6Brand>span:last-child{display:grid}.v6Brand strong{font-size:15px}.v6Brand small{color:var(--v6-muted);font-size:11px}.v6Logo{width:42px;height:42px;border-radius:var(--v6-radius);display:grid;place-items:center;overflow:hidden;border:1px solid color-mix(in srgb,var(--v6-accent) 55%,var(--v6-line));background:#0b0e10}.v6Logo img{width:100%;height:100%;object-fit:cover}.v6Logo.letter{font-weight:900;font-size:20px;color:var(--v6-accent)}.v6Nav nav{display:flex;align-items:center;gap:20px;margin-inline-start:auto;overflow:auto;scrollbar-width:none}.v6Nav nav a{font-size:12px;color:var(--v6-muted);white-space:nowrap;transition:.2s}.v6Nav nav a:hover{color:var(--v6-text)}.v6Lang{border:1px solid var(--v6-line);background:var(--v6-panel);color:var(--v6-text);border-radius:999px;padding:8px 11px;cursor:pointer}
 .v6Hero{min-height:calc(100svh - 74px);position:relative;display:flex;align-items:flex-end;padding:clamp(40px,7vw,96px);background:radial-gradient(circle at 70% 20%,color-mix(in srgb,var(--v6-accent) 10%,transparent),transparent 36%),linear-gradient(145deg,var(--v6-bg2),var(--v6-bg));background-size:cover;background-position:center}.v6HeroOverlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.74),rgba(0,0,0,.12) 60%,rgba(0,0,0,.3));pointer-events:none}.v6HeroCopy{position:relative;z-index:2;max-width:900px}.v6HeroCopy>span{letter-spacing:.35em;font-size:12px;color:#d8d3ca}.v6Hero h1{font-size:clamp(72px,14vw,190px);line-height:.82;margin:16px 0 24px;color:var(--v6-accent);letter-spacing:-.06em}.v6Hero h2{max-width:800px;font-size:clamp(22px,3.4vw,48px);line-height:1.12;margin:0 0 18px;font-weight:650}.v6Hero p{font-size:clamp(14px,1.5vw,19px);color:#c6c6c2;line-height:1.7}.v6HeroActions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}.v6HeroActions a{border:1px solid #6b7073;border-radius:999px;padding:13px 22px;font-weight:750}.v6HeroActions .primary{background:var(--v6-accent);border-color:var(--v6-accent);color:#171108}
@@ -610,127 +613,7 @@
 @media(max-width:1100px){
   .v14WorldGrid{grid-template-columns:1fr}
   .v14WorldGrid>.v6Section,.v14WorldGrid>.v6Contact{min-height:480px!important}
-  .v6HeroProfileGrid{grid-template-columns:1fr!important}
-  .v6HeroAboutCard{max-width:640px;display:grid!important;grid-template-columns:160px 1fr}
-  .v6HeroAboutPhoto{min-height:190px!important;aspect-ratio:auto!important}
-}
-
-@media(max-width:860px){
-  .v6Admin{--v14-admin-bar:104px;--v14-admin-rail:0px;--v14-admin-inspector:100vw}
-  .v6AdminBar{height:104px!important;align-items:flex-start!important;flex-direction:column!important}
-  .v6AdminActions{width:100%}
-  .v14AdminRail{top:104px;bottom:auto;left:0;right:0;width:100%;height:56px;padding:6px 8px;flex-direction:row;overflow-x:auto;overflow-y:hidden;border-inline-end:0;border-bottom:1px solid rgba(255,255,255,.09);gap:5px}
-  .v14RailBrand,.v14RailDivider{display:none}
-  .v14AdminRail button{flex:0 0 auto;width:auto;min-height:42px;padding:7px 10px}
-  .v14AdminRail button b{display:none}.v14AdminRail button span{white-space:nowrap}
-  .v6AdminSite{padding-top:160px!important;padding-inline:0!important}
-  .v6Admin.preview .v6AdminSite{padding-top:104px!important}
-  .v6Inspector{top:auto!important;left:7px!important;right:7px!important;bottom:7px!important;width:auto!important;max-height:78svh!important;border-radius:16px 16px 11px 11px!important}
-}
-
-@media(max-width:720px){
-  .v6Nav{height:64px;padding:0 14px;gap:10px}.v6Nav nav{display:none}
-  .v6Brand strong{font-size:18px}.v6Logo{width:38px;height:38px}
-  .v6Hero.v6HeroProfile{width:calc(100% - 12px);min-height:auto!important;margin:6px auto;padding:34px 18px 30px!important;border-radius:17px}
-  .v6HeroProfileGrid{gap:24px!important}
-  .v6HeroProfile .v6HeroCopy h1{font-size:21vw!important;margin:10px 0 16px}
-  .v6HeroProfile .v6HeroCopy h2{font-size:21px}.v6HeroProfile .v6HeroCopy p{font-size:11px}
-  .v6HeroAboutCard{display:grid!important;grid-template-columns:104px 1fr!important;max-width:none}
-  .v6HeroAboutPhoto{min-height:160px!important}
-  .v14WorldGrid{width:calc(100% - 12px);margin:0 auto 6px;gap:6px}
-  .v14WorldGrid>.v6Section,.v14WorldGrid>.v6Contact{min-height:390px!important;padding:28px 16px 22px!important;border-radius:17px}
-  .v6SectionHead{display:block!important;margin-bottom:19px!important}
-  .v6SectionHead h2,.v6Contact h2{font-size:39px!important}
-  .v6SectionHead p,.v6Contact p{font-size:10px!important}
-  #photos .v6AlbumCard{flex-basis:72vw}#videos .v6VideoCompactCard{flex-basis:80vw}#movies .v6PosterCard{flex-basis:43vw}#music .v6MusicCard{flex-basis:48vw}#games .v6GameCard{flex-basis:74vw}
-  .v14WorldGrid>.v6Contact{grid-template-columns:1fr!important;align-content:end!important}
-  .v6ContactLinks{grid-template-columns:1fr 1fr!important}
-  .v6ContactLinks a{min-height:48px;padding:12px!important}
-  .v6Footer{min-height:74px!important;padding:18px 16px!important}
-}
-
-@media(max-width:460px){
-  .v6ContactLinks{grid-template-columns:1fr!important}
-  .v6AdminActions button,.v6AdminVisitorsLink{height:34px;padding:0 9px!important;font-size:9px!important}
-}
-
-
-/* Rover V15 — approved exact cinematic layout */
-
-.v6Site{background:#020304!important;color:#f7f6f2}
-.v6Nav{width:calc(100% - 12px)!important;max-width:1900px;margin:6px auto 0;height:58px!important;border:1px solid rgba(255,255,255,.13)!important;border-bottom-color:rgba(255,255,255,.16)!important;border-radius:14px 14px 0 0;background:rgba(3,5,7,.88)!important;padding:0 clamp(20px,3.5vw,54px)!important}
-.v6Nav .v6Brand strong{font-family:Georgia,"Times New Roman",serif!important;font-size:24px!important;font-weight:500!important;color:#f8f6f1}
-.v6Nav .v6Brand small,.v6Nav .v6Logo{display:none!important}
-.v6Nav nav{margin-inline-start:34px!important;margin-inline-end:auto!important;gap:28px!important}
-.v6Nav nav a{color:#eeefed!important;font-size:11px!important;opacity:.84;padding:20px 0 17px}
-.v6Nav nav a:first-child{opacity:1;border-bottom:2px solid #fff}
-.v6Lang{order:5;border-color:rgba(255,255,255,.55)!important;background:rgba(4,7,10,.65)!important;min-width:54px}
-
-.v6Hero.v6HeroProfile{width:calc(100% - 12px)!important;max-width:1900px;height:clamp(440px,52svh,620px)!important;min-height:440px!important;margin:0 auto 5px!important;padding:clamp(38px,5vw,72px)!important;border:1px solid rgba(255,255,255,.13)!important;border-top:0!important;border-radius:0 0 14px 14px!important;align-items:center!important;overflow:hidden;background-position:center!important}
-.v6HeroOverlay{background:linear-gradient(90deg,rgba(1,3,5,.95) 0%,rgba(1,3,5,.78) 28%,rgba(1,3,5,.30) 58%,rgba(1,3,5,.12) 77%,rgba(1,3,5,.28) 100%),linear-gradient(0deg,rgba(0,0,0,.35),transparent 42%)!important}
-.v6HeroProfileGrid{width:100%!important;max-width:none!important;display:block!important}
-.v6HeroProfile .v6HeroCopy{max-width:560px!important}
-.v6HeroProfile .v6HeroCopy>span{display:none!important}
-.v6HeroProfile .v6HeroCopy::before{content:"Hello, I'm";display:block;margin-bottom:5px;font-family:Georgia,"Times New Roman",serif;font-size:clamp(17px,1.55vw,25px);color:#f2f1ec}
-.v6Site[dir="rtl"] .v6HeroProfile .v6HeroCopy::before{content:"مرحباً، أنا"}
-.v6HeroProfile .v6HeroCopy h1{margin:0 0 16px!important;font-family:Georgia,"Times New Roman",serif!important;font-size:clamp(78px,8.8vw,142px)!important;font-weight:500!important;line-height:.79!important;letter-spacing:-.055em!important;color:#f8f7f3!important;text-shadow:0 4px 35px rgba(0,0,0,.45)}
-.v6HeroProfile .v6HeroCopy h2{margin:0 0 10px!important;max-width:390px!important;font-size:14px!important;line-height:1.35!important;font-weight:500!important;color:#f0efeb!important}
-.v6HeroProfile .v6HeroCopy p{display:none!important}
-.v6HeroProfile .v6HeroAboutCard{display:none!important}
-
-.v15HeroMediaIcons{display:flex;gap:9px;margin-top:19px}
-.v15HeroMediaIcons a{width:39px;height:35px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.26);border-radius:8px;background:rgba(5,8,11,.70);color:#f5f5f2!important;font-size:14px;transition:.18s ease}
-.v15HeroMediaIcons a:hover{background:rgba(255,255,255,.12);transform:translateY(-2px)}
-.v15HeroActions{display:flex;gap:10px;margin-top:17px}
-.v15HeroActions button{min-width:185px;height:43px;padding:0 24px;border:1px solid rgba(255,255,255,.82);border-radius:999px;background:rgba(3,5,7,.58);color:#f5f4f0;display:inline-flex;align-items:center;justify-content:center;gap:10px;font-size:12px;font-weight:750;cursor:pointer}
-.v15HeroActions button.primary{background:#f4f3ef;color:#101214;border-color:#f4f3ef}
-
-.v15Availability{position:absolute;z-index:4;right:clamp(24px,4vw,60px);bottom:clamp(24px,4vw,44px);width:min(292px,31vw);min-height:62px;padding:10px 14px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;border:1px solid rgba(255,255,255,.20);border-radius:14px;background:rgba(7,13,20,.82);backdrop-filter:blur(16px);color:#f4f5f3;text-align:start;cursor:pointer;box-shadow:0 18px 40px rgba(0,0,0,.28)}
-.v15Availability i{width:10px;height:10px;border-radius:50%;background:#22ef72;box-shadow:0 0 18px rgba(34,239,114,.9)}
-.v15Availability span{display:grid;gap:3px}.v15Availability strong{font-size:10px}.v15Availability small{font-size:8px;color:#bdc6ce}.v15Availability b{font-size:24px;font-weight:300}
-.v6Site[dir="rtl"] .v15Availability{right:auto;left:clamp(24px,4vw,60px)}
-.v6ScrollCue{display:none!important}
-
-.v14WorldGrid{width:calc(100% - 12px)!important;max-width:1900px!important;margin:0 auto 6px!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:5px!important}
-.v14WorldGrid::before{display:none!important}
-.v14WorldGrid>.v6Section,.v14WorldGrid>.v6Contact{min-height:300px!important;height:clamp(285px,31vw,410px)!important;padding:0!important;border:1px solid rgba(255,255,255,.14)!important;border-radius:9px!important;overflow:hidden!important;background-position:center!important;background-size:cover!important;isolation:isolate;display:grid!important;grid-template-columns:minmax(190px,32%) minmax(0,68%)!important;grid-template-rows:1fr!important;align-items:center!important}
-.v14WorldGrid>.v6Section::after,.v14WorldGrid>.v6Contact::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(1,3,5,.96) 0%,rgba(1,3,5,.84) 28%,rgba(1,3,5,.34) 62%,rgba(1,3,5,.24) 100%),linear-gradient(0deg,rgba(0,0,0,.28),transparent 55%)!important}
-.v14WorldGrid>.v6Section>*,.v14WorldGrid>.v6Contact>*{position:relative;z-index:2}
-
-.v6SectionHead{grid-column:1!important;grid-row:1!important;align-self:center!important;display:block!important;margin:0!important;padding:clamp(22px,3vw,40px)!important}
-.v6SectionHead>div>span.v15SectionEyebrow{display:none!important}
-.v15SectionNumber{display:block!important;margin-bottom:8px;color:#aab2b9!important;font-size:10px!important;letter-spacing:.06em!important}
-.v6SectionHead h2,.v6Contact h2{margin:0 0 3px!important;font-family:Georgia,"Times New Roman",serif!important;font-size:clamp(34px,3.1vw,52px)!important;font-weight:500!important;line-height:.92!important;letter-spacing:-.035em!important;color:#faf8f3!important}
-.v6SectionHead p,.v6Contact p{margin:0!important;color:#dadbd7!important;font-family:Georgia,"Times New Roman",serif!important;font-size:clamp(13px,1.2vw,18px)!important;line-height:1.25!important}
-.v6SectionHead p::after{content:"";display:block;width:85%;max-width:235px;height:1px;margin-top:14px;background:rgba(255,255,255,.10)}
-
-#photos .v6AlbumGrid,#videos .v6VideoCompactGrid,#movies .v6PosterGrid,#music .v6MusicGrid,#games .v6GameGrid{grid-column:2!important;grid-row:1!important;align-self:center!important;display:flex!important;align-items:center!important;gap:8px!important;overflow-x:auto!important;overflow-y:hidden!important;padding:22px 18px 22px 0!important;scrollbar-width:none;scroll-snap-type:x proximity}
-.v6Site[dir="rtl"] #photos .v6AlbumGrid,.v6Site[dir="rtl"] #videos .v6VideoCompactGrid,.v6Site[dir="rtl"] #movies .v6PosterGrid,.v6Site[dir="rtl"] #music .v6MusicGrid,.v6Site[dir="rtl"] #games .v6GameGrid{padding:22px 0 22px 18px!important}
-#photos .v6AlbumGrid::-webkit-scrollbar,#videos .v6VideoCompactGrid::-webkit-scrollbar,#movies .v6PosterGrid::-webkit-scrollbar,#music .v6MusicGrid::-webkit-scrollbar,#games .v6GameGrid::-webkit-scrollbar{display:none}
-#photos .v6AlbumCard{flex:0 0 clamp(132px,12vw,190px)!important}
-#videos .v6VideoCompactCard{flex:0 0 clamp(155px,15vw,220px)!important}
-#movies .v6PosterCard{flex:0 0 clamp(94px,8.6vw,132px)!important}
-#music .v6MusicCard{flex:0 0 clamp(140px,12.5vw,190px)!important}
-#games .v6GameCard{flex:0 0 clamp(110px,10vw,150px)!important}
-
-.v6AlbumCard,.v6VideoCompactCard,.v6PosterCard,.v6MusicCard,.v6GameCard{border:1px solid rgba(255,255,255,.18)!important;border-radius:7px!important;background:rgba(6,9,12,.80)!important;box-shadow:0 12px 30px rgba(0,0,0,.25)!important}
-.v6AlbumCover{aspect-ratio:16/10!important}.v6AlbumCaption{padding:8px!important}.v6AlbumCaption strong{font-size:11px!important}.v6AlbumCaption small{display:none}
-.v6VideoCompactBody{padding:7px 8px!important}.v6VideoCompactBody h3{font-size:10px!important}
-.v6PosterBody{padding:8px!important}.v6PosterBody>small,.v6PosterBody>span,.v6PosterBody>p,.v6PosterBody>.v6External{display:none!important}.v6PosterBody h3{margin:0!important;font-size:10px!important}
-.v6MusicBody{padding:8px!important}.v6MusicBody h3{font-size:11px!important}.v6MusicArtist{font-size:8px!important}.v6MusicMeta,.v6MusicVisit{display:none!important}
-.v6GameInfo{padding:7px 8px!important}.v6GameInfo h3{font-size:10px!important;margin:0!important}.v6GameInfo p,.v6GameFooter{display:none!important}
-.v6Add{position:absolute!important;left:clamp(22px,3vw,40px)!important;bottom:22px!important;margin:0!important}
-.v6Site[dir="rtl"] .v6Add{left:auto!important;right:clamp(22px,3vw,40px)!important}
-
-.v14WorldGrid>.v6Contact{grid-template-columns:minmax(190px,42%) minmax(0,58%)!important;gap:0!important}
-.v14WorldGrid>.v6Contact>div:first-of-type{padding:clamp(22px,3vw,40px)!important;align-self:center}
-.v6Contact>div:first-of-type>span{display:block;margin-bottom:8px;color:#aab2b9!important;font-size:10px!important}
-.v6ContactLinks{align-self:center!important;padding:24px!important;display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important}
-.v6ContactLinks a{min-height:46px!important;padding:10px 12px!important;display:flex!important;align-items:center!important;border-radius:8px!important;background:rgba(4,7,10,.58)!important;border-color:rgba(255,255,255,.17)!important;font-size:9px!important}
-
-.v6Footer{width:calc(100% - 12px)!important;max-width:1900px;margin:0 auto 6px;min-height:62px!important;border:1px solid rgba(255,255,255,.09)!important;border-radius:9px!important;background:#030405!important}
-
-@media(max-width:720px){
+  .v6HeroProfileGrid…3164 tokens truncated…edia(max-width:720px){
   .v6Nav{width:100%!important;margin:0!important;height:62px!important;border-width:0 0 1px!important;border-radius:0!important;padding:0 15px!important}
   .v6Nav nav{display:none!important}.v6Nav .v6Brand strong{font-size:22px!important}
   .v6Lang{margin-inline-start:auto;min-width:44px;padding:7px 9px!important}
@@ -2473,4 +2356,41 @@
   -webkit-text-stroke:0!important;
   font-weight:500!important;
   text-shadow:var(--v27-copy-glow)!important;
+}
+
+/* Keep mobile section cards compact enough to show their full content. */
+@media(max-width:720px){
+  .v6Site #photos.v15MobileExpanded .v6AlbumCard{flex:0 0 58vw!important}
+  .v6Site #videos.v15MobileExpanded .v6VideoCompactCard{flex:0 0 64vw!important}
+  .v6Site #movies.v15MobileExpanded .v6PosterCard{flex:0 0 36vw!important}
+  .v6Site #music.v15MobileExpanded .v6MusicCard{flex:0 0 40vw!important}
+  .v6Site #games.v15MobileExpanded .v6GameCard{flex:0 0 56vw!important}
+
+  .v6Site #music.v15MobileExpanded .v6MusicCover{
+    aspect-ratio:1.18/1!important;
+  }
+
+  .v6Site #music.v15MobileExpanded .v6MusicBody{
+    padding:9px 10px 10px!important;
+  }
+
+  .v6Site #music.v15MobileExpanded .v6MusicBody h3{
+    margin:0 0 4px!important;
+    font-size:13px!important;
+    line-height:1.3!important;
+  }
+
+  .v6Site #music.v15MobileExpanded .v6MusicArtist{
+    margin:0 0 5px!important;
+    font-size:10px!important;
+    line-height:1.3!important;
+  }
+
+  .v6Site #music.v15MobileExpanded .v6MusicMeta{gap:5px!important}
+
+  .v6Site #music.v15MobileExpanded .v6MusicVisit{
+    margin-top:7px!important;
+    padding:7px 9px!important;
+    font-size:9px!important;
+  }
 }
