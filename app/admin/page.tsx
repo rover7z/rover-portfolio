@@ -4,6 +4,7 @@ import { createClient } from "../../lib/supabase/server";
 import type { PortfolioItem } from "../../lib/content";
 import { defaultPersonalSiteConfig, mergePersonalSiteConfig } from "../../lib/personal-site";
 import { PersonalEditor } from "./personal-editor";
+import "./admin-studio.css";
 
 export default async function AdminPage() {
   if (!isSupabaseConfigured()) {
