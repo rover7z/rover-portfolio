@@ -132,8 +132,8 @@
 }
 
 
-/* On wide screens, extend the portrait column to the full About content height. */
-@media (min-width: 1101px) {
+/* On desktop-mode and wide screens, extend the portrait column to full content height. */
+@media (min-width: 761px) {
   .v6Site .v6AboutModalGrid {
     align-items: stretch !important;
   }
