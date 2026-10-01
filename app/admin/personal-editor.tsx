@@ -263,6 +263,39 @@ export function PersonalEditor({ initialItems, initialSettings }: { initialItems
     router.refresh();
   }
 
+  async function savePhotoAlbumOrder(albumKeys: string[]) {
+    const groups = new Map<string, EditableItem[]>();
+    items.filter((item) => item.kind === "photo").forEach((item) => {
+      const key = item.category?.trim() || "__rover_default_album__";
+      groups.set(key, [...(groups.get(key) ?? []), item]);
+    });
+    const orderedItems = albumKeys.flatMap((key) =>
+      (groups.get(key) ?? []).slice().sort((a, b) => Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0)),
+    );
+    const updated = orderedItems.map((item, sort_order) => ({ ...item, sort_order }));
+    const changed = updated.filter((item) => Number(items.find((entry) => entry.id === item.id)?.sort_order ?? 0) !== item.sort_order);
+    if (!changed.length) return;
+
+    setBusy(true);
+    setMessage("");
+    setItems((current) => current.map((item) => {
+      const next = updated.find((entry) => entry.id === item.id);
+      return next ? { ...item, sort_order: next.sort_order } : item;
+    }));
+    const results = await Promise.all(changed.map((item) =>
+      supabase.from("portfolio_items").update({ sort_order: item.sort_order }).eq("id", item.id),
+    ));
+    const error = results.find((result) => result.error)?.error;
+    setBusy(false);
+    if (error) {
+      setMessage(error.message);
+      router.refresh();
+      return;
+    }
+    setMessage(lang === "ar" ? "تم حفظ ترتيب الألبومات." : "Album order saved.");
+    router.refresh();
+  }
+
   async function upload(event: ChangeEvent<HTMLInputElement>, onUrl: (url: string) => void) {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -358,6 +391,9 @@ export function PersonalEditor({ initialItems, initialSettings }: { initialItems
           onAdd={() => startAdd(panel.kind)}
           onEdit={startEditItem}
           onEditSection={() => openSectionSettings(panel.kind)}
+          onSaveAlbumOrder={savePhotoAlbumOrder}
+          saving={busy}
+          message={message}
         /> : panel.type === "item" ? <AdminPanelPage title={selectedItem?._local ? t.newItem : selectedItem?.title || t.item} description={lang === "ar" ? "عدّل النصوص والوسائط والروابط وحالة النشر من مكان واحد." : "Edit copy, media, links, and publishing details in one place."} onBack={() => openPanel({ type: "content", kind: (selectedItem?.kind as ContentKind) || "photo" })} lang={lang}>
           {selectedItem && <ItemPanel item={selectedItem} patchItem={patchItem} saveItem={saveItem} deleteItem={deleteItem} upload={upload} busy={busy} lang={lang} t={t} />}
           {message && <p className="v6AdminMessage">{message}</p>}
@@ -419,9 +455,10 @@ function AdminOverview({ lang, items, publishedCount, draftCount, dirty, onOpen,
   </div>;
 }
 
-function ContentManager({ kind, items, lang, onAdd, onEdit, onEditSection }: { kind: ContentKind; items: PortfolioItem[]; lang: Lang; onAdd: () => void; onEdit: (item: PortfolioItem) => void; onEditSection: () => void }) {
+function ContentManager({ kind, items, lang, onAdd, onEdit, onEditSection, onSaveAlbumOrder, saving, message }: { kind: ContentKind; items: PortfolioItem[]; lang: Lang; onAdd: () => void; onEdit: (item: PortfolioItem) => void; onEditSection: () => void; onSaveAlbumOrder: (keys: string[]) => void; saving: boolean; message: string }) {
   const [query, setQuery] = useState("");
   const [visibility, setVisibility] = useState<"all" | "published" | "draft">("all");
+  const [draggedAlbum, setDraggedAlbum] = useState<string | null>(null);
   const ar = lang === "ar";
   const labelsByKind: Record<ContentKind, { ar: string; en: string; icon: string }> = {
     photo: { ar: "الصور", en: "Photos", icon: "◉" }, video: { ar: "الفيديو", en: "Videos", icon: "▶" },
@@ -434,6 +471,18 @@ function ContentManager({ kind, items, lang, onAdd, onEdit, onEditSection }: { k
     const matchesVisibility = visibility === "all" || (visibility === "published" ? item.is_published : !item.is_published);
     return matchesQuery && matchesVisibility;
   }).sort((a, b) => Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0));
+  const albumGroups = kind === "photo" ? groupAdminPhotoAlbums(items, lang) : [];
+  function moveAlbum(sourceKey: string, targetKey: string) {
+    if (sourceKey === targetKey || saving) return;
+    const keys = albumGroups.map((album) => album.key);
+    const from = keys.indexOf(sourceKey);
+    if (from < 0) return;
+    keys.splice(from, 1);
+    const to = keys.indexOf(targetKey);
+    if (from < 0 || to < 0) return;
+    keys.splice(to, 0, sourceKey);
+    onSaveAlbumOrder(keys);
+  }
   return <div className="v20ContentManager">
     <AdminPanelPage title={info[lang]} description={ar ? "أدر العناصر الظاهرة في هذا القسم. افتح أي بطاقة لتعديل بياناتها أو أضف محتوى جديداً." : "Manage the items shown in this section. Edit any item or add new content."} lang={lang} actions={<><button className="v20SecondaryButton" onClick={onEditSection}>{ar ? "إعدادات القسم" : "Section settings"}</button><button className="v20PrimaryButton" onClick={onAdd}>＋ {ar ? "إضافة محتوى" : "Add content"}</button></>}>
       <div className="v20ListToolbar">
@@ -441,6 +490,24 @@ function ContentManager({ kind, items, lang, onAdd, onEdit, onEditSection }: { k
         <div className="v20FilterTabs">{(["all", "published", "draft"] as const).map((value) => <button key={value} className={visibility === value ? "active" : ""} onClick={() => setVisibility(value)}>{value === "all" ? (ar ? "الكل" : "All") : value === "published" ? (ar ? "منشور" : "Published") : (ar ? "مسودة" : "Draft")}</button>)}</div>
         <span className="v20ResultCount">{visible.length} {ar ? "عنصر" : visible.length === 1 ? "item" : "items"}</span>
       </div>
+      {kind === "photo" && albumGroups.length > 0 && <section className="v20AlbumOrdering" aria-label={ar ? "ترتيب الألبومات" : "Album order"}>
+        <div className="v20AlbumOrderHeading"><div><strong>{ar ? "ترتيب الألبومات بالواجهة" : "Album order on the site"}</strong><small>{ar ? "اسحب الألبوم أو استخدم الأسهم. أول بطاقة تظهر أولاً للزوار." : "Drag an album or use the arrows. The first card appears first to visitors."}</small></div><span>↕</span></div>
+        <div className="v20AlbumOrderList">{albumGroups.map((album, index) => <article
+          key={album.key}
+          className={"v20AlbumOrderCard" + (draggedAlbum === album.key ? " dragging" : "")}
+          onDragOver={(event) => { event.preventDefault(); }}
+          onDrop={(event) => { event.preventDefault(); if (draggedAlbum) moveAlbum(draggedAlbum, album.key); setDraggedAlbum(null); }}
+          onDragEnd={() => setDraggedAlbum(null)}
+        >
+          <button type="button" className="v20AlbumDragHandle" draggable={!saving} aria-label={ar ? `اسحب ألبوم ${album.title} لتغيير ترتيبه` : `Drag ${album.title} to reorder`} onDragStart={(event) => { setDraggedAlbum(album.key); event.dataTransfer.effectAllowed = "move"; event.dataTransfer.setData("text/plain", album.key); }} title={ar ? "اسحب لتغيير الترتيب" : "Drag to reorder"}>⠿</button>
+          <span className="v20AlbumOrderCover">{album.items[0]?.cover_url ? <img src={album.items[0].cover_url} alt="" loading="lazy" /> : <i>◉</i>}</span>
+          <span className="v20AlbumOrderDetails"><strong>{album.title}</strong><small>{album.items.length} {ar ? "صورة" : album.items.length === 1 ? "photo" : "photos"}</small></span>
+          <span className="v20AlbumOrderPosition">{String(index + 1).padStart(2, "0")}</span>
+          <span className="v20AlbumOrderArrows"><button type="button" aria-label={ar ? "قدّم الألبوم" : "Move album earlier"} disabled={index === 0 || saving} onClick={() => moveAlbum(album.key, albumGroups[index - 1].key)}>↑</button><button type="button" aria-label={ar ? "أخّر الألبوم" : "Move album later"} disabled={index === albumGroups.length - 1 || saving} onClick={() => moveAlbum(albumGroups[index + 1].key, album.key)}>↓</button></span>
+        </article>)}</div>
+        {saving && <p className="v20AlbumOrderStatus">{ar ? "جاري حفظ الترتيب…" : "Saving album order…"}</p>}
+        {!saving && message && <p className="v20AlbumOrderStatus">{message}</p>}
+      </section>}
       {visible.length ? <div className="v20ItemGrid">{visible.map((item) => <button key={item.id || item.kind + "-" + item.title} className="v20ItemCard" onClick={() => onEdit(item)}>
         <span className="v20ItemThumb">{item.cover_url ? <img src={item.cover_url} alt="" loading="lazy" /> : <span>{info.icon}</span>}<i className={item.is_published ? "published" : "draft"}>{item.is_published ? (ar ? "منشور" : "Published") : (ar ? "مسودة" : "Draft")}</i></span>
         <span className="v20ItemInfo"><strong>{ar && item.title_ar ? item.title_ar : item.title || (ar ? "بدون عنوان" : "Untitled")}</strong><small>{[item.category, item.year, item.duration].filter(Boolean).join(" · ") || (ar ? "لا توجد تفاصيل إضافية" : "No additional details")}</small><b>{item.is_featured ? (ar ? "★ مميز" : "★ Featured") : (ar ? "تعديل التفاصيل" : "Edit details")} <span>↗</span></b></span>
@@ -454,6 +521,21 @@ function AdminPanelPage({ title, description, onBack, lang, actions, children }:
     <div className="v20PageHeading"><div>{onBack && <button className="v20BackButton" onClick={onBack}>← {lang === "ar" ? "رجوع" : "Back"}</button>}<p className="v20Eyebrow">{lang === "ar" ? "إدارة محتوى الموقع" : "WEBSITE MANAGEMENT"}</p><h1>{title}</h1><p>{description}</p></div>{actions && <div className="v20PageActions">{actions}</div>}</div>
     <div className="v20PanelCard">{children}</div>
   </section>;
+}
+
+function groupAdminPhotoAlbums(items: PortfolioItem[], lang: Lang) {
+  const groups = new Map<string, PortfolioItem[]>();
+  for (const item of items) {
+    const key = item.category?.trim() || "__rover_default_album__";
+    groups.set(key, [...(groups.get(key) ?? []), item]);
+  }
+  return [...groups.entries()]
+    .map(([key, albumItems]) => ({
+      key,
+      title: key === "__rover_default_album__" ? (lang === "ar" ? "صوري" : "My Photos") : key,
+      items: albumItems.sort((a, b) => Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0)),
+    }))
+    .sort((a, b) => Number(a.items[0]?.sort_order ?? 0) - Number(b.items[0]?.sort_order ?? 0));
 }
 
 function panelDescription(panel: Panel, lang: Lang, settings: PersonalSiteConfig, items: PortfolioItem[]) {
