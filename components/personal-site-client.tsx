@@ -283,7 +283,7 @@ export function PersonalSiteClient({
 
   const nodes: Record<PersonalSectionKey, ReactNode> = {
     photos: (
-      <section id="photos" className={`v6Section v6Dark ${expandedSection === "photos" ? "v15MobileExpanded" : ""}`} key="photos" data-v6-bg={sectionPreset("photos")} style={sectionStyle("photos")} onClick={(event) => toggleMobileSection("photos", event)}>
+      <section id="photos" className={`v6Section v6Dark ${expandedSection === "photos" ? "v15MobileExpanded" : ""}`} key="photos" data-v6-bg={sectionPreset("photos")} style={sectionStyle("photos")} onClick={(event) => toggleMobileSection("photos", event)} onContextMenu={(event) => event.preventDefault()} onDragStart={(event) => event.preventDefault()}>
         {sectionTitle("photos")}
         <div className="v6AlbumGrid">
           {photoAlbums.map((album) => {
@@ -314,7 +314,7 @@ export function PersonalSiteClient({
       </section>
     ),
     videos: (
-      <section id="videos" className={`v6Section v6Black ${expandedSection === "videos" ? "v15MobileExpanded" : ""}`} key="videos" data-v6-bg={sectionPreset("videos")} style={sectionStyle("videos")} onClick={(event) => toggleMobileSection("videos", event)}>
+      <section id="videos" className={`v6Section v6Black ${expandedSection === "videos" ? "v15MobileExpanded" : ""}`} key="videos" data-v6-bg={sectionPreset("videos")} style={sectionStyle("videos")} onClick={(event) => toggleMobileSection("videos", event)} onContextMenu={(event) => event.preventDefault()} onDragStart={(event) => event.preventDefault()}>
         {sectionTitle("videos")}
         <div className="v6VideoCompactGrid">
           {videos.map((item, i) => {
@@ -477,7 +477,7 @@ export function PersonalSiteClient({
     ? ((settings.hero as any).nightBackgroundUrl || settings.hero.backgroundUrl)
     : settings.hero.backgroundUrl;
 
-  return <main className={`v6Site ${editor?.enabled ? "v6Editing" : ""}`} dir={dir} style={style} data-v6-site-bg={(settings.theme as any).backgroundPreset || "none"} data-v18-theme={siteMode} onContextMenu={(event) => event.preventDefault()} onDragStart={(event) => event.preventDefault()}>
+  return <main className={`v6Site ${editor?.enabled ? "v6Editing" : ""}`} dir={dir} style={style} data-v6-site-bg={(settings.theme as any).backgroundPreset || "none"} data-v18-theme={siteMode}>
     {settings.header.enabled && <header className={`v6Nav ${settings.header.sticky ? "sticky" : ""}`}>
       {edit(lang === "ar" ? "الشعار والقائمة" : "Brand & navigation", { type: "brand" })}
       <a className="v6Brand" href="#home"><Logo settings={settings} /><span>{settings.brand.showName && <strong>{settings.hero.name}</strong>}{settings.brand.showAlias && <small>{settings.hero.alias}</small>}</span></a>
@@ -660,7 +660,7 @@ export function PersonalSiteClient({
       </div>
     </div>}
 
-    {activeAlbum && <div className="v6MediaModal" onClick={() => setActiveAlbumKey(null)}>
+    {activeAlbum && <div className="v6MediaModal" onClick={() => setActiveAlbumKey(null)} onContextMenu={(event) => event.preventDefault()} onDragStart={(event) => event.preventDefault()}>
       <div className="v6MediaModalPanel v6AlbumModal" onClick={(e) => e.stopPropagation()}>
         <button className="v6ModalClose" type="button" onClick={() => setActiveAlbumKey(null)}>×</button>
         <div className="v6ModalHeading"><span>{lang === "ar" ? "ألبوم الصور" : "Photo album"}</span><h3>{activeAlbum.title}</h3><p>{activeAlbum.items.length} {lang === "ar" ? "صور" : "photos"}</p></div>
@@ -677,7 +677,7 @@ export function PersonalSiteClient({
       </div>
     </div>}
 
-    {activeVideo && <div className="v6MediaModal" onClick={() => setActiveVideo(null)}>
+    {activeVideo && <div className="v6MediaModal" onClick={() => setActiveVideo(null)} onContextMenu={(event) => event.preventDefault()} onDragStart={(event) => event.preventDefault()}>
       <div className="v6MediaModalPanel v6VideoModal" onClick={(e) => e.stopPropagation()}>
         <button className="v6ModalClose" type="button" onClick={() => setActiveVideo(null)}>×</button>
         <div className="v6VideoModalFrame"><VideoPlayer item={activeVideo} title={titleFor(activeVideo)} autoPlay /><span className="v6OwnershipMark" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5.2" /><circle cx="12" cy="12" r="4.1" /><circle cx="17.4" cy="6.7" r="1" fill="currentColor" stroke="none" /></svg><span>rover7z</span></span></div>

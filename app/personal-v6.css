@@ -2378,11 +2378,19 @@
 }
 
 
-/* ROVER content protection: deterrence + visible ownership watermark. */
-.v6Site img,
-.v6Site video {
-  -webkit-user-drag: none;
-  user-select: none;
+/* Keep touch movement native; only protect media inside Photos and Videos. */
+.v6Site #photos img,
+.v6Site #photos video,
+.v6Site #videos img,
+.v6Site #videos video,
+.v6Site .v6AlbumGalleryMedia img,
+.v6Site .v6VideoModalFrame,
+.v6Site .v6VideoModalFrame video {
+  -webkit-touch-callout:none;
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-user-drag:none;
+  user-drag:none;
 }
 
 .v6Site .v6AlbumGalleryItem > img {
@@ -2390,29 +2398,6 @@
   width: 100%;
   height: auto;
 }
-
-.v6Site .v6VideoPlayer {
-  user-select: none;
-}
-
-
-/* Rover protection hardening — touch/drag/context-menu deterrence */
-.v6Site,
-.v6Site img,
-.v6Site video,
-.v6Site iframe{ -webkit-touch-callout:none; -webkit-user-select:none; user-select:none; }
-.v6Site img,
-.v6Site video{ -webkit-user-drag:none; user-drag:none; }
-.v6Site .v6AlbumGalleryItem img,
-.v6Site .v6VideoModalFrame,
-.v6Site .v6VideoCard,
-.v6Site .v6PhotoCard,
-.v6Site .v6PosterVisual,
-.v6Site .v6MusicCover,
-.v6Site .v6GameVisual,
-.v6Site .v6HeroAboutPhoto,
-.v6Site .v6AboutModalPhoto{ touch-action:pan-y; }
-
 
 /* Rover V26 — small glass ownership mark, only on original photo/video work */
 .v6Site .v6OwnershipMark{position:absolute;right:10px;bottom:10px;z-index:25;display:inline-flex;align-items:center;gap:6px;padding:5px 8px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:linear-gradient(135deg,rgba(255,255,255,.14),rgba(255,255,255,.045));box-shadow:inset 0 1px 0 rgba(255,255,255,.24),0 6px 18px rgba(0,0,0,.18);color:rgba(255,255,255,.86);font:600 9px/1 Arial,sans-serif;letter-spacing:.08em;white-space:nowrap;pointer-events:none;overflow:hidden;backdrop-filter:blur(10px) saturate(125%);-webkit-backdrop-filter:blur(10px) saturate(125%);transform:rotate(-5deg)}
