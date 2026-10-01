@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useMemo, useState } from "react";
+import { ChangeEvent, useMemo, useRef, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { PersonalSiteClient, type PersonalEditTarget } from "../../components/personal-site-client";
 import type { PortfolioItem, PortfolioKind } from "../../lib/content";
@@ -8,7 +8,8 @@ import { personalSectionKeys, type Lang, type LocalizedText, type PersonalSectio
 import { createClient } from "../../lib/supabase/client";
 import { AutoMediaImporter } from "../../components/auto-media-importer";
 
-type Panel = PersonalEditTarget | { type: "item" } | null;
+type ContentKind = "photo" | "video" | "movie" | "music" | "game";
+type Panel = PersonalEditTarget | { type: "item" } | { type: "content"; kind: ContentKind } | null;
 type EditableItem = PortfolioItem & { _local?: boolean };
 
 const labels = {
@@ -20,7 +21,7 @@ const labels = {
     name: "الاسم", alias: "اللقب", heading: "العنوان الكبير", home: "اسم الرئيسية", kicker: "الوصف الرئيسي", heroSub: "السطر الصغير", firstButton: "الزر الأول", secondButton: "الزر الثاني", firstTarget: "وجهة الزر الأول", secondTarget: "وجهة الزر الثاني", heroBg: "خلفية الواجهة",
     aboutText: "الوصف عني", aboutPhoto: "صورتي", expTitle: "عنوان الخبرة", expText: "الوظائف والخبرة", email: "البريد", instagram: "Instagram", youtube: "YouTube", github: "GitHub", links: "روابط إضافية", addLink: "إضافة رابط", linkName: "اسم الرابط", linkUrl: "الرابط",
     accent: "اللون الرئيسي", bg: "الخلفية", bg2: "الخلفية البديلة", panel: "لون البطاقات", text: "لون النص", muted: "النص الثانوي", line: "الحدود", radius: "استدارة الزوايا", footerText: "نص الحقوق", footerEnabled: "إظهار التذييل",
-    type: "النوع", photo: "صورة", video: "فيديو", movie: "فيلم", music: "أغنية", game: "لعبة", itemTitle: "الاسم / العنوان", itemSubtitle: "العنوان الفرعي", artist: "الفنان", platform: "المنصة", description: "الوصف", category: "التصنيف", year: "السنة", duration: "المدة", rating: "تقييمي / 10", cover: "صورة الغلاف", mediaUrl: "رابط الفيديو/الصوت", external: "الرابط الخارجي", netflix: "رابط الفيلم / المنصة", spotify: "رابط Spotify", gameLink: "رابط اللعبة / المتجر", coverUpload: "رفع صورة الغلاف", mediaUpload: "رفع فيديو أو صوت", published: "منشور", featured: "مميز", sort: "ترتيب العنصر", saveItem: "حفظ المحتوى", deleteItem: "حذف", cancel: "إلغاء",
+    type: "النوع", photo: "صورة", video: "فيديو", movie: "فيلم", music: "أغنية", game: "لعبة", itemTitle: "الاسم / العنوان", itemSubtitle: "العنوان الفرعي", artist: "الفنان", platform: "المنصة", description: "الوصف", category: "التصنيف", tags: "الوسوم", year: "السنة", duration: "المدة", rating: "تقييمي / 10", cover: "صورة الغلاف", mediaUrl: "رابط الفيديو/الصوت", external: "الرابط الخارجي", netflix: "رابط الفيلم / المنصة", spotify: "رابط Spotify", gameLink: "رابط اللعبة / المتجر", coverUpload: "رفع صورة الغلاف", mediaUpload: "رفع فيديو أو صوت", published: "منشور", featured: "مميز", sort: "ترتيب العنصر", saveItem: "حفظ المحتوى", deleteItem: "حذف", cancel: "إلغاء",
   },
   en: {
     editor: "Rover Visual Editor", preview: "Visitor preview", edit: "Back to editing", sections: "Sections", save: "Save website", saving: "Saving…", saved: "Saved", unsaved: "Unsaved changes", signout: "Sign out", close: "Close",
@@ -30,7 +31,7 @@ const labels = {
     name: "Name", alias: "Alias", heading: "Big heading", home: "Home label", kicker: "Main description", heroSub: "Small line", firstButton: "Primary button", secondButton: "Secondary button", firstTarget: "Primary target", secondTarget: "Secondary target", heroBg: "Hero background",
     aboutText: "About description", aboutPhoto: "My photo", expTitle: "Experience title", expText: "Jobs & experience", email: "Email", instagram: "Instagram", youtube: "YouTube", github: "GitHub", links: "Extra links", addLink: "Add link", linkName: "Link name", linkUrl: "URL",
     accent: "Accent color", bg: "Background", bg2: "Alternate background", panel: "Card color", text: "Text color", muted: "Muted text", line: "Borders", radius: "Corner radius", footerText: "Copyright text", footerEnabled: "Show footer",
-    type: "Type", photo: "Photo", video: "Video", movie: "Movie", music: "Song", game: "Game", itemTitle: "Name / title", itemSubtitle: "Subtitle", artist: "Artist", platform: "Platform", description: "Description", category: "Category", year: "Year", duration: "Duration", rating: "My rating / 10", cover: "Cover image", mediaUrl: "Video / audio URL", external: "External link", netflix: "Movie / Platform URL", spotify: "Spotify URL", gameLink: "Game / store URL", coverUpload: "Upload cover", mediaUpload: "Upload video or audio", published: "Published", featured: "Featured", sort: "Item order", saveItem: "Save content", deleteItem: "Delete", cancel: "Cancel",
+    type: "Type", photo: "Photo", video: "Video", movie: "Movie", music: "Song", game: "Game", itemTitle: "Name / title", itemSubtitle: "Subtitle", artist: "Artist", platform: "Platform", description: "Description", category: "Category", tags: "Tags", year: "Year", duration: "Duration", rating: "My rating / 10", cover: "Cover image", mediaUrl: "Video / audio URL", external: "External link", netflix: "Movie / Platform URL", spotify: "Spotify URL", gameLink: "Game / store URL", coverUpload: "Upload cover", mediaUpload: "Upload video or audio", published: "Published", featured: "Featured", sort: "Item order", saveItem: "Save content", deleteItem: "Delete", cancel: "Cancel",
   },
 };
 
@@ -71,9 +72,11 @@ export function PersonalEditor({ initialItems, initialSettings }: { initialItems
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [dirty, setDirty] = useState(false);
+  const settingsRevisionRef = useRef(0);
   const t = labels[lang];
 
   function updateSettings(next: PersonalSiteConfig) {
+    settingsRevisionRef.current += 1;
     setSettings(next);
     setDirty(true);
     setMessage("");
@@ -155,18 +158,29 @@ export function PersonalEditor({ initialItems, initialSettings }: { initialItems
   }
 
   async function saveSettings() {
+    if (busy) return;
+    const snapshot = structuredClone(settings);
+    const revision = settingsRevisionRef.current;
     setBusy(true);
     setMessage("");
-    const { error } = await supabase.from("site_settings").upsert({ key: "site_config_v6", value: settings }, { onConflict: "key" });
-    setBusy(false);
-    if (error) return setMessage(error.message);
-    setSavedSettings(structuredClone(settings));
-    setDirty(false);
-    setMessage(t.saved);
-    router.refresh();
+    try {
+      const { error } = await supabase.from("site_settings").upsert({ key: "site_config_v6", value: snapshot }, { onConflict: "key" });
+      if (error) throw error;
+      setSavedSettings(snapshot);
+      const hasNewChanges = settingsRevisionRef.current !== revision;
+      setDirty(hasNewChanges);
+      setMessage(hasNewChanges ? t.unsaved : t.saved);
+      router.refresh();
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : (error as { message?: string })?.message || (lang === "ar" ? "تعذر الحفظ. حاول مرة أخرى." : "Could not save. Try again."));
+    } finally {
+      setBusy(false);
+    }
   }
 
   function discardSettings() {
+    if (busy) return;
+    settingsRevisionRef.current += 1;
     setSettings(structuredClone(savedSettings));
     setDirty(false);
     setMessage("");
@@ -237,6 +251,7 @@ export function PersonalEditor({ initialItems, initialSettings }: { initialItems
 
   async function deleteItem() {
     if (!selectedItem?.id) { setSelectedItem(null); setPanel(null); return; }
+    const returnKind = selectedItem.kind as ContentKind;
     if (!window.confirm(lang === "ar" ? `حذف “${selectedItem.title}”؟` : `Delete “${selectedItem.title}”?`)) return;
     setBusy(true);
     const { error } = await supabase.from("portfolio_items").delete().eq("id", selectedItem.id);
@@ -244,7 +259,7 @@ export function PersonalEditor({ initialItems, initialSettings }: { initialItems
     if (error) return setMessage(error.message);
     setItems((current) => current.filter((x) => x.id !== selectedItem.id));
     setSelectedItem(null);
-    setPanel(null);
+    setPanel({ type: "content", kind: returnKind });
     router.refresh();
   }
 
@@ -271,80 +286,189 @@ export function PersonalEditor({ initialItems, initialSettings }: { initialItems
     router.refresh();
   }
 
-  function openWorkspace(id: string, target: PersonalEditTarget) {
-    setPanel(target);
-    setPreview(false);
-    window.setTimeout(() => {
-      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "center" });
-    }, 80);
-  }
-
-  const bridge = {
-    enabled: true,
-    controlsVisible: !preview,
-    onEdit: (target: PersonalEditTarget) => { setPanel(target); setPreview(false); },
-    onEditItem: startEditItem,
-    onAddItem: startAdd,
+  const contentKinds: { kind: ContentKind; label: { ar: string; en: string }; icon: string }[] = [
+    { kind: "photo", label: { ar: "الصور", en: "Photos" }, icon: "◉" },
+    { kind: "video", label: { ar: "الفيديو", en: "Videos" }, icon: "▶" },
+    { kind: "movie", label: { ar: "الأفلام", en: "Movies" }, icon: "▣" },
+    { kind: "music", label: { ar: "الأغاني", en: "Music" }, icon: "♫" },
+    { kind: "game", label: { ar: "الألعاب", en: "Games" }, icon: "✦" },
+  ];
+  const publishedCount = items.filter((item) => item.is_published).length;
+  const draftCount = items.length - publishedCount;
+  const openPanel = (next: Panel) => { setPanel(next); setPreview(false); setMessage(""); };
+  const activeContentKind = panel?.type === "content" ? panel.kind : panel?.type === "item" ? selectedItem?.kind : undefined;
+  const openSectionSettings = (kind: ContentKind) => {
+    const key: Record<ContentKind, PersonalSectionKey> = { photo: "photos", video: "videos", movie: "movies", music: "music", game: "games" };
+    openPanel({ type: "section", key: key[kind] });
   };
 
-  return <div className={`v6Admin ${preview ? "preview" : ""} ${panel && !preview ? "panelOpen" : ""}`} dir={lang === "ar" ? "rtl" : "ltr"}>
-    <div className="v6AdminBar">
-      <div className="v6AdminTitle"><strong>{t.editor}</strong>{dirty && <span>● {t.unsaved}</span>}</div>
-      <div className="v6AdminActions">
-        <button onClick={() => setPreview((x) => !x)}>{preview ? t.edit : t.preview}</button>
-        <a className="v6AdminVisitorsLink" href="/admin/visitors">{lang === "ar" ? "الزوار" : "Visitors"}</a><button onClick={() => { setPanel({ type: "sections" }); setPreview(false); }}>{t.sections}</button>
-        <button onClick={() => { setPanel({ type: "brand" }); setPreview(false); }}>{t.brand}</button>
-        <button onClick={() => { setPanel({ type: "theme" }); setPreview(false); }}>{t.theme}</button>
-        <button onClick={() => setLang((x) => x === "ar" ? "en" : "ar")}>{lang === "ar" ? "EN" : "عربي"}</button>
-        {dirty && <button onClick={discardSettings}>{lang === "ar" ? "تراجع" : "Discard"}</button>}
-        <button className="save" disabled={busy || !dirty} onClick={saveSettings}>{busy ? t.saving : t.save}</button>
-        <button onClick={signOut}>{t.signout}</button>
+  return <div className={`v20Admin ${preview ? "isPreview" : ""}`} dir={lang === "ar" ? "rtl" : "ltr"}>
+    <header className="v20Topbar">
+      <a className="v20Brand" href="/admin" aria-label="Rover Admin">
+        <span className="v20BrandMark">R</span>
+        <span><strong>Rover</strong><small>{lang === "ar" ? "لوحة الإدارة" : "ADMIN STUDIO"}</small></span>
+      </a>
+      <div className="v20TopActions">
+        {dirty && <span className="v20SaveState"><i />{t.unsaved}</span>}
+        <button type="button" className="v20ActionButton" onClick={() => { setPreview((value) => !value); setPanel(null); }}><span>{preview ? "✎" : "↗"}</span>{preview ? t.edit : t.preview}</button>
+        <a className="v20ActionButton v20QuietButton" href="/" target="_blank" rel="noreferrer">↗ <span>{lang === "ar" ? "الموقع" : "Website"}</span></a>
+        <a className="v20ActionButton v20QuietButton" href="/admin/visitors">◷ <span>{lang === "ar" ? "الزوار" : "Visitors"}</span></a>
+        <button type="button" className="v20ActionButton v20LanguageButton" onClick={() => setLang((value) => value === "ar" ? "en" : "ar")}>{lang === "ar" ? "EN" : "عربي"}</button>
+        {dirty && <button type="button" className="v20ActionButton v20QuietButton" disabled={busy} onClick={discardSettings}>{lang === "ar" ? "تراجع" : "Discard"}</button>}
+        <button type="button" className="v20SaveButton" disabled={busy || !dirty} onClick={saveSettings}>{busy ? t.saving : t.save}</button>
+        <button type="button" className="v20Signout" onClick={signOut} aria-label={t.signout} title={t.signout}>⇥</button>
       </div>
-    </div>
+    </header>
 
-    {!preview && <nav className="v14AdminRail" aria-label={lang === "ar" ? "اختصارات تعديل الموقع" : "Website editing shortcuts"}>
-      <div className="v14RailBrand">
-        <span>R</span>
-        <div><strong>Rover</strong><small>{lang === "ar" ? "مساحة التعديل" : "Studio"}</small></div>
-      </div>
-      <button className={panel?.type === "hero" ? "active" : ""} onClick={() => openWorkspace("home", { type: "hero" })}><b>⌂</b><span>{lang === "ar" ? "الرئيسية" : "Home"}</span></button>
-      {(["photos","videos","movies","music","games"] as PersonalSectionKey[]).map((key) => (
-        <button key={key} className={panel?.type === "section" && panel.key === key ? "active" : ""} onClick={() => openWorkspace(key, { type: "section", key })}>
-          <b>{key === "photos" ? "◉" : key === "videos" ? "▶" : key === "movies" ? "▣" : key === "music" ? "♫" : "✦"}</b>
-          <span>{settings.sections[key].nav[lang]}</span>
-        </button>
-      ))}
-      {(settings.customSections ?? []).filter((section) => section.enabled).sort((a, b) => a.order - b.order).map((section) => (
-        <button key={section.id} className={panel?.type === "customSection" && panel.id === section.id ? "active" : ""} onClick={() => openWorkspace(section.id, { type: "customSection", id: section.id })}>
-          <b>＋</b><span>{section.nav[lang]}</span>
-        </button>
-      ))}
-      <button className={panel?.type === "contact" ? "active" : ""} onClick={() => openWorkspace("contact", { type: "contact" })}><b>✉</b><span>{settings.sections.contact.nav[lang]}</span></button>
-      <div className="v14RailDivider" />
-      <button className={panel?.type === "about" ? "active" : ""} onClick={() => { setPanel({ type: "about" }); setPreview(false); }}><b>CV</b><span>{lang === "ar" ? "نبذتي والسيرة" : "About & CV"}</span></button>
-      <button className={panel?.type === "theme" ? "active" : ""} onClick={() => { setPanel({ type: "theme" }); setPreview(false); }}><b>◐</b><span>{lang === "ar" ? "المظهر" : "Appearance"}</span></button>
-      <button className={panel?.type === "brand" ? "active" : ""} onClick={() => { setPanel({ type: "brand" }); setPreview(false); }}><b>R</b><span>{lang === "ar" ? "الشعار والقائمة" : "Brand"}</span></button>
-    </nav>}
+    {preview ? <main className="v20PreviewCanvas"><PersonalSiteClient items={items} settings={settings} forcedLang={lang} /></main> : <div className="v20Layout">
+      <aside className="v20Sidebar">
+        <p className="v20NavCaption">{lang === "ar" ? "إدارة الموقع" : "SITE MANAGEMENT"}</p>
+        <button className={`v20NavItem ${panel === null ? "active" : ""}`} onClick={() => openPanel(null)}><b>⌂</b><span>{lang === "ar" ? "نظرة عامة" : "Overview"}</span></button>
+        <button className={`v20NavItem ${panel?.type === "hero" ? "active" : ""}`} onClick={() => openPanel({ type: "hero" })}><b>✦</b><span>{lang === "ar" ? "الواجهة الرئيسية" : "Homepage"}</span></button>
+        <p className="v20NavCaption">{lang === "ar" ? "المحتوى" : "CONTENT"}</p>
+        {contentKinds.map(({ kind, label, icon }) => {
+          const count = items.filter((item) => item.kind === kind).length;
+          const selected = panel?.type === "content" && panel.kind === kind;
+          return <button key={kind} className={`v20NavItem ${selected ? "active" : ""}`} onClick={() => openPanel({ type: "content", kind })}><b>{icon}</b><span>{label[lang]}</span><small>{count}</small></button>;
+        })}
+        <button className={`v20NavItem ${panel?.type === "sections" || panel?.type === "section" || panel?.type === "customSection" ? "active" : ""}`} onClick={() => openPanel({ type: "sections" })}><b>▤</b><span>{lang === "ar" ? "ترتيب الأقسام" : "Sections & order"}</span></button>
+        {(settings.customSections ?? []).map((section) => <button key={section.id} className={`v20NavItem v20SubNav ${panel?.type === "customSection" && panel.id === section.id ? "active" : ""}`} onClick={() => openPanel({ type: "customSection", id: section.id })}><b>＋</b><span>{section.nav[lang] || section.title[lang]}</span></button>)}
+        <p className="v20NavCaption">{lang === "ar" ? "إعدادات الموقع" : "SITE SETTINGS"}</p>
+        <button className={`v20NavItem ${panel?.type === "about" ? "active" : ""}`} onClick={() => openPanel({ type: "about" })}><b>CV</b><span>{lang === "ar" ? "نبذة وسيرة ذاتية" : "About & CV"}</span></button>
+        <button className={`v20NavItem ${panel?.type === "contact" ? "active" : ""}`} onClick={() => openPanel({ type: "contact" })}><b>✉</b><span>{lang === "ar" ? "التواصل" : "Contact"}</span></button>
+        <button className={`v20NavItem ${panel?.type === "theme" ? "active" : ""}`} onClick={() => openPanel({ type: "theme" })}><b>◐</b><span>{lang === "ar" ? "المظهر والألوان" : "Appearance"}</span></button>
+        <button className={`v20NavItem ${panel?.type === "brand" ? "active" : ""}`} onClick={() => openPanel({ type: "brand" })}><b>R</b><span>{lang === "ar" ? "الشعار والقائمة" : "Brand & navigation"}</span></button>
+        <button className={`v20NavItem ${panel?.type === "footer" ? "active" : ""}`} onClick={() => openPanel({ type: "footer" })}><b>⌄</b><span>{lang === "ar" ? "التذييل والحقوق" : "Footer"}</span></button>
+      </aside>
 
-    <div className="v6AdminSite"><PersonalSiteClient items={items} settings={settings} editor={bridge} forcedLang={lang} /></div>
-
-    {panel && !preview && <aside className="v6Inspector">
-      <div className="v6InspectorHead"><strong>{panelTitle(panel, t, Boolean(selectedItem?._local))}</strong><button onClick={() => setPanel(null)}>×</button></div>
-      <div className="v6InspectorBody">
-        {panel.type === "sections" && <SectionsPanel settings={settings} patchSection={patchSection} onEdit={(key: PersonalSectionKey) => setPanel({ type: "section", key })} onEditCustom={(id: string) => setPanel({ type: "customSection", id })} onAddCustom={addCustomSection} t={t} />}
-        {panel.type === "section" && <SectionPanel sectionKey={panel.key} settings={settings} patchSection={patchSection} patchLocalized={patchSectionLocalized} upload={upload} t={t} />}
-        {panel.type === "customSection" && <CustomSectionPanel sectionId={panel.id} settings={settings} patchSection={patchCustomSection} patchLocalized={patchCustomLocalized} deleteSection={deleteCustomSection} upload={upload} t={t} />}
-        {panel.type === "brand" && <BrandPanel settings={settings} updateSettings={updateSettings} upload={upload} t={t} />}
-        {panel.type === "hero" && <HeroPanel settings={settings} updateSettings={updateSettings} patchLocalized={patchLocalized} upload={upload} t={t} />}
-        {panel.type === "theme" && <ThemePanel settings={settings} updateSettings={updateSettings} upload={upload} t={t} />}
-        {panel.type === "about" && <AboutPanel settings={settings} updateSettings={updateSettings} patchLocalized={patchLocalized} upload={upload} t={t} />}
-        {panel.type === "contact" && <ContactPanel settings={settings} updateSettings={updateSettings} upload={upload} t={t} />}
-        {panel.type === "footer" && <FooterPanel settings={settings} updateSettings={updateSettings} patchLocalized={patchLocalized} t={t} />}
-        {panel.type === "item" && selectedItem && <ItemPanel item={selectedItem} patchItem={patchItem} saveItem={saveItem} deleteItem={deleteItem} upload={upload} busy={busy} lang={lang} t={t} />}
-        {message && <p className="v6AdminMessage">{message}</p>}
-      </div>
-    </aside>}
+      <main className="v20Main">
+        {panel === null ? <AdminOverview
+          lang={lang}
+          items={items}
+          publishedCount={publishedCount}
+          draftCount={draftCount}
+          dirty={dirty}
+          onOpen={openPanel}
+          contentKinds={contentKinds}
+        /> : panel.type === "content" ? <ContentManager
+          kind={panel.kind}
+          items={items.filter((item) => item.kind === panel.kind)}
+          lang={lang}
+          onAdd={() => startAdd(panel.kind)}
+          onEdit={startEditItem}
+          onEditSection={() => openSectionSettings(panel.kind)}
+        /> : panel.type === "item" ? <AdminPanelPage title={selectedItem?._local ? t.newItem : selectedItem?.title || t.item} description={lang === "ar" ? "عدّل النصوص والوسائط والروابط وحالة النشر من مكان واحد." : "Edit copy, media, links, and publishing details in one place."} onBack={() => openPanel({ type: "content", kind: (selectedItem?.kind as ContentKind) || "photo" })} lang={lang}>
+          {selectedItem && <ItemPanel item={selectedItem} patchItem={patchItem} saveItem={saveItem} deleteItem={deleteItem} upload={upload} busy={busy} lang={lang} t={t} />}
+          {message && <p className="v6AdminMessage">{message}</p>}
+        </AdminPanelPage> : <AdminPanelPage
+          title={panelTitle(panel, t, Boolean(selectedItem?._local))}
+          description={panelDescription(panel, lang, settings, items)}
+          onBack={() => openPanel(null)}
+          lang={lang}
+        >
+          {panel.type === "sections" && <SectionsPanel settings={settings} patchSection={patchSection} onEdit={(key: PersonalSectionKey) => openPanel({ type: "section", key })} onEditCustom={(id: string) => openPanel({ type: "customSection", id })} onAddCustom={addCustomSection} t={t} />}
+          {panel.type === "section" && <SectionPanel sectionKey={panel.key} settings={settings} patchSection={patchSection} patchLocalized={patchSectionLocalized} upload={upload} t={t} />}
+          {panel.type === "customSection" && <CustomSectionPanel sectionId={panel.id} settings={settings} patchSection={patchCustomSection} patchLocalized={patchCustomLocalized} deleteSection={deleteCustomSection} upload={upload} t={t} />}
+          {panel.type === "brand" && <BrandPanel settings={settings} updateSettings={updateSettings} upload={upload} t={t} />}
+          {panel.type === "hero" && <HeroPanel settings={settings} updateSettings={updateSettings} patchLocalized={patchLocalized} upload={upload} t={t} />}
+          {panel.type === "theme" && <ThemePanel settings={settings} updateSettings={updateSettings} upload={upload} t={t} />}
+          {panel.type === "about" && <AboutPanel settings={settings} updateSettings={updateSettings} patchLocalized={patchLocalized} upload={upload} t={t} />}
+          {panel.type === "contact" && <ContactPanel settings={settings} updateSettings={updateSettings} patchLocalized={patchLocalized} upload={upload} t={t} />}
+          {panel.type === "footer" && <FooterPanel settings={settings} updateSettings={updateSettings} patchLocalized={patchLocalized} t={t} />}
+          {message && <p className="v6AdminMessage">{message}</p>}
+        </AdminPanelPage>}
+      </main>
+    </div>}
   </div>;
+}
+
+function AdminOverview({ lang, items, publishedCount, draftCount, dirty, onOpen, contentKinds }: any) {
+  const ar = lang === "ar";
+  const totalSections = personalSectionKeys.length;
+  const settingsTiles: Array<[Panel, string, string, string]> = [
+    [{ type: "hero" }, ar ? "الواجهة الرئيسية" : "Homepage", ar ? "الاسم والعناوين والأزرار والخلفيات" : "Name, copy, buttons, and hero images", "⌂"],
+    [{ type: "sections" }, ar ? "الأقسام والترتيب" : "Sections & order", ar ? "إظهار الأقسام وترتيبها وتعديل بياناتها" : "Visibility, order, and section details", "▤"],
+    [{ type: "about" }, ar ? "نبذة وسيرة ذاتية" : "About & CV", ar ? "الصورة والخبرة والتعليم والمهارات" : "Photo, experience, education, and skills", "CV"],
+    [{ type: "contact" }, ar ? "التواصل" : "Contact", ar ? "البريد والحسابات والروابط" : "Email, accounts, and links", "✉"],
+    [{ type: "theme" }, ar ? "المظهر والألوان" : "Appearance & colors", ar ? "خلفيات النهار والليل والألوان" : "Day and night backgrounds and colors", "◐"],
+    [{ type: "brand" }, ar ? "الشعار والقائمة" : "Brand & navigation", ar ? "الشعار والاسم والقائمة العلوية" : "Logo, name, and top navigation", "R"],
+    [{ type: "footer" }, ar ? "التذييل والحقوق" : "Footer", ar ? "إظهار التذييل ونص الحقوق" : "Footer visibility and copyright text", "⌄"],
+  ];
+  return <div className="v20Overview">
+    <div className="v20Welcome">
+      <div><p className="v20Eyebrow">ROVER / ADMIN STUDIO</p><h1>{ar ? "إدارة موقعك" : "Manage your website"}</h1><p>{ar ? "عدّل المحتوى والمظهر وكل تفاصيل الموقع من مساحة واحدة واضحة." : "Update content, appearance, and website details from one clear workspace."}</p></div>
+      <span className={"v20Health" + (dirty ? " pending" : "")}><i />{dirty ? (ar ? "تغييرات غير محفوظة" : "Unsaved changes") : (ar ? "الموقع متصل" : "Website connected")}</span>
+    </div>
+    <div className="v20Stats">
+      <article><span>{ar ? "كل المحتوى" : "All content"}</span><strong>{items.length}</strong><small>{ar ? "صور، فيديو، أفلام، أغاني وألعاب" : "Photos, videos, movies, music, and games"}</small></article>
+      <article><span>{ar ? "منشور" : "Published"}</span><strong>{publishedCount}</strong><small>{ar ? "ظاهر للزوار" : "Visible to visitors"}</small></article>
+      <article><span>{ar ? "مسودات" : "Drafts"}</span><strong>{draftCount}</strong><small>{ar ? "محفوظة وغير منشورة" : "Saved but hidden"}</small></article>
+      <article><span>{ar ? "أقسام الموقع" : "Website sections"}</span><strong>{totalSections}</strong><small>{ar ? "إعدادات مستقلة لكل قسم" : "Independent settings for each section"}</small></article>
+    </div>
+    <section className="v20QuickSection">
+      <div className="v20SectionHeading"><div><p className="v20Eyebrow">{ar ? "تعديل مباشر" : "QUICK ACCESS"}</p><h2>{ar ? "المحتوى" : "Your content"}</h2></div></div>
+      <div className="v20ContentTiles">{contentKinds.map(({ kind, label, icon }: any) => {
+        const count = items.filter((item: PortfolioItem) => item.kind === kind).length;
+        return <button key={kind} className="v20ContentTile" onClick={() => onOpen({ type: "content", kind })}><span className="v20TileIcon">{icon}</span><strong>{label[lang]}</strong><small>{count} {ar ? "عنصر" : count === 1 ? "item" : "items"}</small><b>↗</b></button>;
+      })}</div>
+    </section>
+    <section className="v20QuickSection">
+      <div className="v20SectionHeading"><div><p className="v20Eyebrow">{ar ? "كل التفاصيل بيدك" : "EVERY DETAIL, IN ONE PLACE"}</p><h2>{ar ? "إعدادات الموقع" : "Site settings"}</h2></div></div>
+      <div className="v20SettingsTiles">{settingsTiles.map(([target, title, note, icon]) => <button key={title} className="v20SettingTile" onClick={() => onOpen(target)}><span>{icon}</span><div><strong>{title}</strong><small>{note}</small></div><b>↗</b></button>)}</div>
+    </section>
+  </div>;
+}
+
+function ContentManager({ kind, items, lang, onAdd, onEdit, onEditSection }: { kind: ContentKind; items: PortfolioItem[]; lang: Lang; onAdd: () => void; onEdit: (item: PortfolioItem) => void; onEditSection: () => void }) {
+  const [query, setQuery] = useState("");
+  const [visibility, setVisibility] = useState<"all" | "published" | "draft">("all");
+  const ar = lang === "ar";
+  const labelsByKind: Record<ContentKind, { ar: string; en: string; icon: string }> = {
+    photo: { ar: "الصور", en: "Photos", icon: "◉" }, video: { ar: "الفيديو", en: "Videos", icon: "▶" },
+    movie: { ar: "الأفلام", en: "Movies", icon: "▣" }, music: { ar: "الأغاني", en: "Music", icon: "♫" }, game: { ar: "الألعاب", en: "Games", icon: "✦" },
+  };
+  const info = labelsByKind[kind];
+  const visible = items.filter((item) => {
+    const needle = query.trim().toLowerCase();
+    const matchesQuery = !needle || [item.title, item.title_ar, item.subtitle, item.subtitle_ar, item.category].some((value) => value?.toLowerCase().includes(needle));
+    const matchesVisibility = visibility === "all" || (visibility === "published" ? item.is_published : !item.is_published);
+    return matchesQuery && matchesVisibility;
+  }).sort((a, b) => Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0));
+  return <div className="v20ContentManager">
+    <AdminPanelPage title={info[lang]} description={ar ? "أدر العناصر الظاهرة في هذا القسم. افتح أي بطاقة لتعديل بياناتها أو أضف محتوى جديداً." : "Manage the items shown in this section. Edit any item or add new content."} lang={lang} actions={<><button className="v20SecondaryButton" onClick={onEditSection}>{ar ? "إعدادات القسم" : "Section settings"}</button><button className="v20PrimaryButton" onClick={onAdd}>＋ {ar ? "إضافة محتوى" : "Add content"}</button></>}>
+      <div className="v20ListToolbar">
+        <label className="v20Search"><span>⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={ar ? "ابحث بالاسم أو التصنيف" : "Search by name or category"} /></label>
+        <div className="v20FilterTabs">{(["all", "published", "draft"] as const).map((value) => <button key={value} className={visibility === value ? "active" : ""} onClick={() => setVisibility(value)}>{value === "all" ? (ar ? "الكل" : "All") : value === "published" ? (ar ? "منشور" : "Published") : (ar ? "مسودة" : "Draft")}</button>)}</div>
+        <span className="v20ResultCount">{visible.length} {ar ? "عنصر" : visible.length === 1 ? "item" : "items"}</span>
+      </div>
+      {visible.length ? <div className="v20ItemGrid">{visible.map((item) => <button key={item.id || item.kind + "-" + item.title} className="v20ItemCard" onClick={() => onEdit(item)}>
+        <span className="v20ItemThumb">{item.cover_url ? <img src={item.cover_url} alt="" loading="lazy" /> : <span>{info.icon}</span>}<i className={item.is_published ? "published" : "draft"}>{item.is_published ? (ar ? "منشور" : "Published") : (ar ? "مسودة" : "Draft")}</i></span>
+        <span className="v20ItemInfo"><strong>{ar && item.title_ar ? item.title_ar : item.title || (ar ? "بدون عنوان" : "Untitled")}</strong><small>{[item.category, item.year, item.duration].filter(Boolean).join(" · ") || (ar ? "لا توجد تفاصيل إضافية" : "No additional details")}</small><b>{item.is_featured ? (ar ? "★ مميز" : "★ Featured") : (ar ? "تعديل التفاصيل" : "Edit details")} <span>↗</span></b></span>
+      </button>)}</div> : <div className="v20EmptyState"><span>{info.icon}</span><strong>{ar ? "ماكو محتوى هنا بعد" : "No content here yet"}</strong><p>{ar ? "أضف أول عنصر لهذا القسم، وبعدها تقدر تعدّل كل تفاصيله من هنا." : "Add the first item to this section, then manage every detail here."}</p><button className="v20PrimaryButton" onClick={onAdd}>＋ {ar ? "إضافة محتوى" : "Add content"}</button></div>}
+    </AdminPanelPage>
+  </div>;
+}
+
+function AdminPanelPage({ title, description, onBack, lang, actions, children }: { title: string; description: string; onBack?: () => void; lang: Lang; actions?: ReactNode; children: ReactNode }) {
+  return <section className="v20PanelPage">
+    <div className="v20PageHeading"><div>{onBack && <button className="v20BackButton" onClick={onBack}>← {lang === "ar" ? "رجوع" : "Back"}</button>}<p className="v20Eyebrow">{lang === "ar" ? "إدارة محتوى الموقع" : "WEBSITE MANAGEMENT"}</p><h1>{title}</h1><p>{description}</p></div>{actions && <div className="v20PageActions">{actions}</div>}</div>
+    <div className="v20PanelCard">{children}</div>
+  </section>;
+}
+
+function panelDescription(panel: Panel, lang: Lang, settings: PersonalSiteConfig, items: PortfolioItem[]) {
+  const ar = lang === "ar";
+  if (!panel) return "";
+  if (panel.type === "section") return ar ? "تحكم بعناوين القسم وظهوره وخلفيته وتفاصيله." : "Control section titles, visibility, backgrounds, and details.";
+  if (panel.type === "customSection") return ar ? "حرّر المحتوى والمظهر والروابط لهذا القسم المضاف." : "Edit the content, appearance, and links for this custom section.";
+  if (panel.type === "sections") return ar ? "غيّر ترتيب الأقسام، أظهرها أو أخفها، وأضف أقساماً جديدة." : "Reorder, show or hide sections, and create new sections.";
+  if (panel.type === "hero") return ar ? "عدّل الاسم والعناوين والأزرار والخلفيات التي تظهر في أول الموقع." : "Edit the name, copy, buttons, and backgrounds on the homepage.";
+  if (panel.type === "brand") return ar ? "تحكم بالشعار واسم الموقع والقائمة العلوية." : "Manage the site logo, name, and top navigation.";
+  if (panel.type === "theme") return ar ? "عدّل الألوان والخلفيات العامة للوضعين النهاري والليلي." : "Set the global colors and day or night backgrounds.";
+  if (panel.type === "about") return ar ? "عدّل النبذة والخبرة والتعليم واللغات والمهارات وملف السيرة." : "Edit your bio, experience, education, languages, skills, and CV file.";
+  if (panel.type === "contact") return ar ? "حدّث وسائل التواصل وروابطك ومظهر القسم." : "Update contact methods, links, and section appearance.";
+  if (panel.type === "footer") return ar ? "تحكم بظهور التذييل ونص الحقوق باللغتين." : "Control footer visibility and copyright text in both languages.";
+  return ar ? "أدر إعدادات وأعمال أقسام الموقع." : "Manage section settings and site content.";
 }
 
 function panelTitle(panel: Panel, t: any, isNew: boolean) {
@@ -506,6 +630,7 @@ function BrandPanel({ settings, updateSettings, upload, t }: any) {
 function HeroPanel({ settings, updateSettings, patchLocalized, upload, t }: any) {
   const patch = (key: string, value: any) => { const n = structuredClone(settings); n.hero[key] = value; updateSettings(n); };
   return <div className="v6Form">
+    <Toggle label="إظهار الواجهة الرئيسية / Show homepage hero" checked={settings.hero.enabled} onChange={(value) => patch("enabled", value)} />
     <label>{t.name}<input value={settings.hero.name} onChange={(event) => patch("name", event.target.value)} /></label>
     <label>{t.alias}<input value={settings.hero.alias} onChange={(event) => patch("alias", event.target.value)} /></label>
     <label>{t.heading}<input value={settings.hero.heading} onChange={(event) => patch("heading", event.target.value)} /></label>
@@ -549,6 +674,8 @@ function AboutPanel({ settings, updateSettings, patchLocalized, upload, t }: any
   const skills = settings.about.resumeSkills ?? { en: "Microsoft Excel\nMicrosoft Word\nComputer skills\nPromotion & sales\nBusiness management\nWorking under pressure", ar: "Microsoft Excel\nMicrosoft Word\nمهارات الحاسوب\nالترويج والمبيعات\nإدارة الأعمال\nالعمل تحت الضغط" };
 
   return <div className="v6Form">
+    <p className="v6Group">اسم/توقيع قسم النبذة / About label</p>
+    <Pair value={settings.about.eyebrow} onChange={(l, v) => patchLocalized("about.eyebrow", l, v)} t={t} />
     <p className="v6Group">{t.aboutPhoto}</p>
     <label><input dir="ltr" value={settings.about.imageUrl} onChange={(event) => patch("imageUrl", event.target.value)} /></label>
     <Upload label={t.aboutPhoto} accept="image/*" onChange={(event) => upload(event, (url: string) => patch("imageUrl", url))} />
@@ -564,7 +691,7 @@ function AboutPanel({ settings, updateSettings, patchLocalized, upload, t }: any
   </div>;
 }
 
-function ContactPanel({ settings, updateSettings, upload, t }: any) {
+function ContactPanel({ settings, updateSettings, patchLocalized, upload, t }: any) {
   const patch = (key: string, value: any) => {
     const n = structuredClone(settings);
     n.contact[key] = value;
@@ -612,6 +739,8 @@ function ContactPanel({ settings, updateSettings, upload, t }: any) {
   };
 
   return <div className="v6Form">
+    <p className="v6Group">عنوان قسم التواصل / Contact heading</p>
+    <Pair value={settings.contact.eyebrow} onChange={(l: Lang, v: string) => patchLocalized("contact.eyebrow", l, v)} t={t} />
     <label>{t.email}<input dir="ltr" value={settings.contact.email} onChange={(e) => patch("email", e.target.value)} /></label>
     <label>{t.instagram}<input dir="ltr" value={settings.contact.instagram} onChange={(e) => patch("instagram", e.target.value)} /></label>
     <label>{t.youtube}<input dir="ltr" value={settings.contact.youtube} onChange={(e) => patch("youtube", e.target.value)} /></label>
@@ -674,5 +803,28 @@ function ItemPanel({ item, patchItem, saveItem, deleteItem, upload, busy, lang, 
   const externalLabel = item.kind === "movie" ? t.netflix : item.kind === "music" ? t.spotify : item.kind === "game" ? t.gameLink : t.external;
   const showMedia = item.kind === "video" || item.kind === "music";
   const autoImporter = ["movie", "music", "game"].includes(item.kind) ? <AutoMediaImporter item={item} lang={lang} onUrlChange={(url) => patchItem("external_url", url)} onApply={(data) => applyAutoMetadata(data, item, patchItem)} /> : null;
-  return <div className="v6Form">{autoImporter}<label>{t.type}<select value={item.kind} onChange={(e) => patchItem("kind", e.target.value)}><option value="photo">{t.photo}</option><option value="video">{t.video}</option><option value="movie">{t.movie}</option><option value="music">{t.music}</option><option value="game">{t.game}</option></select></label><label>{t.sort}<input type="number" value={item.sort_order ?? 0} onChange={(e) => patchItem("sort_order", Number(e.target.value))} /></label><p className="v6Group">{t.itemTitle}</p><div className="v6Pair"><label>{t.english}<input dir="ltr" value={item.title ?? ""} onChange={(e) => patchItem("title", e.target.value)} /></label><label>{t.arabic}<input dir="rtl" value={item.title_ar ?? ""} onChange={(e) => patchItem("title_ar", e.target.value)} /></label></div>{item.kind !== "photo" && <><p className="v6Group">{subtitleLabel}</p><div className="v6Pair"><label>{t.english}<input dir="ltr" value={item.subtitle ?? ""} onChange={(e) => patchItem("subtitle", e.target.value)} /></label><label>{t.arabic}<input dir="rtl" value={item.subtitle_ar ?? ""} onChange={(e) => patchItem("subtitle_ar", e.target.value)} /></label></div></>}{(item.kind === "movie" || item.kind === "video" || item.kind === "game") && <><p className="v6Group">{t.description}</p><div className="v6Pair"><label>{t.english}<textarea rows={4} value={item.description ?? ""} onChange={(e) => patchItem("description", e.target.value)} /></label><label>{t.arabic}<textarea dir="rtl" rows={4} value={item.description_ar ?? ""} onChange={(e) => patchItem("description_ar", e.target.value)} /></label></div></>}<label>{item.kind === "photo" ? (lang === "ar" ? "الألبوم" : "Album") : item.kind === "game" || item.kind === "movie" ? t.platform : t.category}<input value={item.category ?? ""} onChange={(e) => patchItem("category", e.target.value)} /></label><label>{t.cover}<input dir="ltr" value={item.cover_url ?? ""} onChange={(e) => patchItem("cover_url", e.target.value)} /></label><Upload label={t.coverUpload} accept="image/*" onChange={(e) => upload(e, (url: string) => patchItem("cover_url", url))} />{showMedia && <><label>{t.mediaUrl}<input dir="ltr" value={item.video_url ?? ""} onChange={(e) => patchItem("video_url", e.target.value)} /></label><Upload label={t.mediaUpload} accept={item.kind === "video" ? "video/*" : "audio/*"} onChange={(e) => upload(e, (url: string) => patchItem("video_url", url))} /></>} {item.kind !== "photo" && <label>{externalLabel}<input dir="ltr" value={item.external_url ?? ""} onChange={(e) => patchItem("external_url", e.target.value)} /></label>}<div className="v6Pair"><label>{t.year}<input value={item.year ?? ""} onChange={(e) => patchItem("year", e.target.value)} /></label><label>{t.duration}<input value={item.duration ?? ""} onChange={(e) => patchItem("duration", e.target.value)} /></label></div>{item.kind === "movie" && <label>{t.rating}<input type="number" min="0" max="10" step="0.1" value={item.rating ?? ""} onChange={(e) => patchItem("rating", e.target.value === "" ? null : Number(e.target.value))} /></label>}<Toggle label={t.published} checked={Boolean(item.is_published)} onChange={(v) => patchItem("is_published", v)} /><Toggle label={t.featured} checked={Boolean(item.is_featured)} onChange={(v) => patchItem("is_featured", v)} /><div className="v6ItemActions"><button className="save" onClick={saveItem} disabled={busy}>{t.saveItem}</button><button className="danger" onClick={deleteItem}>{t.deleteItem}</button></div></div>;
+  return <div className="v6Form">
+    {autoImporter}
+    <div className="v6Pair">
+      <label>{t.type}<select value={item.kind} onChange={(event) => patchItem("kind", event.target.value)}><option value="photo">{t.photo}</option><option value="video">{t.video}</option><option value="movie">{t.movie}</option><option value="music">{t.music}</option><option value="game">{t.game}</option></select></label>
+      <label>{t.sort}<input type="number" value={item.sort_order ?? 0} onChange={(event) => patchItem("sort_order", Number(event.target.value))} /></label>
+    </div>
+    <p className="v6Group">{t.itemTitle}</p>
+    <div className="v6Pair"><label>{t.english}<input dir="ltr" value={item.title ?? ""} onChange={(event) => patchItem("title", event.target.value)} /></label><label>{t.arabic}<input dir="rtl" value={item.title_ar ?? ""} onChange={(event) => patchItem("title_ar", event.target.value)} /></label></div>
+    <p className="v6Group">{subtitleLabel}</p>
+    <div className="v6Pair"><label>{t.english}<input dir="ltr" value={item.subtitle ?? ""} onChange={(event) => patchItem("subtitle", event.target.value)} /></label><label>{t.arabic}<input dir="rtl" value={item.subtitle_ar ?? ""} onChange={(event) => patchItem("subtitle_ar", event.target.value)} /></label></div>
+    <p className="v6Group">{t.description}</p>
+    <div className="v6Pair"><label>{t.english}<textarea rows={4} value={item.description ?? ""} onChange={(event) => patchItem("description", event.target.value)} /></label><label>{t.arabic}<textarea dir="rtl" rows={4} value={item.description_ar ?? ""} onChange={(event) => patchItem("description_ar", event.target.value)} /></label></div>
+    <label>{item.kind === "photo" ? (lang === "ar" ? "الألبوم" : "Album") : item.kind === "game" || item.kind === "movie" ? t.platform : t.category}<input value={item.category ?? ""} onChange={(event) => patchItem("category", event.target.value)} /></label>
+    <label>{t.tags}<input value={(item.tags ?? []).join(", ")} onChange={(event) => patchItem("tags", event.target.value.split(",").map((tag: string) => tag.trim()).filter(Boolean))} placeholder={lang === "ar" ? "افصل بين الوسوم بفاصلة" : "Separate tags with commas"} /></label>
+    <div className="v6Pair"><label>{t.cover}<input dir="ltr" value={item.cover_url ?? ""} onChange={(event) => patchItem("cover_url", event.target.value)} /></label><Upload label={t.coverUpload} accept="image/*" onChange={(event) => upload(event, (url: string) => patchItem("cover_url", url))} /></div>
+    {item.cover_url && <div className="v20CoverPreview"><img src={item.cover_url} alt={lang === "ar" ? "معاينة الغلاف" : "Cover preview"} /><span>{lang === "ar" ? "معاينة الغلاف" : "Cover preview"}</span></div>}
+    {showMedia && <><label>{t.mediaUrl}<input dir="ltr" value={item.video_url ?? ""} onChange={(event) => patchItem("video_url", event.target.value)} /></label><Upload label={t.mediaUpload} accept={item.kind === "video" ? "video/*" : "audio/*"} onChange={(event) => upload(event, (url: string) => patchItem("video_url", url))} /></>}
+    {item.kind !== "photo" && <label>{externalLabel}<input dir="ltr" value={item.external_url ?? ""} onChange={(event) => patchItem("external_url", event.target.value)} /></label>}
+    <div className="v6Pair"><label>{t.year}<input value={item.year ?? ""} onChange={(event) => patchItem("year", event.target.value)} /></label><label>{t.duration}<input value={item.duration ?? ""} onChange={(event) => patchItem("duration", event.target.value)} /></label></div>
+    {item.kind === "movie" && <><label>{t.rating}<input type="number" min="0" max="10" step="0.1" value={item.rating ?? ""} onChange={(event) => patchItem("rating", event.target.value === "" ? null : Number(event.target.value))} /></label><div className="v6Pair"><label>{lang === "ar" ? "نص التقييم الإضافي" : "Additional rating"}<input value={item.source_rating_text ?? ""} onChange={(event) => patchItem("source_rating_text", event.target.value)} /></label><label>{lang === "ar" ? "مصدر التقييم" : "Rating source"}<input value={item.source_rating_label ?? ""} onChange={(event) => patchItem("source_rating_label", event.target.value)} /></label></div></>}
+    <Toggle label={t.published} checked={Boolean(item.is_published)} onChange={(value) => patchItem("is_published", value)} />
+    <Toggle label={t.featured} checked={Boolean(item.is_featured)} onChange={(value) => patchItem("is_featured", value)} />
+    <div className="v6ItemActions"><button className="save" onClick={saveItem} disabled={busy}>{busy ? t.saving : t.saveItem}</button><button className="danger" onClick={deleteItem} disabled={busy}>{t.deleteItem}</button></div>
+  </div>;
 }
