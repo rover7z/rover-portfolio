@@ -2424,12 +2424,12 @@
 
 /* Original backgrounds, with a small glow on the lettering only. */
 .v6Site[data-v18-theme="day"]{
-  --v27-letter-edge:rgba(240,253,255,.90);
-  --v27-letter-glow:rgba(94,211,232,.58);
+  --v27-letter-edge:rgba(255,255,255,.90);
+  --v27-letter-glow:rgba(255,255,255,.58);
 }
 .v6Site[data-v18-theme="night"]{
-  --v27-letter-edge:rgba(137,226,240,.70);
-  --v27-letter-glow:rgba(94,211,232,.48);
+  --v27-letter-edge:rgba(0,0,0,.55);
+  --v27-letter-glow:rgba(0,0,0,.45);
 }
 .v6Site[data-v18-theme] .v14WorldGrid>:is(.v6Section,.v6Contact)::after,
 .v6Site[data-v18-theme] .v14WorldGrid>:is(.v6Section,.v6Contact).v15MobileExpanded::after{
