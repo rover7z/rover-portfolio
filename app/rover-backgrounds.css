@@ -80,8 +80,8 @@
   }
 
   .v6Site .v14WorldGrid > #contact.v15MobileExpanded {
-    height: 320px !important;
-    min-height: 320px !important;
+    height: 430px !important;
+    min-height: 0 !important;
   }
 
   .v6Site #contact .v6ContactLinks a {
