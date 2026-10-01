@@ -475,7 +475,7 @@ export function PersonalSiteClient({
     ? ((settings.hero as any).nightBackgroundUrl || settings.hero.backgroundUrl)
     : settings.hero.backgroundUrl;
 
-  return <main className={`v6Site ${editor?.enabled ? "v6Editing" : ""}`} dir={dir} style={style} data-v6-site-bg={(settings.theme as any).backgroundPreset || "none"} data-v18-theme={siteMode}>
+  return <main className={`v6Site ${editor?.enabled ? "v6Editing" : ""}`} dir={dir} style={style} data-v6-site-bg={(settings.theme as any).backgroundPreset || "none"} data-v18-theme={siteMode} onContextMenu={(event) => event.preventDefault()} onDragStart={(event) => event.preventDefault()}>
     {settings.header.enabled && <header className={`v6Nav ${settings.header.sticky ? "sticky" : ""}`}>
       {edit(lang === "ar" ? "الشعار والقائمة" : "Brand & navigation", { type: "brand" })}
       <a className="v6Brand" href="#home"><Logo settings={settings} /><span>{settings.brand.showName && <strong>{settings.hero.name}</strong>}{settings.brand.showAlias && <small>{settings.hero.alias}</small>}</span></a>
@@ -665,7 +665,7 @@ export function PersonalSiteClient({
         <div className="v6AlbumGallery">
           {activeAlbum.items.map((item, i) => <div className="v6AlbumGalleryItem" key={item.id ?? `${item.title}-${i}`}>
             {editItem(item)}
-            {item.cover_url ? <a href={item.cover_url} target="_blank" rel="noreferrer"><img src={item.cover_url} alt={titleFor(item)} /></a> : <div className="v6Placeholder">PHOTO</div>}
+            {item.cover_url ? <img src={item.cover_url} alt={titleFor(item)} draggable={false} /> : <div className="v6Placeholder">PHOTO</div>}
             <div><strong>{titleFor(item)}</strong></div>
           </div>)}
         </div>
@@ -698,7 +698,7 @@ function VideoPlayer({ item, title, autoPlay = false }: { item: PortfolioItem; t
   const source = item.video_url || item.external_url || "";
   const youtube = youtubeEmbed(source, autoPlay);
   if (youtube) return <iframe className="v6VideoPlayer" src={youtube} title={title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />;
-  if (source) return <video className="v6VideoPlayer" controls autoPlay={autoPlay} playsInline preload="metadata" poster={item.cover_url ?? undefined} src={source} />;
+  if (source) return <video className="v6VideoPlayer" controls controlsList="nodownload noplaybackrate" disablePictureInPicture autoPlay={autoPlay} playsInline preload="metadata" poster={item.cover_url ?? undefined} src={source} onContextMenu={(event) => event.preventDefault()} />;
   if (item.cover_url) return <img className="v6VideoPlayer" src={item.cover_url} alt={title} />;
   return <div className="v6VideoPlayer v6Placeholder">VIDEO</div>;
 }
