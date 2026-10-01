@@ -2451,3 +2451,14 @@
 .v6Site .v6GameVisual,
 .v6Site .v6HeroAboutPhoto,
 .v6Site .v6AboutModalPhoto{ touch-action:pan-y; }
+
+
+/* Rover V26 — small glass ownership mark, only on original photo/video work */
+.v6Site .v6OwnershipMark{position:absolute;right:10px;bottom:10px;z-index:25;display:inline-flex;align-items:center;gap:6px;padding:5px 8px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:linear-gradient(135deg,rgba(255,255,255,.14),rgba(255,255,255,.045));box-shadow:inset 0 1px 0 rgba(255,255,255,.24),0 6px 18px rgba(0,0,0,.18);color:rgba(255,255,255,.86);font:600 9px/1 Arial,sans-serif;letter-spacing:.08em;white-space:nowrap;pointer-events:none;overflow:hidden;backdrop-filter:blur(10px) saturate(125%);-webkit-backdrop-filter:blur(10px) saturate(125%);transform:rotate(-5deg)}
+.v6Site .v6OwnershipMark svg{width:13px;height:13px;flex:0 0 13px;display:block;fill:none;stroke:currentColor;stroke-width:1.7}
+.v6Site .v6OwnershipMark::before{content:"";position:absolute;top:-20%;bottom:-20%;left:-45%;width:28%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);transform:skewX(-18deg);animation:v26GlassSweep 4.8s ease-in-out infinite}
+.v6Site .v6AlbumCover,.v6Site .v6AlbumGalleryItem,.v6Site .v6VideoThumb,.v6Site .v6VideoModalFrame{position:relative;overflow:hidden}
+.v6Site .v6AlbumGalleryItem::after,.v6Site .v6VideoModalFrame::after{content:none!important}
+.v6Site[dir="rtl"] .v6OwnershipMark{right:auto;left:10px}
+@keyframes v26GlassSweep{0%,58%{left:-45%;opacity:0}65%{opacity:.8}78%,100%{left:125%;opacity:0}}
+@media(max-width:720px){.v6Site .v6OwnershipMark{right:8px;bottom:8px;padding:4px 7px;gap:5px;font-size:8px}.v6Site .v6OwnershipMark svg{width:12px;height:12px;flex-basis:12px}.v6Site[dir="rtl"] .v6OwnershipMark{right:auto;left:8px}}
