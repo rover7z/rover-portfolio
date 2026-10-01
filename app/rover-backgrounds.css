@@ -24,7 +24,7 @@
 /* Responsive section rhythm: use the desktop grid's final column for contact,
    and keep tablet and phone layouts compact and easy to tap. */
 @media (min-width: 1101px) {
-  .v6Site .v14WorldGrid > #contact {
+  .v6Site[data-v18-theme] .v14WorldGrid > #contact {
     grid-column: 1 / -1 !important;
     height: clamp(280px, 24vw, 340px) !important;
     min-height: 280px !important;
