@@ -64,7 +64,7 @@
 
   .v6Site .v14WorldGrid > #contact.v15MobileExpanded {
     height: 320px !important;
-    min-height: 320px !important;
+    min-height: 0 !important;
   }
 
   .v6Site #contact .v6ContactLinks a {
@@ -90,8 +90,8 @@
 
   /* Let every movie card, including its title, rating and IMDb link, fit. */
   .v6Site .v14WorldGrid > #movies.v15MobileExpanded {
-    height: auto !important;
-    min-height: 520px !important;
+    height: clamp(520px, 74svh, 620px) !important;
+    min-height: 0 !important;
     padding-bottom: 18px !important;
   }
 
@@ -106,5 +106,27 @@
     flex: 0 0 34vw !important;
     height: auto !important;
     align-self: stretch !important;
+  }
+}
+
+@media (max-width: 720px) and (prefers-reduced-motion: no-preference) {
+  .v6Site .v14WorldGrid > .v6Section,
+  .v6Site .v14WorldGrid > .v6Contact {
+    transition:
+      height 680ms cubic-bezier(.18, .78, .2, 1),
+      border-color 420ms ease,
+      box-shadow 520ms ease !important;
+  }
+
+  .v6Site #movies .v6PosterGrid {
+    transition:
+      opacity 420ms ease 100ms,
+      transform 560ms cubic-bezier(.18, .78, .2, 1) !important;
+  }
+
+  .v6Site .v14WorldGrid > .v6Contact .v6ContactLinks {
+    transition:
+      opacity 440ms ease 120ms,
+      transform 560ms cubic-bezier(.18, .78, .2, 1) !important;
   }
 }
