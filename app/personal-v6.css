@@ -2433,3 +2433,21 @@
 .v6Site .v6VideoPlayer {
   user-select: none;
 }
+
+
+/* Rover protection hardening — touch/drag/context-menu deterrence */
+.v6Site,
+.v6Site img,
+.v6Site video,
+.v6Site iframe{ -webkit-touch-callout:none; -webkit-user-select:none; user-select:none; }
+.v6Site img,
+.v6Site video{ -webkit-user-drag:none; user-drag:none; }
+.v6Site .v6AlbumGalleryItem img,
+.v6Site .v6VideoModalFrame,
+.v6Site .v6VideoCard,
+.v6Site .v6PhotoCard,
+.v6Site .v6PosterVisual,
+.v6Site .v6MusicCover,
+.v6Site .v6GameVisual,
+.v6Site .v6HeroAboutPhoto,
+.v6Site .v6AboutModalPhoto{ touch-action:pan-y; }
