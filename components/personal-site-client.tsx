@@ -299,6 +299,7 @@ export function PersonalSiteClient({
               {editItem(cover)}
               <div className="v6AlbumCover">
                 {cover?.cover_url ? <img src={cover.cover_url} alt={album.title} /> : <div className="v6Placeholder">PHOTO</div>}
+                <span className="v6OwnershipMark" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5.2" /><circle cx="12" cy="12" r="4.1" /><circle cx="17.4" cy="6.7" r="1" fill="currentColor" stroke="none" /></svg><span>rover7z</span></span>
                 <span className="v6AlbumCount">{album.items.length} {lang === "ar" ? (album.items.length === 1 ? "صورة" : "صور") : (album.items.length === 1 ? "photo" : "photos")}</span>
               </div>
               <div className="v6AlbumCaption">
@@ -329,6 +330,7 @@ export function PersonalSiteClient({
               {editItem(item)}
               <div className="v6VideoThumb">
                 {thumb ? <img src={thumb} alt={titleFor(item)} /> : <div className="v6Placeholder">VIDEO</div>}
+                <span className="v6OwnershipMark" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5.2" /><circle cx="12" cy="12" r="4.1" /><circle cx="17.4" cy="6.7" r="1" fill="currentColor" stroke="none" /></svg><span>rover7z</span></span>
                 <span className="v6VideoPlay">▶</span>
                 {item.duration && <small className="v6VideoDuration">{item.duration}</small>}
               </div>
@@ -666,6 +668,7 @@ export function PersonalSiteClient({
           {activeAlbum.items.map((item, i) => <div className="v6AlbumGalleryItem" key={item.id ?? `${item.title}-${i}`}>
             {editItem(item)}
             {item.cover_url ? <img src={item.cover_url} alt={titleFor(item)} draggable={false} /> : <div className="v6Placeholder">PHOTO</div>}
+            <span className="v6OwnershipMark" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5.2" /><circle cx="12" cy="12" r="4.1" /><circle cx="17.4" cy="6.7" r="1" fill="currentColor" stroke="none" /></svg><span>rover7z</span></span>
             <div><strong>{titleFor(item)}</strong></div>
           </div>)}
         </div>
@@ -675,7 +678,7 @@ export function PersonalSiteClient({
     {activeVideo && <div className="v6MediaModal" onClick={() => setActiveVideo(null)}>
       <div className="v6MediaModalPanel v6VideoModal" onClick={(e) => e.stopPropagation()}>
         <button className="v6ModalClose" type="button" onClick={() => setActiveVideo(null)}>×</button>
-        <div className="v6VideoModalFrame"><VideoPlayer item={activeVideo} title={titleFor(activeVideo)} autoPlay /></div>
+        <div className="v6VideoModalFrame"><VideoPlayer item={activeVideo} title={titleFor(activeVideo)} autoPlay /><span className="v6OwnershipMark" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5.2" /><circle cx="12" cy="12" r="4.1" /><circle cx="17.4" cy="6.7" r="1" fill="currentColor" stroke="none" /></svg><span>rover7z</span></span></div>
         <div className="v6VideoModalInfo"><h3>{titleFor(activeVideo)}</h3>{descriptionFor(activeVideo) && <p>{descriptionFor(activeVideo)}</p>}</div>
       </div>
     </div>}
