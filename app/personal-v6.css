@@ -2420,3 +2420,21 @@
 .v6Site[dir="rtl"] .v6OwnershipMark{right:10px;left:auto}
 @keyframes v26GlassSweep{0%,58%{left:-45%;opacity:0}65%{opacity:.8}78%,100%{left:125%;opacity:0}}
 @media(max-width:720px){.v6Site .v6OwnershipMark{right:8px;bottom:8px;padding:4px 7px;gap:5px;font-size:8px}.v6Site .v6OwnershipMark svg{width:12px;height:12px;flex-basis:12px}.v6Site[dir="rtl"] .v6OwnershipMark{right:8px;left:auto}}
+
+
+/* Rover V27 — keep Arabic/RTL sections visually consistent with the dark glass look */
+.v6Site[dir="rtl"] .v14WorldGrid{
+  background:transparent!important;
+}
+.v6Site[dir="rtl"] .v14WorldGrid>.v6Section::after,
+.v6Site[dir="rtl"] .v14WorldGrid>.v6Contact::after{
+  background:linear-gradient(270deg,rgba(3,5,7,.76) 0%,rgba(3,5,7,.46) 48%,rgba(3,5,7,.12) 100%)!important;
+}
+.v6Site[dir="rtl"] .v14WorldGrid>.v6Section.v15MobileExpanded::after,
+.v6Site[dir="rtl"] .v14WorldGrid>.v6Contact.v15MobileExpanded::after{
+  background:linear-gradient(180deg,rgba(3,5,7,.38) 0%,rgba(3,5,7,.62) 52%,rgba(3,5,7,.86) 100%)!important;
+}
+.v6Site[dir="rtl"] .v14WorldGrid>.v6Section,
+.v6Site[dir="rtl"] .v14WorldGrid>.v6Contact{
+  background-color:transparent!important;
+}
