@@ -2380,50 +2380,6 @@
   user-select: none;
 }
 
-.v6Site .v6AlbumCover,
-.v6Site .v6VideoThumb,
-.v6Site .v6PosterVisual,
-.v6Site .v6MusicCover,
-.v6Site .v6GameVisual,
-.v6Site .v6HeroAboutPhoto,
-.v6Site .v6AboutModalPhoto,
-.v6Site .v6AlbumGalleryItem,
-.v6Site .v6VideoModalFrame {
-  position: relative;
-  overflow: hidden;
-}
-
-.v6Site .v6AlbumCover::after,
-.v6Site .v6VideoThumb::after,
-.v6Site .v6PosterVisual::after,
-.v6Site .v6MusicCover::after,
-.v6Site .v6GameVisual::after,
-.v6Site .v6HeroAboutPhoto::after,
-.v6Site .v6AboutModalPhoto::after,
-.v6Site .v6AlbumGalleryItem::after,
-.v6Site .v6VideoModalFrame::after {
-  content: "ROVER • rover7z";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 20;
-  transform: translate(-50%, -50%) rotate(-18deg);
-  padding: 7px 14px;
-  border: 1px solid rgba(255,255,255,.28);
-  border-radius: 999px;
-  background: rgba(0,0,0,.22);
-  color: rgba(255,255,255,.78);
-  font: 700 11px/1.1 Arial, sans-serif;
-  letter-spacing: .14em;
-  white-space: nowrap;
-  pointer-events: none;
-  text-shadow: 0 1px 8px rgba(0,0,0,.7);
-}
-
-.v6Site .v6VideoModalFrame::after {
-  opacity: .58;
-}
-
 .v6Site .v6AlbumGalleryItem > img {
   display: block;
   width: 100%;
@@ -2459,6 +2415,6 @@
 .v6Site .v6OwnershipMark::before{content:"";position:absolute;top:-20%;bottom:-20%;left:-45%;width:28%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);transform:skewX(-18deg);animation:v26GlassSweep 4.8s ease-in-out infinite}
 .v6Site .v6AlbumCover,.v6Site .v6AlbumGalleryItem,.v6Site .v6VideoThumb,.v6Site .v6VideoModalFrame{position:relative;overflow:hidden}
 .v6Site .v6AlbumGalleryItem::after,.v6Site .v6VideoModalFrame::after{content:none!important}
-.v6Site[dir="rtl"] .v6OwnershipMark{right:auto;left:10px}
+.v6Site[dir="rtl"] .v6OwnershipMark{right:10px;left:auto}
 @keyframes v26GlassSweep{0%,58%{left:-45%;opacity:0}65%{opacity:.8}78%,100%{left:125%;opacity:0}}
-@media(max-width:720px){.v6Site .v6OwnershipMark{right:8px;bottom:8px;padding:4px 7px;gap:5px;font-size:8px}.v6Site .v6OwnershipMark svg{width:12px;height:12px;flex-basis:12px}.v6Site[dir="rtl"] .v6OwnershipMark{right:auto;left:8px}}
+@media(max-width:720px){.v6Site .v6OwnershipMark{right:8px;bottom:8px;padding:4px 7px;gap:5px;font-size:8px}.v6Site .v6OwnershipMark svg{width:12px;height:12px;flex-basis:12px}.v6Site[dir="rtl"] .v6OwnershipMark{right:8px;left:auto}}
