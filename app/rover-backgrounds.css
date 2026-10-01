@@ -36,7 +36,7 @@
 
   .v6Site #contact .v6ContactLinks {
     width: 100% !important;
-    max-width: 620px !important;
+    max-width: 380px !important;
     justify-self: center !important;
     gap: 12px !important;
   }
