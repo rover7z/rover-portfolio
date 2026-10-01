@@ -63,7 +63,7 @@
   }
 
   .v6Site .v14WorldGrid > #contact.v15MobileExpanded {
-    height: 320px !important;
+    height: 430px !important;
     min-height: 0 !important;
   }
 
@@ -126,36 +126,7 @@
 
   .v6Site .v14WorldGrid > .v6Contact .v6ContactLinks {
     transition:
-      opacity 440ms ease 120ms,
+      opacity 420ms ease 100ms,
       transform 560ms cubic-bezier(.18, .78, .2, 1) !important;
-  }
-}
-
-/* Contact should ease open more gently while keeping its snappy close. */
-@media (max-width: 720px) and (prefers-reduced-motion: no-preference) {
-  .v6Site .v14WorldGrid > #contact {
-    transition:
-      height 650ms cubic-bezier(.2, .82, .22, 1),
-      border-color 420ms ease,
-      box-shadow 520ms ease !important;
-  }
-
-  .v6Site .v14WorldGrid > #contact.v15MobileExpanded {
-    transition:
-      height 920ms cubic-bezier(.16, .8, .2, 1),
-      border-color 420ms ease,
-      box-shadow 520ms ease !important;
-  }
-
-  .v6Site .v14WorldGrid > #contact .v6ContactLinks {
-    transition:
-      opacity 480ms ease,
-      transform 500ms cubic-bezier(.2, .82, .22, 1) !important;
-  }
-
-  .v6Site .v14WorldGrid > #contact.v15MobileExpanded .v6ContactLinks {
-    transition:
-      opacity 650ms ease 120ms,
-      transform 700ms cubic-bezier(.16, .8, .2, 1) 80ms !important;
   }
 }
