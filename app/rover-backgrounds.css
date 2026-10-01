@@ -130,3 +130,37 @@
       transform 560ms cubic-bezier(.18, .78, .2, 1) !important;
   }
 }
+
+
+/* On wide screens, extend the portrait column to the full About content height. */
+@media (min-width: 1101px) {
+  .v6Site .v6AboutModalGrid {
+    align-items: stretch !important;
+  }
+
+  .v6Site .v6AboutModalPhoto {
+    position: relative !important;
+    top: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    align-self: stretch !important;
+  }
+
+  .v6Site .v6AboutModalPhoto img {
+    object-fit: cover !important;
+    object-position: center 28% !important;
+  }
+}
+
+.v6Site[data-v18-theme="day"] .v6ResumeSkills span {
+  color: #252c32 !important;
+  background: rgba(244, 247, 249, .96) !important;
+  border-color: rgba(40, 49, 57, .24) !important;
+}
+
+.v6Site[data-v18-theme="night"] .v6ResumeSkills span {
+  color: #f1f4f6 !important;
+  background: rgba(255, 255, 255, .10) !important;
+  border-color: rgba(255, 255, 255, .34) !important;
+}
