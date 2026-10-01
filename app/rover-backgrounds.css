@@ -29,6 +29,9 @@
     height: clamp(280px, 24vw, 340px) !important;
     min-height: 280px !important;
     grid-template-columns: minmax(0, 40%) minmax(0, 35%) minmax(0, 25%) !important;
+    background-size: auto 100% !important;
+    background-position: right center !important;
+    background-repeat: no-repeat !important;
   }
 
   .v6Site #contact .v6ContactLinks {
