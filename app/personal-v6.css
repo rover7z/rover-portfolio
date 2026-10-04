@@ -108,7 +108,14 @@
 .v6AlbumGalleryMedia>.v6OwnershipMark{direction:ltr}
 .v6AlbumGalleryItem>img{width:100%;aspect-ratio:4/5;height:auto;object-fit:cover;display:block}
 .v6AlbumGalleryItem>.v6Placeholder{aspect-ratio:4/5;display:grid;place-items:center}
-.v6AlbumGalleryItem>div:last-child{padding:9px 10px;font-size:10px}
+.v6AlbumGalleryCaption{padding:9px 10px;min-height:54px;display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:10px}
+.v6AlbumGalleryCaption>strong{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.v6PhotoLike{flex:0 0 auto;min-width:40px;min-height:40px;padding:0 9px;display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid rgba(255,255,255,.48);border-radius:999px;background:transparent;color:#f4f3ef;font:600 11px/1 Arial,sans-serif;cursor:pointer;touch-action:manipulation;transition:background-color .16s ease,border-color .16s ease,transform .16s ease}
+.v6PhotoLike svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.v6PhotoLike.isLiked{border-color:rgba(255,255,255,.88);background:rgba(255,255,255,.12);color:#fff}
+.v6PhotoLike:active{transform:scale(.96)}
+.v6PhotoLike:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.v6PhotoLike:disabled{cursor:wait;opacity:.68}
 .v6VideoModal{width:min(900px,100%);overflow:visible}
 .v6VideoModalFrame{background:#000;border-radius:18px 18px 0 0;overflow:hidden}
 .v6VideoModalFrame .v6VideoPlayer{width:100%;aspect-ratio:16/9;display:block;border:0;object-fit:contain;background:#000}
@@ -133,6 +140,7 @@
   .v6MediaModalPanel{border-radius:13px}
   .v6ModalHeading{padding:18px 14px 8px}
   .v6AlbumGallery{padding:10px 14px 18px;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .v6PhotoLike{min-width:44px;min-height:44px;padding:0 10px}
   .v6VideoModalInfo{padding:13px}
 }
 

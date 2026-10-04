@@ -5,6 +5,7 @@ import type { PortfolioItem, PortfolioKind } from "../lib/content";
 import { personalSectionKeys, type CustomSectionSettings, type Lang, type PersonalSectionKey, type PersonalSiteConfig } from "../lib/personal-site";
 
 type SiteMode = "day" | "night";
+type PhotoLikeState = { count: number; liked: boolean };
 
 export type PersonalEditTarget =
   | { type: "brand" }
@@ -45,6 +46,9 @@ export function PersonalSiteClient({
   const spotifyPlayingRef = useRef<string | null>(null);
   const spotifyAttemptRef = useRef(0);
   const [activeAlbumKey, setActiveAlbumKey] = useState<string | null>(null);
+  const [photoLikes, setPhotoLikes] = useState<Record<string, PhotoLikeState>>({});
+  const [photoLikesReady, setPhotoLikesReady] = useState(false);
+  const [busyPhotoLikes, setBusyPhotoLikes] = useState<Set<string>>(() => new Set());
   const [activeVideo, setActiveVideo] = useState<PortfolioItem | null>(null);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [resumeOpen, setResumeOpen] = useState(false);
@@ -133,6 +137,69 @@ export function PersonalSiteClient({
   const photoAlbums = groupPhotoAlbums(photos, lang);
   const activeAlbum = photoAlbums.find((album) => album.key === activeAlbumKey) ?? null;
   const customSections = settings.customSections ?? [];
+
+  useEffect(() => {
+    if (!activeAlbumKey) {
+      setPhotoLikesReady(false);
+      return;
+    }
+    const album = photoAlbums.find((entry) => entry.key === activeAlbumKey);
+    const photoIds = album?.items.map((item) => item.id).filter((id): id is string => Boolean(id)) ?? [];
+    if (!photoIds.length) {
+      setPhotoLikesReady(false);
+      return;
+    }
+    let cancelled = false;
+    setPhotoLikesReady(false);
+    const visitorId = getPhotoVisitorId();
+    const query = new URLSearchParams({ ids: photoIds.join(","), visitorId });
+    void fetch(`/api/photo-likes?${query}`, { cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Could not load photo likes");
+        return response.json() as Promise<{ likes: Array<{ photoId: string; count: number; liked: boolean }> }>;
+      })
+      .then(({ likes }) => {
+        if (cancelled) return;
+        setPhotoLikesReady(true);
+        setPhotoLikes((current) => {
+          const next = { ...current };
+          likes.forEach((like) => { next[like.photoId] = { count: like.count, liked: like.liked }; });
+          return next;
+        });
+      })
+      .catch(() => { if (!cancelled) setPhotoLikesReady(false); });
+    return () => { cancelled = true; };
+  }, [activeAlbumKey, lang]);
+
+  const togglePhotoLike = async (photoId: string) => {
+    if (busyPhotoLikes.has(photoId)) return;
+    const previous = photoLikes[photoId] ?? { count: 0, liked: false };
+    const liked = !previous.liked;
+    setPhotoLikes((current) => ({
+      ...current,
+      [photoId]: { count: Math.max(0, previous.count + (liked ? 1 : -1)), liked },
+    }));
+    setBusyPhotoLikes((current) => new Set(current).add(photoId));
+    try {
+      const response = await fetch("/api/photo-likes", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ photoId, visitorId: getPhotoVisitorId(), liked }),
+      });
+      if (!response.ok) throw new Error("Could not save photo like");
+      const result = await response.json() as { like: { photoId: string; count: number; liked: boolean } };
+      setPhotoLikes((current) => ({ ...current, [photoId]: { count: result.like.count, liked: result.like.liked } }));
+    } catch {
+      setPhotoLikes((current) => ({ ...current, [photoId]: previous }));
+    } finally {
+      setBusyPhotoLikes((current) => {
+        const next = new Set(current);
+        next.delete(photoId);
+        return next;
+      });
+    }
+  };
+
 
   const ordered = useMemo(
     () => personalSectionKeys
@@ -671,7 +738,19 @@ export function PersonalSiteClient({
               {item.cover_url ? <img src={item.cover_url} alt={titleFor(item)} draggable={false} /> : <div className="v6Placeholder">PHOTO</div>}
               <span className="v6OwnershipMark" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5.2" /><circle cx="12" cy="12" r="4.1" /><circle cx="17.4" cy="6.7" r="1" fill="currentColor" stroke="none" /></svg><span>rover7z</span></span>
             </div>
-            <div><strong>{titleFor(item)}</strong></div>
+            <div className="v6AlbumGalleryCaption">
+              <strong>{titleFor(item)}</strong>
+              {photoLikesReady && item.id && !editor?.enabled && <button type="button"
+                className={`v6PhotoLike ${photoLikes[item.id]?.liked ? "isLiked" : ""}`}
+                aria-label={photoLikeLabel(lang, titleFor(item), photoLikes[item.id]?.liked ?? false, photoLikes[item.id]?.count ?? 0)}
+                aria-pressed={photoLikes[item.id]?.liked ?? false}
+                disabled={busyPhotoLikes.has(item.id)}
+                onClick={() => void togglePhotoLike(item.id!)}
+              >
+                <HeartIcon filled={photoLikes[item.id]?.liked ?? false} />
+                <span>{photoLikes[item.id]?.count ?? 0}</span>
+              </button>}
+            </div>
           </div>)}
         </div>
       </div>
@@ -698,6 +777,35 @@ function Logo({ settings }: { settings: PersonalSiteConfig }) {
 function Empty({ lang, textAr, textEn }: { lang: Lang; textAr: string; textEn: string }) {
   return <div className="v6Empty">{lang === "ar" ? textAr : textEn}</div>;
 }
+
+let fallbackPhotoVisitorId: string | null = null;
+function getPhotoVisitorId() {
+  const key = "rover_photo_visitor_id";
+  try {
+    const stored = window.localStorage.getItem(key);
+    if (stored && UUID_PATTERN.test(stored)) return stored;
+    const id = createUuid();
+    window.localStorage.setItem(key, id);
+    return id;
+  } catch { return fallbackPhotoVisitorId ??= createUuid(); }
+}
+function createUuid() {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) return crypto.randomUUID();
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (digit) => {
+    const random = Math.floor(Math.random() * 16);
+    return (digit === "x" ? random : (random & 0x3) | 0x8).toString(16);
+  });
+}
+function photoLikeLabel(lang: Lang, title: string, liked: boolean, count: number) {
+  if (lang === "ar") return `${liked ? "إلغاء الإعجاب بصورة" : "أعجبتني صورة"} ${title}، ${count} إعجابات`;
+  return `${liked ? "Unlike" : "Like"} ${title}, ${count} likes`;
+}
+function HeartIcon({ filled }: { filled: boolean }) {
+  return <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <path d="M20.8 8.7c0 4.2-8.8 10.1-8.8 10.1S3.2 12.9 3.2 8.7a4.5 4.5 0 0 1 8.8-1.3 4.5 4.5 0 0 1 8.8 1.3Z" fill={filled ? "currentColor" : "none"} />
+  </svg>;
+}
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 function VideoPlayer({ item, title, autoPlay = false }: { item: PortfolioItem; title: string; autoPlay?: boolean }) {
   const source = item.video_url || item.external_url || "";
