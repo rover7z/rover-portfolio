@@ -297,7 +297,7 @@ begin
   if p_liked then
     insert into public.photo_likes (photo_id, visitor_id)
     values (p_photo_id, p_visitor_id)
-    on conflict (photo_id, visitor_id) do nothing;
+    on conflict on constraint photo_likes_pkey do nothing;
   else
     delete from public.photo_likes
     where photo_likes.photo_id = p_photo_id
